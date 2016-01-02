@@ -1,0 +1,40 @@
+/*
+ * ArcadeDrive.h
+ *
+ *  Created on: Oct 30, 2015
+ *      Author: Andrew
+ */
+
+#ifndef SRC_CONTROLLERS_ARCADEDRIVECONTROLLER_H_
+#define SRC_CONTROLLERS_ARCADEDRIVECONTROLLER_H_
+
+#include "lib/DriveBase.h"
+
+class ArcadeDriveController : public DriveController {
+public:
+	ArcadeDriveController();
+	virtual ~ArcadeDriveController();
+
+	/*
+	 * Calculate motor output given the most recent joystick commands.
+	 * In this case just return the most recent joystick commands.
+	 */
+	void CalcDriveOutput(AngleProvider *angle, DistProvider *dist,
+			DriveOutput *out);
+
+	/*
+	 * This controller is open-loop so OnTarget doesn't make sense here...
+	 * just return false I guess...
+	 */
+	bool OnTarget() { return false; }
+
+	/*
+	 * Set the joystick values (which in this case will be output)
+	 */
+	void SetJoysticks(double throttle, double turn);
+private:
+	double m_leftOutput;
+	double m_rightOutput;
+};
+
+#endif /* SRC_CONTROLLERS_ARCADEDRIVECONTROLLER_H_ */
