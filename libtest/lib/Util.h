@@ -38,7 +38,7 @@ RobotMode GetRobotMode();
  *
  * @return returns current robot mode in RobotMode format
  */
-RobotMode GetRobotMode(RobotStateInterface *stateProvider);
+RobotMode GetRobotMode(RobotStateInterface &stateProvider);
 
 
 /**
@@ -73,7 +73,7 @@ namespace Constants {
                                     0.0: atan2(x, y))
 #define DIR_DEGREES(x,y)        RADIANS_TO_DEGREES(DIR_RADIANS(x, y))
 
-inline uint32_t GetUsecTime() {
+inline uint64_t GetUsecTime() {
 	return GetFPGATime();
 }
 

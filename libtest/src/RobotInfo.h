@@ -32,7 +32,7 @@ constexpr double DRIVE_DIST_PER_CLICK = DRIVE_DIST_PER_REVOLUTION *
  * Intake subsystem
  */
 #define		INTAKE_EXTEND_SOL_CHANNEL		6
-#define		INTAKE_ROLLER_LEFT_PWM			7
+#define		INTAKE_ROLLER_LEFT_PWM			2
 
 #define		INTAKE_FORWARD_SPEED			1.0
 #define		INTAKE_REVERSE_SPEED			-1.0
@@ -42,15 +42,15 @@ constexpr double DRIVE_DIST_PER_CLICK = DRIVE_DIST_PER_REVOLUTION *
  */
 #define		FLYWHEEL_ONE_PWM				6
 #define		FLYWHEEL_TWO_PWM				5
-#define		CHEATER_PWM						2
+#define		CHEATER_PWM						7
 #define		FLYWHEEL_BANNERSENSOR_DIN		1
 
 #define		READY_LIGHT_RELAY				1
 
 #define		FLYWHEEL_RUN_SPEED				1.0
 
-#define		FEED_FORWARD_SPEED				-1.0
-#define		FEED_REVERSE_SPEED				1.0
+#define		FEED_FORWARD_SPEED				-0.3
+#define		FEED_REVERSE_SPEED				0.3
 
 /**
  * Compressor

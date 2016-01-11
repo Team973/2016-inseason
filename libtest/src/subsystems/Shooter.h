@@ -15,6 +15,7 @@
 #include "lib/DelaySwitch.h"
 #include "lib/PID.h"
 #include "lib/RampedOutput.h"
+#include "lib/LogSpreadsheet.h"
 
 /**
  * Open loop control on flywheel at the moment... will do fine tuning
@@ -23,14 +24,14 @@
 class Shooter : public CoopTask
 {
 public:
-	Shooter(TaskMgr *scheduler);
+	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
 	void SetFlywheelTeleopShoot();
-	void SetFlywheelNearShoot();
-	void SetFlywheelFarShoot();
-	void SetFlywheelFullPower();
-	void SetFlywheelIntake();
+	//void SetFlywheelNearShoot();
+	//void SetFlywheelFarShoot();
+	//void SetFlywheelFullPower();
+	//void SetFlywheelIntake();
 	void SetFlywheelStop();
 
 	void FeedForward();
@@ -79,6 +80,8 @@ private:
 	bool m_flywheelReady;
 
 	double m_maxObservedRPM;
+
+	LogCell *m_shooterSpeed;
 };
 
 #endif /* SRC_SUBSYSTEMS_SHOOTER_H_ */

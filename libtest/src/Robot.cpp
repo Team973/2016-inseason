@@ -6,7 +6,9 @@
 #define TWO_BALL_AUTO	1
 
 Robot::Robot(void
-	) : m_driverJoystick(nullptr),
+	) :
+	m_logger(nullptr),
+	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
 	m_leftDriveVictor(nullptr),
@@ -22,7 +24,6 @@ Robot::Robot(void
 	m_autoState(0),
 	m_autoTimer(0),
 	m_selectedAutoRoutine(TWO_BALL_AUTO),
-	m_logger(nullptr),
 	m_battery(nullptr),
 	m_time(nullptr),
 	m_state(nullptr),
@@ -47,7 +48,6 @@ Robot::Robot(void
 			m_leftDriveEncoder, nullptr, m_gyroEncoder);
 
 	m_intake = new Intake(this);
-	m_shooter = new Shooter(this);
 
 	m_airPressureSwitch = new DigitalInput(AIR_PRESSURE_DIN);
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
@@ -70,6 +70,8 @@ Robot::Robot(void
 	m_logger->RegisterCell(m_accelCellY);
 	m_logger->RegisterCell(m_accelCellZ);
 	m_logger->RegisterCell(m_messages);
+
+	m_shooter = new Shooter(this, m_logger);
 }
 
 Robot::~Robot(void) {
@@ -86,12 +88,11 @@ void Robot::Initialize(void) {
 }
 
 void Robot::AllStateContinuous(void) {
-	static int i = 0;
-	printf("Print me!\n");
+	m_battery->LogPrintf("%f", DriverStation::GetInstance().GetBatteryVoltage());
 
-	m_battery->LogPrintf("%f", DriverStation::GetInstance()->GetBatteryVoltage());
 	m_time->LogPrintf("%u", GetMsecTime());
 	m_state->LogPrintf("%s", GetRobotModeString());
+
 	m_accelCellX->LogDouble(m_accel->GetX());
 	m_accelCellY->LogDouble(m_accel->GetY());
 	m_accelCellZ->LogDouble(m_accel->GetZ());
@@ -99,10 +100,6 @@ void Robot::AllStateContinuous(void) {
 	SmartDashboard::PutNumber("X-Accel", m_accel->GetX());
 	SmartDashboard::PutNumber("Y-Accel", m_accel->GetY());
 	SmartDashboard::PutNumber("Z-Accel", m_accel->GetZ());
-
-	if (++i % 100 == 0) {
-		m_messages->LogText("I am alive");
-	}
 }
 
 #include "Disabled.h"

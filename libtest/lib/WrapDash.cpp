@@ -25,5 +25,5 @@ void DBStringPrintf(DBStringPos position, const char *formatstring, ...) {
 	vsnprintf(msg, DBSTRING_MAX_LENGTH - 1, formatstring, args);
 	va_end(args);
 
-	//SmartDashboard::PutString(positionStrings[position], msg);
+	SmartDashboard::PutString(positionStrings[position], msg);
 }

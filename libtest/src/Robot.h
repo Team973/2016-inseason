@@ -11,17 +11,28 @@
 class Robot : public CoopMTRobot
 {
 private:
+	LogSpreadsheet *m_logger;
+
+	/**
+	 * Inputs (joysticks, sensors, etc...)
+	 */
 	Joystick		*m_driverJoystick;
 	Joystick		*m_operatorJoystick;
 
 	Accelerometer 	*m_accel;
 
+	/**
+	 * Outputs (motors, solenoids, etc...)
+	 */
 	VictorSP		*m_leftDriveVictor;
 	VictorSP		*m_rightDriveVictor;
 	Encoder			*m_leftDriveEncoder;
 	Encoder			*m_gyroEncoder;
 	Drive			*m_drive;
 
+	/**
+	 * Subsystems
+	 */
 	Intake			*m_intake;
 	Shooter			*m_shooter;
 
@@ -42,7 +53,6 @@ private:
 	/**
 	 * Logging
 	 */
-	LogSpreadsheet *m_logger;
 	LogCell *m_battery;
 	LogCell *m_time;
 	LogCell *m_state;
@@ -52,14 +62,23 @@ private:
 	LogCell *m_messages;
 
 public:
+	/**
+	 * Defined in Robot.cpp
+	 */
 	Robot(void);
 	~Robot(void);
 	void Initialize(void);
 
+	/**
+	 * Defined in Disabled.h
+	 */
 	void DisabledStart(void);
 	void DisabledStop(void);
 	void DisabledContinuous(void);
 
+	/**
+	 * Defined in Autonomous.h
+	 */
 	void AutonomousStart(void);
 	void AutonomousStop(void);
 	void AutonomousContinuous(void);
@@ -67,13 +86,22 @@ public:
 	void TwoBallAuto(void);
 	void OneBallAuto(void);
 
+	/**
+	 * Defined in Teleop.h
+	 */
 	void TeleopStart(void);
 	void TeleopStop(void);
 	void TeleopContinuous(void);
 
+	/**
+	 * Defined in Test.h
+	 */
 	void TestStart(void);
 	void TestStop(void);
 	void TestContinuous(void);
 
+	/**
+	 * Defined in Robot.cpp
+	 */
 	void AllStateContinuous(void);
 };

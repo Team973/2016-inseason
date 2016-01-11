@@ -10,7 +10,7 @@
 #include "Util.h"
 
 SingleThreadTaskMgr::SingleThreadTaskMgr(
-		RobotStateInterface *stateProvider,
+		RobotStateInterface &stateProvider,
 		double loopPeriod
 	): m_mutex(PTHREAD_MUTEX_INITIALIZER)
 	 , m_loopPeriodSec(loopPeriod)

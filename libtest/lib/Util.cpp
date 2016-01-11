@@ -10,17 +10,17 @@ RobotMode GetRobotMode() {
 	return GetRobotMode(DriverStation::GetInstance());
 }
 
-RobotMode GetRobotMode(RobotStateInterface *stateProvider) {
-	if (stateProvider->IsDisabled()) {
+RobotMode GetRobotMode(RobotStateInterface &stateProvider) {
+	if (stateProvider.IsDisabled()) {
 		return RobotMode::MODE_DISABLED;
 	}
-	else if (stateProvider->IsAutonomous()) {
+	else if (stateProvider.IsAutonomous()) {
 		return RobotMode::MODE_AUTO;
 	}
-	else if (stateProvider->IsOperatorControl()) {
+	else if (stateProvider.IsOperatorControl()) {
 		return RobotMode::MODE_TELEOP;
 	}
-	else if (stateProvider->IsTest()) {
+	else if (stateProvider.IsTest()) {
 		return RobotMode::MODE_TEST;
 	}
 	else {

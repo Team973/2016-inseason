@@ -42,7 +42,7 @@ void Robot::OneBallAuto(void) {
 		break;
 	case 2:
 		//Start the shooter
-		m_shooter->SetFlywheelNearShoot();
+		//m_shooter->SetFlywheelNearShoot();
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -70,7 +70,7 @@ void Robot::TwoBallAuto() {
 	case 0:
 		//start driving (and rev up flywheel)
 		m_intake->ExtendIntake();
-		m_shooter->SetFlywheelFarShoot();
+		//m_shooter->SetFlywheelFarShoot();
 		m_drive->PIDDrive(15.5 * 12.0);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;

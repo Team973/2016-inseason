@@ -28,7 +28,7 @@ public:
 	 * 		(can be drive station)
 	 * @param loopPeriod interval (in seconds) at which to schedule each period
 	 */
-	SingleThreadTaskMgr(RobotStateInterface *stateProvider,
+	SingleThreadTaskMgr(RobotStateInterface &stateProvider,
 			double loopPeriod = DEFAULT_PERIOD);
 	virtual ~SingleThreadTaskMgr();
 
@@ -99,7 +99,7 @@ private:
 	double m_loopPeriodSec;
 	bool m_actuallyRunning;
 	bool m_shouldBeRunning;
-	RobotStateInterface *m_stateProvider;
+	RobotStateInterface &m_stateProvider;
 };
 
 #endif /* FRCLIB_SINGLETHREADTASKMGR_H_ */
