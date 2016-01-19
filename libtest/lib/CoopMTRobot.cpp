@@ -7,7 +7,7 @@
 
 #include "unistd.h"
 
-#include "wpilib.h"
+#include "WPILib.h"
 
 #include "CoopMTRobot.h"
 #include "lib/util/Ansi.h"

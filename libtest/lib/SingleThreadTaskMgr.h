@@ -9,7 +9,7 @@
 #define FRCLIB_SINGLETHREADTASKMGR_H_
 
 #include "pthread.h"
-#include "wpilib.h"
+#include "WPILib.h"
 #include "TaskMgr.h"
 
 #define DEFAULT_FREQUENCY	200.0

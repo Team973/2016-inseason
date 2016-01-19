@@ -6,7 +6,7 @@
 #include "src/controllers/CheesyDriveController.h"
 #include "src/controllers/PIDDriveController.h"
 
-#include "robotInfo.h"
+#include "RobotInfo.h"
 
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 			Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro):

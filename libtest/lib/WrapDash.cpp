@@ -1,6 +1,6 @@
 #include <cstdarg>
 #include "WrapDash.h"
-#include "wpilib.h"
+#include "WPILib.h"
 
 #define DBSTRING_MAX_LENGTH		21
 
