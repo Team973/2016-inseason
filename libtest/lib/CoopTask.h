@@ -20,6 +20,8 @@
 
 #include "util/Util.h"
 
+class TaskMgr;
+
 class CoopTask {
 public:
 	CoopTask();

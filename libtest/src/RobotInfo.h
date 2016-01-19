@@ -8,6 +8,8 @@
 #ifndef ROBOTINFO_H_
 #define ROBOTINFO_H_
 
+#include "lib/util/Util.h"
+
 /**
  * Drive subsystem... all units in inches
  */

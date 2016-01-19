@@ -1,6 +1,13 @@
+#include "RobotInfo.h"
 #include "Robot.h"
 
-#include "RobotInfo.h"
+#include "lib/GreyCompressor.h"
+#include "lib/logging/LogSpreadsheet.h"
+#include "lib/SingleThreadTaskMgr.h"
+
+#include "subsystems/Intake.h"
+#include "subsystems/Shooter.h"
+#include "subsystems/Drive.h"
 
 #define ONE_BALL_AUTO	0
 #define TWO_BALL_AUTO	1

@@ -1,13 +1,14 @@
-#include <subsystems/Drive.h>
 #include "WPILib.h"
 
-#include "../lib/CoopMTRobot.h"
-#include "../lib/GreyCompressor.h"
-#include "../lib/logging/LogSpreadsheet.h"
-#include "../lib/SingleThreadTaskMgr.h"
+#include "lib/CoopMTRobot.h"
 
-#include "subsystems/Intake.h"
-#include "subsystems/Shooter.h"
+class LogSpreadsheet;
+class SingleThreadTaskMgr;
+class Drive;
+class Intake;
+class Shooter;
+class GreyCompressor;
+class LogCell;
 
 class Robot : public CoopMTRobot
 {

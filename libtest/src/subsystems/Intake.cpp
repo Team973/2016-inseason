@@ -7,6 +7,7 @@
 
 #include <subsystems/Intake.h>
 #include "RobotInfo.h"
+#include "lib/TaskMgr.h"
 
 Intake::Intake(TaskMgr *scheduler) :
 	m_intakeMotor(nullptr),

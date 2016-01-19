@@ -5,18 +5,19 @@
  *      Author: Andrew
  */
 
-#include <subsystems/Shooter.h>
+#include "subsystems/Shooter.h"
 #include "RobotInfo.h"
 #include "lib/util/Util.h"
 #include "lib/WrapDash.h"
 #include "controllers/FlywheelGains.h"
+#include "lib/TaskMgr.h"
+#include "lib/filters/MovingAverageFilter.h"
+#include "lib/filters/DelaySwitch.h"
+#include "lib/filters/PID.h"
+#include "lib/logging/LogSpreadsheet.h"
+#include "lib/filters/MedianFilter.h"
+#include "controllers/StateSpaceFlywheelController.h"
 
-/*
- * Units are motor output units per sec
- * Motor should be able to go from 0.0 to 1.0 in about half a second?
- * 1.0 / 0.5 = 2
- */
-static constexpr double FLYWHEEL_RAMP_RATE = 2;
 static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 3500;
 
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
@@ -28,9 +29,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_flywheelSetPower(0.0),
 		m_scheduler(scheduler),
 		m_pidCtrl(nullptr),
-		m_speedFilter(0.9),
 		m_flywheelState(FlywheelState::openLoop),
-		m_flywheelRampRate(nullptr),
 		m_flywheelReady(false),
 		m_maxObservedRPM(0.0),
 		m_shooterSpeed(nullptr),
@@ -48,8 +47,6 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 	m_flywheelEncoder= new Counter(FLYWHEEL_BANNERSENSOR_DIN);
 
 	m_pidCtrl = new PID(0.0005 / 60.0, 0.0, 0.0, PID_SPEED_CTRL);
-
-	m_flywheelRampRate = new RampedOutput(FLYWHEEL_RAMP_RATE);
 
 	m_shooterPow = new LogCell("shooter power");
 	logger->RegisterCell(m_shooterPow);

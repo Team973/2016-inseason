@@ -16,7 +16,6 @@
 #define SRC_SUBSYSTEMS_INTAKE_H_
 
 #include "WPILib.h"
-#include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
 
 class Intake : public CoopTask {

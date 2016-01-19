@@ -9,15 +9,17 @@
 #define SRC_SUBSYSTEMS_SHOOTER_H_
 
 #include "WPILib.h"
-#include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
-#include "lib/filters/MovingAverageFilter.h"
-#include "lib/filters/DelaySwitch.h"
-#include "lib/filters/PID.h"
-#include "lib/filters/RampedOutput.h"
-#include "lib/logging/LogSpreadsheet.h"
-#include "lib/filters/MedianFilter.h"
-#include "controllers/StateSpaceFlywheelController.h"
+
+class TaskMgr;
+class MovingAverageFilter;
+class DelaySwitch;
+class PID;
+class LogSpreadsheet;
+class Median5Filter;
+class StateSpaceFlywheelController;
+class LogCell;
+class LogSpreadsheet;
 
 /**
  * Open loop control on flywheel at the moment... will do fine tuning
@@ -59,9 +61,7 @@ private:
 
 	PID	*m_pidCtrl;
 
-	MovingAverageFilter m_speedFilter;
 	FlywheelState m_flywheelState;
-	RampedOutput *m_flywheelRampRate;
 
 	bool m_flywheelReady;
 
