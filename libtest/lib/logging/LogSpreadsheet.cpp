@@ -5,7 +5,7 @@
  *      Author: Andrew
  */
 
-#include <lib/LogSpreadsheet.h>
+#include "lib/logging/LogSpreadsheet.h"
 #include "lib/CoopTask.h"
 
 #include <cstdio>
@@ -17,11 +17,14 @@ LogCell::LogCell(const char *name,
 		m_buffer(new char[size]),
 		m_name(name),
 		m_buffSize(size),
-		m_flags(flags) {
+		m_flags(flags),
+		m_mutex(){
+	pthread_mutex_init(&m_mutex, NULL);
 	this->ClearCell();
 }
 
 LogCell::~LogCell() {
+	pthread_mutex_destroy(&m_mutex);
 	delete[] m_buffer;
 }
 
@@ -40,7 +43,11 @@ void LogCell::LogDouble(double val) {
 void LogCell::LogPrintf(const char *formatstr, ...) {
 	va_list args;
 	va_start (args, formatstr);
+
+	AcquireLock();
 	vsnprintf(m_buffer, m_buffSize, formatstr, args);
+	ReleaseLock();
+
 	va_end (args);
 }
 
@@ -125,11 +132,13 @@ void LogSpreadsheet::InitializeTable() {
 void LogSpreadsheet::WriteRow() {
 	for (std::vector<LogCell*>::iterator it = m_cells.begin();
 			it != m_cells.end(); ++it) {
+		(*it)->AcquireLock();
 		*m_oFile << "\"" << (*it)->GetContent() << "\",";
 
 		if ((*it)->ClearOnRead()) {
 			(*it)->ClearCell();
 		}
+		(*it)->ReleaseLock();
 	}
 	*m_oFile << std::endl;
 }

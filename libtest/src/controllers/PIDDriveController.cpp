@@ -6,7 +6,7 @@
  */
 
 #include <controllers/PIDDriveController.h>
-#include "lib/PID.h"
+#include "lib/filters/PID.h"
 #include <stdio.h>
 
 static constexpr double DRIVE_PID_KP = 0.1;

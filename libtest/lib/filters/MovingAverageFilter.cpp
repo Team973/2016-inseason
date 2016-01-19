@@ -5,7 +5,7 @@
  *      Author: Andrew
  */
 
-#include <lib/MovingAverageFilter.h>
+#include "lib/filters/MovingAverageFilter.h"
 
 MovingAverageFilter::MovingAverageFilter(double weight, double initial):
 	m_weight(weight),

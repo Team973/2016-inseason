@@ -1,0 +1,31 @@
+/*
+ * FlywheelGains.h
+ *
+ *  Created on: Jan 17, 2016
+ *      Author: Andrew
+ */
+
+#ifndef SRC_CONTROLLERS_FLYWHEELGAINS_H_
+#define SRC_CONTROLLERS_FLYWHEELGAINS_H_
+
+#include "lib/StateSpaceGains.h"
+
+double AAA[] = {1.0, 0.0, 3.133671, 0.942587};
+double BBB[] = {1.0, 0.0};
+double CCC[] = {0.0, 1.0};
+double DDD[] = {0.0};
+double LLL[] = {0.015956, 0.392587};
+double KKK[] {0.922587, 0.048196};
+double UUUMAX[] = {12.000000};
+double UUUMIN[] = {-2.000000};
+
+class FlywheelGains {
+public:
+	static StateSpaceGains *MakeGains() {
+		return new StateSpaceGains(
+				AAA, 4, BBB, 2, CCC, 2, DDD, 1,
+				LLL, 2, KKK, 2, UUUMAX, 1, UUUMIN, 1);
+	}
+};
+
+#endif /* SRC_CONTROLLERS_FLYWHEELGAINS_H_ */

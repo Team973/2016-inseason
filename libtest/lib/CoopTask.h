@@ -18,7 +18,7 @@
 #ifndef FRCLIB_COOPTASK_H_
 #define FRCLIB_COOPTASK_H_
 
-#include "Util.h"
+#include "util/Util.h"
 
 class CoopTask {
 public:

@@ -1,4 +1,4 @@
-#include "lib/AsynchLogCell.h"
+#include "lib/logging/AsynchLogCell.h"
 
 AsynchLogCell::AsynchLogCell(char *name, AsynchLogCellListener *listener,
 	unsigned int size):

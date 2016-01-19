@@ -5,8 +5,8 @@
  *      Author: Andrew
  */
 
-#include <lib/RampedOutput.h>
-#include <lib/Util.h>
+#include <lib/filters/RampedOutput.h>
+#include <lib/util/Util.h>
 
 RampedOutput::RampedOutput(double rampRate, double initialOutput):
 		m_rampRate(rampRate),

@@ -9,30 +9,48 @@ void Robot::TeleopStop(void) {
 }
 
 void Robot::TeleopContinuous(void) {
-
-	/**
-	 * cheater forward with right bumper
-	 */
-	if (m_operatorJoystick->GetRawButton(DualAction::RightBumper)) {
-		m_shooter->FeedForward();
-	}
-	else if (m_operatorJoystick->GetRawButton(DualAction::Back)) {
-		m_shooter->FeedReverse();
-	}
-	else {
-		m_shooter->FeedStop();
-	}
-
 	/**
 	 * flywheel shoot with right trigger
 	 * flywheel intake with Y button
 	 * default state stop
 	 */
+	static bool wasAPressed = false;
+	static bool wasBPressed = false;
+	static double pow = 0.0;
+
 	if (m_operatorJoystick->GetRawButton(DualAction::BtnA)) {
-		m_shooter->SetFlywheelTeleopShoot();
+		if (!wasAPressed) {
+			printf("increment power\n");
+			pow += 0.05;
+			m_shooter->SetFlywheelPower(pow);
+			wasAPressed = true;
+		}
 	}
- 	else if (m_operatorJoystick->GetRawButton(DualAction::BtnX)) {
-		m_shooter->SetFlywheelStop();
+	else {
+		wasAPressed = false;
+	}
+
+
+	if (m_operatorJoystick->GetRawButton(DualAction::BtnB)) {
+		if (!wasBPressed) {
+			printf("decrement power\n");
+			pow -= 0.05;
+			m_shooter->SetFlywheelPower(pow);
+			wasBPressed = true;
+		}
+	}
+	else {
+		wasBPressed = false;
+	}
+
+	if (m_operatorJoystick->GetRawButton(DualAction::BtnY)) {
+		printf("state space\n");
+		m_shooter->SetFlywheelSSShoot();
+	}
+ 	if (m_operatorJoystick->GetRawButton(DualAction::BtnX)) {
+ 		printf("stop\n");
+ 		pow = 0.0;
+		m_shooter->SetFlywheelPower(0.0);
 	}
 
 
@@ -47,6 +65,8 @@ void Robot::TeleopContinuous(void) {
 			-m_driverJoystick->GetRawAxis(DualAction::RightXAxis));
 			*/
 
+ 	/*
 	printf("gyro reading %lf... raw counts %d\n", m_gyroEncoder->GetDistance(),
 			m_gyroEncoder->GetRaw());
+			*/
 }

@@ -21,7 +21,7 @@
 #include "stdint.h"
 #include "WPILib.h"
 #include "TaskMgr.h"
-#include "Util.h"
+#include "util/Util.h"
 
 #ifndef PROGRAM_NAME
 #define PROGRAM_NAME "(unspecified)"

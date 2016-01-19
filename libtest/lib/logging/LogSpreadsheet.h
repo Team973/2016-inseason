@@ -20,6 +20,7 @@
 
 #include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
+#include <pthread.h>
 
 constexpr uint32_t DEFAULT_MAX_LOG_CELL_SIZE = 32;
 
@@ -92,6 +93,14 @@ public:
 		return m_flags & LOG_CELL_FLAG_CLEAR_ON_READ;
 	}
 
+	void AcquireLock() {
+		pthread_mutex_lock(&m_mutex);
+	}
+
+	void ReleaseLock() {
+		pthread_mutex_unlock(&m_mutex);
+	}
+
 protected:
 	char *m_buffer;
 
@@ -99,6 +108,7 @@ private:
 	const char *m_name;
 	const int m_buffSize;
 	const uint32_t m_flags;
+	pthread_mutex_t m_mutex;
 };
 
 /**

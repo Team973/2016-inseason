@@ -8,6 +8,7 @@
 Robot::Robot(void
 	) :
 	m_logger(nullptr),
+	m_hiFreq(nullptr),
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
@@ -31,6 +32,9 @@ Robot::Robot(void
 	m_accelCellY(nullptr),
 	m_accelCellZ(nullptr)
 {
+	m_hiFreq = new SingleThreadTaskMgr(DriverStation::GetInstance(), 1.0 / 200.0);
+	m_hiFreq->SetHighPriority();
+
 	m_driverJoystick = new Joystick(0);
 	m_operatorJoystick = new Joystick(1);
 
@@ -53,7 +57,7 @@ Robot::Robot(void
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
 	m_compressor = new GreyCompressor(m_airPressureSwitch, m_compressorRelay, this);
 
-	m_logger = new LogSpreadsheet(this);
+	m_logger = new LogSpreadsheet(m_hiFreq);
 	m_battery = new LogCell("Battery voltage");
 
 	m_time = new LogCell("Time (ms)");
@@ -71,7 +75,7 @@ Robot::Robot(void
 	m_logger->RegisterCell(m_accelCellZ);
 	m_logger->RegisterCell(m_messages);
 
-	m_shooter = new Shooter(this, m_logger);
+	m_shooter = new Shooter(m_hiFreq, m_logger);
 }
 
 Robot::~Robot(void) {
@@ -80,11 +84,12 @@ Robot::~Robot(void) {
 void Robot::Initialize(void) {
 	printf("initializing the roboto\n");
 
-	SmartDashboard::PutString("DB/String 0", "Two ball auto");
+	//SmartDashboard::PutString("DB/String 0", "Two ball auto");
 
 	m_logger->InitializeTable();
 
 	SmartDashboard::init();
+	m_hiFreq->Start();
 }
 
 void Robot::AllStateContinuous(void) {
@@ -97,9 +102,11 @@ void Robot::AllStateContinuous(void) {
 	m_accelCellY->LogDouble(m_accel->GetY());
 	m_accelCellZ->LogDouble(m_accel->GetZ());
 
+	/*
 	SmartDashboard::PutNumber("X-Accel", m_accel->GetX());
 	SmartDashboard::PutNumber("Y-Accel", m_accel->GetY());
 	SmartDashboard::PutNumber("Z-Accel", m_accel->GetZ());
+	*/
 }
 
 #include "Disabled.h"

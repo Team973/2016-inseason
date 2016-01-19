@@ -1,6 +1,6 @@
 #include <subsystems/Drive.h>
 #include "WPILib.h"
-#include "lib/util.h"
+#include "lib/util/Util.h"
 
 #include "src/controllers/ArcadeDriveController.h"
 #include "src/controllers/CheesyDriveController.h"

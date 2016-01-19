@@ -15,7 +15,7 @@
 #ifndef LIB_ASYNCHLOGCELL_H_
 #define LIB_ASYNCHLOGCELL_H_
 
-#include "lib/LogSpreadsheet.h"
+#include "lib/logging/LogSpreadsheet.h"
 
 class AsynchLogCellListener;
 

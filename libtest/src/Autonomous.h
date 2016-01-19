@@ -55,7 +55,6 @@ void Robot::OneBallAuto(void) {
 		break;
 	case 4:
 		//shoot
-		m_shooter->FeedForward();
 		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoState++;
 		break;
@@ -86,7 +85,6 @@ void Robot::TwoBallAuto() {
 		//retract the intake
 		m_intake->RetractIntake();
 		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
-		m_shooter->FeedReverse();
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -98,7 +96,6 @@ void Robot::TwoBallAuto() {
 	case 4:
 		//Fire first ball
 		//m_intake->RetractIntake();
-		m_shooter->FeedForward();
 		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
@@ -124,7 +121,6 @@ void Robot::TwoBallAuto() {
 	case 8:
 		//retract intake
 		m_intake->RetractIntake();
-		m_shooter->FeedReverse();
 		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
@@ -137,7 +133,6 @@ void Robot::TwoBallAuto() {
 		break;
 	case 10:
 		//fire ball 2
-		m_shooter->FeedForward();
 		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoState++;
 		break;

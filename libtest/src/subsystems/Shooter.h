@@ -11,11 +11,13 @@
 #include "WPILib.h"
 #include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
-#include "lib/MovingAverageFilter.h"
-#include "lib/DelaySwitch.h"
-#include "lib/PID.h"
-#include "lib/RampedOutput.h"
-#include "lib/LogSpreadsheet.h"
+#include "lib/filters/MovingAverageFilter.h"
+#include "lib/filters/DelaySwitch.h"
+#include "lib/filters/PID.h"
+#include "lib/filters/RampedOutput.h"
+#include "lib/logging/LogSpreadsheet.h"
+#include "lib/filters/MedianFilter.h"
+#include "controllers/StateSpaceFlywheelController.h"
 
 /**
  * Open loop control on flywheel at the moment... will do fine tuning
@@ -27,47 +29,31 @@ public:
 	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
-	void SetFlywheelTeleopShoot();
-	//void SetFlywheelNearShoot();
-	//void SetFlywheelFarShoot();
-	//void SetFlywheelFullPower();
-	//void SetFlywheelIntake();
+	void SetFlywheelPIDShoot();
+	void SetFlywheelSSShoot();
+	void SetFlywheelPower(double pow);
 	void SetFlywheelStop();
-
-	void FeedForward();
-	void FeedReverse();
-	void FeedStop();
 
 	void TaskPeriodic(RobotMode mode);
 
 	double GetFlywheelRate(void);
+	double GetFlywheelMedianRate(void);
 
 	bool FlywheelOnTarget() { return m_flywheelReady; }
 private:
-	enum FeedState {
-		feedForward,
-		feedReverse,
-		feedStop
-	};
-
 	enum FlywheelState {
-		closedLoop,
-		fullPower,
-		inbound,
-		stopping
+		openLoop,
+		pidControl,
+		ssControl
 	};
 
 	VictorSP *m_flywheelMotorA;
 	VictorSP *m_flywheelMotorB;
-	VictorSP *m_cheatMotor;
-
-	Relay	 *m_readyLightRelay;
-	DelaySwitch	m_readyLightDelayFilter;
 
 	bool m_flywheelRunning;
 	Counter *m_flywheelEncoder;
 	double m_flywheelTargetSpeed;
-	FeedState m_feedState;
+	double m_flywheelSetPower;
 
 	TaskMgr *m_scheduler;
 
@@ -82,6 +68,13 @@ private:
 	double m_maxObservedRPM;
 
 	LogCell *m_shooterSpeed;
+	LogCell *m_shooterPow;
+	LogCell *m_shooterTime;
+
+	Median5Filter *medFilter;
+	double oldSpeed;
+
+	StateSpaceFlywheelController *m_controller;
 };
 
 #endif /* SRC_SUBSYSTEMS_SHOOTER_H_ */

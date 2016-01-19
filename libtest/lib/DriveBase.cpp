@@ -6,7 +6,7 @@
  */
 
 #include <lib/DriveBase.h>
-#include "lib/util.h"
+#include "lib/util/Util.h"
 
 DriveBase::DriveBase(TaskMgr *scheduler, VictorSP *leftMotor,
 		VictorSP *rightMotor, AngleProvider *angle, DistProvider *dist,
@@ -29,7 +29,7 @@ DriveBase::~DriveBase() {
 
 
 void DriveBase::TaskPostPeriodic(RobotMode mode) {
-	if (m_controller != NULL) {
+	if (m_controller != nullptr) {
 		m_controller->CalcDriveOutput(m_angleProvider,
 				m_distProvider, this);
 	}

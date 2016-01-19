@@ -6,7 +6,7 @@
  */
 
 #include "controllers/ArcadeDriveController.h"
-#include "lib/util.h"
+#include "lib/util/Util.h"
 
 ArcadeDriveController::ArcadeDriveController():
 	m_leftOutput(0.0),

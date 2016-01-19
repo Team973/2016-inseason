@@ -3,7 +3,8 @@
 
 #include "../lib/CoopMTRobot.h"
 #include "../lib/GreyCompressor.h"
-#include "../lib/LogSpreadsheet.h"
+#include "../lib/logging/LogSpreadsheet.h"
+#include "../lib/SingleThreadTaskMgr.h"
 
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
@@ -12,6 +13,8 @@ class Robot : public CoopMTRobot
 {
 private:
 	LogSpreadsheet *m_logger;
+
+	SingleThreadTaskMgr *m_hiFreq;
 
 	/**
 	 * Inputs (joysticks, sensors, etc...)

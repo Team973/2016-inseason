@@ -10,8 +10,8 @@
 #include "wpilib.h"
 
 #include "CoopMTRobot.h"
-#include "Ansi.h"
-#include "Util.h"
+#include "lib/util/Ansi.h"
+#include "util/Util.h"
 #include "WrapDash.h"
 
 CoopMTRobot::CoopMTRobot(void

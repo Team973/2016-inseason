@@ -1,6 +1,6 @@
 #include "WPILib.h"
-#include "PID.h"
-#include "Util.h"
+#include "lib/filters/PID.h"
+#include "lib/util/Util.h"
 
 PID::PID(double Kp, double Ki, double Kd, uint32_t flags)
 {

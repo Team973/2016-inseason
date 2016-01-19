@@ -7,6 +7,9 @@
 
 #include <subsystems/Shooter.h>
 #include "RobotInfo.h"
+#include "lib/util/Util.h"
+#include "lib/WrapDash.h"
+#include "controllers/FlywheelGains.h"
 
 /*
  * Units are motor output units per sec
@@ -19,29 +22,28 @@ static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 3500;
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_flywheelMotorA(nullptr),
 		m_flywheelMotorB(nullptr),
-		m_cheatMotor(nullptr),
-		m_readyLightRelay(nullptr),
-		m_readyLightDelayFilter(),
 		m_flywheelRunning(false),
 		m_flywheelEncoder(nullptr),
 		m_flywheelTargetSpeed(0.0),
-		m_feedState(FeedState::feedStop),
+		m_flywheelSetPower(0.0),
 		m_scheduler(scheduler),
 		m_pidCtrl(nullptr),
 		m_speedFilter(0.9),
-		m_flywheelState(FlywheelState::stopping),
+		m_flywheelState(FlywheelState::openLoop),
 		m_flywheelRampRate(nullptr),
 		m_flywheelReady(false),
 		m_maxObservedRPM(0.0),
-		m_shooterSpeed(nullptr)
+		m_shooterSpeed(nullptr),
+		m_shooterPow(nullptr),
+		m_shooterTime(nullptr),
+		medFilter(nullptr),
+		oldSpeed(0.0),
+		m_controller(nullptr)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
 	m_flywheelMotorA = new VictorSP(FLYWHEEL_ONE_PWM);
 	m_flywheelMotorB = new VictorSP(FLYWHEEL_TWO_PWM);
-	m_cheatMotor = new VictorSP(CHEATER_PWM);
-
-	m_readyLightRelay = new Relay(READY_LIGHT_RELAY);
 
 	m_flywheelEncoder= new Counter(FLYWHEEL_BANNERSENSOR_DIN);
 
@@ -49,64 +51,53 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 
 	m_flywheelRampRate = new RampedOutput(FLYWHEEL_RAMP_RATE);
 
+	m_shooterPow = new LogCell("shooter power");
+	logger->RegisterCell(m_shooterPow);
+
 	m_shooterSpeed = new LogCell("shooter speed (RPM)");
 	logger->RegisterCell(m_shooterSpeed);
+
+	m_shooterTime = new LogCell("Shooter Time (ms)");
+	logger->RegisterCell(m_shooterTime);
+
+	medFilter = new Median5Filter();
+
+	this->m_controller = new StateSpaceFlywheelController(FlywheelGains::MakeGains());
 }
 
 Shooter::~Shooter() {
 	m_scheduler->UnregisterTask(this);
 }
 
-void Shooter::SetFlywheelTeleopShoot() {
-	m_flywheelState = FlywheelState::closedLoop;
+void Shooter::SetFlywheelPIDShoot() {
+	m_flywheelState = FlywheelState::pidControl;
 	m_flywheelTargetSpeed = FLYWHEEL_TELEOP_TARGET_SPEED;
 	printf("standard shoot\n");
 }
-/*
-void Shooter::SetFlywheelNearShoot() {
-	m_flywheelState = FlywheelState::closedLoop;
-	m_flywheelTargetSpeed = FLYWHEEL_NEAR_TARGET_SPEED;
-	printf("near shoot\n");
+
+void Shooter::SetFlywheelSSShoot() {
+	m_flywheelState = FlywheelState::ssControl;
+	m_flywheelTargetSpeed = FLYWHEEL_TELEOP_TARGET_SPEED;
+	m_controller->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
 }
 
-void Shooter::SetFlywheelFarShoot() {
-	m_flywheelState = FlywheelState::closedLoop;
-	m_flywheelTargetSpeed = FLYWHEEL_FAR_TARGET_SPEED;
-	printf("far shoot\n");
+void Shooter::SetFlywheelPower(double pow) {
+	m_flywheelState = FlywheelState::openLoop;
+	m_flywheelSetPower = pow;
+
 }
 
-void Shooter::SetFlywheelFullPower() {
-	m_flywheelState = FlywheelState::fullPower;
-	printf("full power\n");
-}
-
-void Shooter::SetFlywheelIntake() {
-	m_flywheelState = FlywheelState::inbound;
-	printf("intake\n");
-}
-*/
 void Shooter::SetFlywheelStop() {
-	m_flywheelState = FlywheelState::stopping;
+	m_flywheelState = FlywheelState::openLoop;
+	m_flywheelSetPower = 0.0;
 	printf("stop\n");
-}
-
-void Shooter::FeedForward() {
-	m_feedState = FeedState::feedForward;
-}
-
-void Shooter::FeedReverse() {
-	m_feedState = FeedState::feedReverse;
-}
-
-void Shooter::FeedStop() {
-	m_feedState = FeedState::feedStop;
 }
 
 void Shooter::TaskPeriodic(RobotMode mode) {
 	double motorOutput;
 
 	switch(m_flywheelState) {
-	case FlywheelState::closedLoop:
+	case FlywheelState::pidControl:
 		m_maxObservedRPM = max(m_maxObservedRPM, this->GetFlywheelRate());
 		if (this->GetFlywheelRate() < m_flywheelTargetSpeed) {
 			motorOutput = 1.0;
@@ -120,51 +111,35 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		m_flywheelMotorA->Set(motorOutput);
 		m_flywheelMotorB->Set(motorOutput);
 		break;
-	case FlywheelState::fullPower:
-		motorOutput = m_flywheelRampRate->GetValue(1.0);
+	case FlywheelState::ssControl:
+		motorOutput = m_controller->Update(
+				this->GetFlywheelMedianRate() * Constants::PI / 30.0);
 
 		m_flywheelMotorA->Set(motorOutput);
 		m_flywheelMotorB->Set(motorOutput);
 		break;
-	case FlywheelState::stopping:
-		motorOutput = m_flywheelRampRate->GetValue(0.0);
-
-		m_flywheelMotorA->Set(motorOutput);
-		m_flywheelMotorB->Set(motorOutput);
-		break;
-	case FlywheelState::inbound:
-		motorOutput = m_flywheelRampRate->GetValue(-0.7);
+	case FlywheelState::openLoop:
+		motorOutput = m_flywheelSetPower;
 
 		m_flywheelMotorA->Set(motorOutput);
 		m_flywheelMotorB->Set(motorOutput);
 		break;
 	}
 
-	if (m_readyLightDelayFilter.GetValue(GetFlywheelRate() > m_flywheelTargetSpeed - 100.0)) {
-		m_readyLightRelay->Set(Relay::kForward);
-		//printf("flywheel up to speed\n");
-		m_flywheelReady = true;
-	}
-	else {
-		m_readyLightRelay->Set(Relay::kOff);
-		m_flywheelReady = false;
-	}
-
-	switch (m_feedState) {
-	case FeedState::feedForward:
-		m_cheatMotor->Set(FEED_FORWARD_SPEED);
-		break;
-	case FeedState::feedReverse:
-		m_cheatMotor->Set(FEED_REVERSE_SPEED);
-		break;
-	case FeedState::feedStop:
-		m_cheatMotor->Set(0.0);
-		break;
-	}
-	//printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
+	printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
+	DBStringPrintf(DBStringPos::DB_LINE0,
+			"fw med rate: %lf", GetFlywheelMedianRate());
+	DBStringPrintf(DBStringPos::DB_LINE1,
+			"fw raw rate: %lf", GetFlywheelRate());
+	DBStringPrintf(DBStringPos::DB_LINE2,
+			"Flywheel power: %lf", motorOutput);
+	/*
 	SmartDashboard::PutNumber("flywheel", GetFlywheelRate());
 	SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
-	m_shooterSpeed->LogDouble(GetFlywheelRate());
+	*/
+	m_shooterPow->LogDouble(motorOutput);
+	m_shooterSpeed->LogDouble(GetFlywheelMedianRate());
+	m_shooterTime->LogPrintf("%ld", (long) GetUsecTime());
 }
 
 /**
@@ -176,15 +151,14 @@ void Shooter::TaskPeriodic(RobotMode mode) {
  *  * If this value looks good, we do a moving average filter on it
  */
 double Shooter::GetFlywheelRate(void) {
-	double currSample = (1.0 / m_flywheelEncoder->GetPeriod()) * 60.0;
+	return (1.0 / m_flywheelEncoder->GetPeriod()) * 60.0;
+}
 
-	if (currSample > 4000.0) {
-		currSample = 4000.0;
+double Shooter::GetFlywheelMedianRate(void) {
+	double s = GetFlywheelRate();
+	if (s > 6000.0) {
+		s = oldSpeed;
 	}
 
-	if (m_speedFilter.GetLatestValue() <= 0.0001 ||
-			currSample < m_speedFilter.GetLatestValue() * 1000) {
-		return m_speedFilter.GetValue(currSample);
-	}
-	return m_speedFilter.GetLatestValue();
+	return medFilter->Update(s);
 }

@@ -7,12 +7,13 @@
 
 #include "unistd.h"
 #include "SingleThreadTaskMgr.h"
-#include "Util.h"
+#include "util/Util.h"
 
 SingleThreadTaskMgr::SingleThreadTaskMgr(
 		RobotStateInterface &stateProvider,
 		double loopPeriod
-	): m_mutex(PTHREAD_MUTEX_INITIALIZER)
+	): m_thread()
+	 , m_mutex(PTHREAD_MUTEX_INITIALIZER)
 	 , m_loopPeriodSec(loopPeriod)
 	 , m_actuallyRunning(false)
 	 , m_shouldBeRunning(false)
@@ -29,8 +30,7 @@ void SingleThreadTaskMgr::Start(void) {
 	if (!m_shouldBeRunning) {
 		m_shouldBeRunning = true;
 
-		pthread_t thread;
-		pthread_create(&thread, NULL, RunTasks, this);
+		pthread_create(&m_thread, NULL, RunTasks, this);
 	}
 	pthread_mutex_unlock(&m_mutex);
 }
@@ -70,7 +70,7 @@ bool SingleThreadTaskMgr::IsRunning() {
 void* SingleThreadTaskMgr::RunTasks(void *p) {
 	SingleThreadTaskMgr *inst = (SingleThreadTaskMgr*) p;
 	bool keepRunning = true;
-	uint32_t timeSliceStartTimeMs = GetMsecTime();
+	uint64_t timeSliceStartTimeUs = GetUsecTime();
 
 	pthread_mutex_lock(&inst->m_mutex);
 	inst->m_actuallyRunning = true;
@@ -94,26 +94,26 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 
 		pthread_mutex_unlock(&inst->m_mutex);
 
-		uint32_t timeSliceUsedMs =
-				GetMsecTime() - timeSliceStartTimeMs;
+		uint64_t timeSliceUsedUs =
+				GetUsecTime() - timeSliceStartTimeUs;
 
-		uint32_t timeSliceAllotedMs =
-				inst->GetLoopPeriodMs();
+		uint64_t timeSliceAllotedUs =
+				inst->GetLoopPeriodMs() * 1000.0;
 
-		uint32_t timeSliceRemainingMs =
-				timeSliceAllotedMs - timeSliceUsedMs;
+		uint64_t timeSliceRemainingUs =
+				timeSliceAllotedUs - timeSliceUsedUs;
 
-		if (timeSliceUsedMs <= timeSliceAllotedMs) {
-			usleep(timeSliceRemainingMs * 1000);
+		if (timeSliceUsedUs <= timeSliceAllotedUs) {
+			usleep(timeSliceRemainingUs);
 		}
 		else {
 			printf("TaskRunner (%fhz) taking too long.  "\
-					"Time alloted for period: %u ms; time used %u ms",
-					inst->GetLoopFrequency(), timeSliceAllotedMs,
-					timeSliceUsedMs);
+					"Time alloted for period: %llu us; time used %llu us",
+					inst->GetLoopFrequency(), timeSliceAllotedUs,
+					timeSliceUsedUs);
 		}
 
-		timeSliceStartTimeMs += timeSliceAllotedMs;
+		timeSliceStartTimeUs += timeSliceAllotedUs;
 
 		pthread_mutex_lock(&inst->m_mutex);
 		keepRunning = inst->m_shouldBeRunning;

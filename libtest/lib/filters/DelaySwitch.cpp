@@ -5,7 +5,7 @@
  *      Author: Andrew
  */
 
-#include "lib/DelaySwitch.h"
+#include "lib/filters/DelaySwitch.h"
 
 DelaySwitch::DelaySwitch() :
 	m_prevValue(false),
