@@ -32,10 +32,10 @@ ObservableJoystick::~ObservableJoystick() {
 
 float ObservableJoystick::GetRawAxisWithDeadband(int axis, bool fSquared,
 		float threshold) {
-	float value = deadband(GetRawAxis(axis), threshold);
+	float value = Util::deadband(GetRawAxis(axis), threshold);
 
 	if (fSquared) {
-		value = signSquare(value);
+		value = Util::signSquare(value);
 	}
 
 	return value;

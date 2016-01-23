@@ -109,7 +109,7 @@ double PID::CalcOutput(double actual, uint32_t time) {
 
 	output =
     		m_Kp * error +
-			bound(m_Ki * m_integral, -m_icap, m_icap) +
+			Util::bound(m_Ki * m_integral, -m_icap, m_icap) +
 			m_Kd * derivative;
 
 
@@ -118,7 +118,7 @@ double PID::CalcOutput(double actual, uint32_t time) {
 	}
 	m_lastOutput = output;
 
-	output = bound(output, m_min, m_max);
+	output = Util::bound(output, m_min, m_max);
 
 	return output;
 }
@@ -128,5 +128,5 @@ double PID::GetPrevOutput() {
 }
 
 void PID::SetPrevOutput(double prev) {
-	m_lastOutput = bound(prev, m_min, m_max);
+	m_lastOutput = Util::bound(prev, m_min, m_max);
 }

@@ -1,4 +1,6 @@
-#include "Util.h"
+#include "lib/util/Util.h"
+#include "WPILib.h"
+#include <stdio.h>
 
 const char *robotModes[] = {"Disabled", "Auto", "TeleOp"};
 

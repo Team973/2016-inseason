@@ -6,6 +6,7 @@
  */
 
 #include <controllers/CheesyDriveController.h>
+#include <math.h>
 
 CheesyDriveController::CheesyDriveController() :
 		m_leftOutput(0.0),
@@ -57,15 +58,20 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 	if (m_highGear) {
 		wheelNonLinearity = turnNonlinHigh;
 		// Apply a sin function that's scaled to make it feel better.
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+		wheel = sin(Constants::PI / 2.0 * wheelNonLinearity * wheel)
+				/ sin(Constants::PI / 2.0 * wheelNonLinearity);
+		wheel = sin(Constants::PI / 2.0 * wheelNonLinearity * wheel)
+				/ sin(Constants::PI / 2.0 * wheelNonLinearity);
 	}
 	else {
 		wheelNonLinearity = turnNonlinLow;
 		// Apply a sin function that's scaled to make it feel better.
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+		wheel = sin(Constants::PI / 2.0 * wheelNonLinearity * wheel)
+				/ sin(Constants::PI / 2.0 * wheelNonLinearity);
+		wheel = sin(Constants::PI / 2.0 * wheelNonLinearity * wheel)
+				/ sin(Constants::PI / 2.0 * wheelNonLinearity);
+		wheel = sin(Constants::PI / 2.0 * wheelNonLinearity * wheel)
+				/ sin(Constants::PI / 2.0 * wheelNonLinearity);
 	}
 
 	double leftPwm, rightPwm, overPower;
@@ -85,7 +91,7 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 			negInertiaScalar = negInertiaLowMore;
 		}
 		else {
-			if (fabs(wheel) > 0.65) {
+			if (Util::abs(wheel) > 0.65) {
 				negInertiaScalar = negInertiaLowLessExt;
 			}
 			else {
@@ -94,8 +100,8 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 		}
 		sensitivity = senseLow;
 
-		if (fabs(throttle) > senseCutoff) {
-			sensitivity = 1 - (1 - sensitivity) / fabs(throttle);
+		if (Util::abs(throttle) > senseCutoff) {
+			sensitivity = 1 - (1 - sensitivity) / Util::abs(throttle);
 		}
 	}
 
@@ -114,9 +120,9 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 
 	// Quickturn!
 	if (isQuickTurn) {
-		if (fabs(linearPower) < quickStopLinearPowerThreshold) {
+		if (Util::abs(linearPower) < quickStopLinearPowerThreshold) {
 			double alpha = quickStopTimeConstant;
-			m_quickStopAccumulator = (1 - alpha) * m_quickStopAccumulator + alpha * bound(wheel, -1.0, 1.0) * quickStopStickScalar;
+			m_quickStopAccumulator = (1 - alpha) * m_quickStopAccumulator + alpha * Util::bound(wheel, -1.0, 1.0) * quickStopStickScalar;
 		}
 		overPower = 1.0;
 		if (m_highGear) {
@@ -129,7 +135,7 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 	}
 	else {
 		overPower = 0.0;
-		angularPower = fabs(throttle) * wheel * sensitivity - m_quickStopAccumulator;
+		angularPower = Util::abs(throttle) * wheel * sensitivity - m_quickStopAccumulator;
 		if (m_quickStopAccumulator > 1) {
 			m_quickStopAccumulator -= 1;
 		}

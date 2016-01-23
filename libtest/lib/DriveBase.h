@@ -10,7 +10,10 @@
 
 #include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
-#include "WPILib.h"
+#include "lib/util/Util.h"
+
+class VictorSP;
+class Encoder;
 
 /*
  * Interface for a class can determine the angle of the robot

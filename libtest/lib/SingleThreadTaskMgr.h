@@ -9,8 +9,9 @@
 #define FRCLIB_SINGLETHREADTASKMGR_H_
 
 #include "pthread.h"
-#include "WPILib.h"
 #include "TaskMgr.h"
+
+class RobotStateInterface;
 
 #define DEFAULT_FREQUENCY	200.0
 #define DEFAULT_PERIOD		(1.0 / (DEFAULT_FREQUENCY))
@@ -98,8 +99,8 @@ public:
 	 * scheduling algorithm.
 	 */
 	void SetHighPriority() {
-		int max = sched_get_priority_max(SCHED_FIFO);
-		printf("Setting thread max priority... %d\n", max);
+		//int max = sched_get_priority_max(SCHED_FIFO);
+		//printf("Setting thread max priority... %d\n", max);
 		/*
 		struct sched_param param;
 		param.sched_priority = max / 2;

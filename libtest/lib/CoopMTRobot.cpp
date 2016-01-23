@@ -13,6 +13,7 @@
 #include "lib/util/Ansi.h"
 #include "util/Util.h"
 #include "WrapDash.h"
+#include <stdio.h>
 
 CoopMTRobot::CoopMTRobot(void
 		): m_prevMode(RobotMode::MODE_DISABLED)

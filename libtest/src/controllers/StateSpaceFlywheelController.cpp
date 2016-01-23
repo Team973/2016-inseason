@@ -3,6 +3,8 @@
 #include "lib/filters/Debouncer.h"
 #include "lib/util/Util.h"
 
+#include "WPILib.h"
+
 StateSpaceFlywheelController::StateSpaceFlywheelController(StateSpaceGains *gains) :
 	StateSpaceController(1, 1, 2, gains, 1.0 / 200.0) {
 	enabled = true;
@@ -28,7 +30,7 @@ void StateSpaceFlywheelController::CapU() {
 
 	printf("dU %lf (uMax %lf uMin %lf) (upWindow %lf dnWindow %lf)\n",
 			dU, uMax, uMin, upWindow, dnWindow);
-	dU = bound(dU, dnWindow, upWindow);
+	dU = Util::bound(dU, dnWindow, upWindow);
 
 	outputVoltage += dU;
 	U->Set(0, dU);

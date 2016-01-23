@@ -1,7 +1,9 @@
-#include "WPILib.h"
-
 #include "lib/CoopMTRobot.h"
 
+class VictorSP;
+class Accelerometer;
+class Encoder;
+class DigitalInput;
 class LogSpreadsheet;
 class SingleThreadTaskMgr;
 class Drive;

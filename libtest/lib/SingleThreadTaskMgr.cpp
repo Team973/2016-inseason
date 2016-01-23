@@ -7,7 +7,11 @@
 
 #include "unistd.h"
 #include "SingleThreadTaskMgr.h"
-#include "util/Util.h"
+#include "lib/util/Util.h"
+
+#include "WPILib.h"
+
+#include <stdio.h>
 
 SingleThreadTaskMgr::SingleThreadTaskMgr(
 		RobotStateInterface &stateProvider,

@@ -7,6 +7,7 @@
 
 #include "controllers/ArcadeDriveController.h"
 #include "lib/util/Util.h"
+#include <stdio.h>
 
 ArcadeDriveController::ArcadeDriveController():
 	m_leftOutput(0.0),
@@ -25,8 +26,8 @@ void ArcadeDriveController::CalcDriveOutput(AngleProvider *angle, DistProvider *
 }
 
 void ArcadeDriveController::SetJoysticks(double throttle, double turn) {
-	throttle = bound(throttle, -1.0, 1.0);
-	turn = bound(turn, -1.0, 1.0);
+	throttle = Util::bound(throttle, -1.0, 1.0);
+	turn = Util::bound(turn, -1.0, 1.0);
 
 	/*
 	if (throttle < 0.0) {

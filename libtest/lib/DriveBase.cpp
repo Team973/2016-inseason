@@ -8,6 +8,8 @@
 #include <lib/DriveBase.h>
 #include "lib/util/Util.h"
 
+#include "WPILib.h"
+
 DriveBase::DriveBase(TaskMgr *scheduler, VictorSP *leftMotor,
 		VictorSP *rightMotor, AngleProvider *angle, DistProvider *dist,
 		DriveController *controller):
@@ -34,8 +36,8 @@ void DriveBase::TaskPostPeriodic(RobotMode mode) {
 				m_distProvider, this);
 	}
 
-	m_leftMotor->Set(bound(m_leftPower, -1.0, 1.0));
-	m_rightMotor->Set(-bound(m_rightPower, -1.0, 1.0));
+	m_leftMotor->Set(Util::bound(m_leftPower, -1.0, 1.0));
+	m_rightMotor->Set(-Util::bound(m_rightPower, -1.0, 1.0));
 }
 
 void DriveBase::SetDriveOutput(double left, double right) {

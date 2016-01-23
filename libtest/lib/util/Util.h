@@ -1,7 +1,11 @@
 #ifndef FRCLIB_UTIL_H_
 #define FRCLIB_UTIL_H_
 
-#include "WPILib.h"
+#include <stdint.h>
+
+class RobotStateInterface;
+
+//#include "WPILib.h"
 
 /**
  * Used internally to represent the state of the robot
@@ -79,6 +83,12 @@ namespace Constants {
                                     0.0: atan2(x, y))
 #define DIR_DEGREES(x,y)        RADIANS_TO_DEGREES(DIR_RADIANS(x, y))
 
+/**
+ * Defined in WPILib but this is a forward declaration so we can link
+ * properly in the cpp.
+ */
+uint64_t GetFPGATime();
+
 inline uint64_t GetUsecTime() {
 	return GetFPGATime();
 }
@@ -90,6 +100,8 @@ inline uint32_t GetMsecTime() {
 inline double GetSecTime() {
 	return GetUsecTime() * Constants::SEC_PER_USEC;
 }
+
+namespace Util {
 
 /* Return |val| coerced to be above |low| and below |high| inclusive */
 inline double bound(double val, double low, double high) {
@@ -134,13 +146,6 @@ inline double abs(double x) {
 	}
 }
 
-//
-// The NORMALIZE macro transforms a value (n) in the range between (sl) and
-// (sh) to the range between (tl) and (th).
-//
-#define NORMALIZE(n,sl,sh,tl,th) (((n) - (sl))*((th) - (tl))/((sh) - (sl)) + (tl))
-#define NORMALIZE_DRIVE(n,m)    NORMALIZE(n, -1.0, 1.0, -(m), (m))
-
 /**
  * Return 0 if |n| is within +/- |threshold|, otherwise return |n|
  * Useful for joysticks that aren't quite centered at zero
@@ -165,6 +170,19 @@ inline double signSquare(double n) {
 		return n * n;
 	}
 }
+
+inline bool close(double a, double b, double epsilon = 0.00001) {
+	return abs(a - b) < epsilon;
+}
+
+}
+
+//
+// The NORMALIZE macro transforms a value (n) in the range between (sl) and
+// (sh) to the range between (tl) and (th).
+//
+#define NORMALIZE(n,sl,sh,tl,th) (((n) - (sl))*((th) - (tl))/((sh) - (sl)) + (tl))
+#define NORMALIZE_DRIVE(n,m)    NORMALIZE(n, -1.0, 1.0, -(m), (m))
 
 #define MOTOR_RANGE_MIN         -1.0
 #define MOTOR_RANGE_MAX         1.0

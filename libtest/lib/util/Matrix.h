@@ -120,6 +120,11 @@ public:
 	 * This means same size and same value in every column.
 	 */
 	bool Equals(Matrix *m);
+
+	/**
+	 * Print this matrix to stdout
+	 */
+	void Display();
 private:
 	double *m_data;
 	int m_width;

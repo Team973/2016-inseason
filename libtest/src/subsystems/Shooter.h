@@ -16,7 +16,7 @@ class MovingAverageFilter;
 class DelaySwitch;
 class PID;
 class LogSpreadsheet;
-class Median5Filter;
+class MedianFilter;
 class StateSpaceFlywheelController;
 class LogCell;
 class LogSpreadsheet;
@@ -71,7 +71,7 @@ private:
 	LogCell *m_shooterPow;
 	LogCell *m_shooterTime;
 
-	Median5Filter *medFilter;
+	MedianFilter *medFilter;
 	double oldSpeed;
 
 	StateSpaceFlywheelController *m_controller;

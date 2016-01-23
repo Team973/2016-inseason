@@ -57,7 +57,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 	m_shooterTime = new LogCell("Shooter Time (ms)");
 	logger->RegisterCell(m_shooterTime);
 
-	medFilter = new Median5Filter();
+	medFilter = new MedianFilter();
 
 	this->m_controller = new StateSpaceFlywheelController(FlywheelGains::MakeGains());
 }
@@ -95,7 +95,7 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 	switch(m_flywheelState) {
 	case FlywheelState::pidControl:
-		m_maxObservedRPM = max(m_maxObservedRPM, this->GetFlywheelRate());
+		m_maxObservedRPM = Util::max(m_maxObservedRPM, this->GetFlywheelRate());
 		if (this->GetFlywheelRate() < m_flywheelTargetSpeed) {
 			motorOutput = 1.0;
 		}

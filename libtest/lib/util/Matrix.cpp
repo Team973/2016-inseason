@@ -61,11 +61,14 @@ int Matrix::GetHeight() {
 }
 
 bool Matrix::SameSize(Matrix *m) {
-	return (GetWidth() == m->GetWidth()) && (GetHeight() == m->GetHeight());
+	return m && (GetWidth() == m->GetWidth()) && (GetHeight() == m->GetHeight());
 }
 
 Matrix *Matrix::Subtract(Matrix *mat1, Matrix *mat2) {
-	if (!mat1->SameSize(mat2)) {
+	if (!mat1 || !mat2 ||
+			!mat1->SameSize(mat2)) {
+		printf("Tried to subtract matrices of not the same size");
+		return nullptr;
 	}
 	Matrix *result = new Matrix(mat2->GetHeight(),mat1->GetWidth());
 	int comp = mat1->GetWidth() * mat2->GetHeight();
@@ -77,7 +80,8 @@ Matrix *Matrix::Subtract(Matrix *mat1, Matrix *mat2) {
 }
 
 Matrix *Matrix::Add(Matrix *mat1,Matrix *mat2) {
-	if (!mat1->SameSize(mat2)) {
+	if (!mat1 || !mat2 ||
+			!mat1->SameSize(mat2)) {
 		printf("Tried to multiple matrices of not the same size");
 		return nullptr;
 	}
@@ -92,8 +96,10 @@ Matrix *Matrix::Add(Matrix *mat1,Matrix *mat2) {
 }
 
 Matrix *Matrix::Multiply(Matrix *mat1, Matrix *mat2) {
-	if (mat1->GetWidth() != mat2->GetHeight()) {
+	if (!mat1 || !mat2 ||
+			mat1->GetWidth() != mat2->GetHeight()) {
 		printf("Cant multiply matrices of disparit dimensions\n");
+		return nullptr;
 	}
 
 	int destHeight = mat1->GetHeight();
@@ -141,4 +147,17 @@ bool Matrix::Equals(Matrix *m) {
 	}
 
 	return true;
+}
+
+void Matrix::Display() {
+	printf("[ ");
+
+	for (int x = 0; x < GetHeight(); x++) {
+		for (int y = 0; y < GetWidth(); y++) {
+			printf("%lf ", Get(x, y));
+		}
+		printf(";");
+	}
+
+	printf("]\n");
 }

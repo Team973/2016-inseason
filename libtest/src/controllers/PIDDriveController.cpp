@@ -36,8 +36,8 @@ void PIDDriveController::CalcDriveOutput(AngleProvider *angle,
 	m_prevDist = dist->GetDist();
 	m_prevAngle = angle->GetAngle();
 
-	double throttle = -bound(m_drivePID->CalcOutput(m_prevDist), -0.5, 0.5);
-	double turn = bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
+	double throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -0.5, 0.5);
+	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
 
 	printf("dist target %lf, dist curr %lf, dist error: %lf \n",
 			m_targetDist, m_prevDist, m_targetDist - m_prevDist);
@@ -48,7 +48,7 @@ void PIDDriveController::CalcDriveOutput(AngleProvider *angle,
 
 	out->SetDriveOutput(throttle + turn, throttle - turn);
 
-	if (abs(m_targetDist - m_prevDist) < 2 && abs(dist->GetRate()) < 0.5) {
+	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(dist->GetRate()) < 0.5) {
 		m_onTarget = true;
 	}
 	else {

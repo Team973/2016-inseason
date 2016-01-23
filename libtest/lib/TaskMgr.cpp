@@ -111,7 +111,7 @@ int TaskMgr::FindTask(CoopTask *task) {
 
 	for (int i = 0; i < m_numTasks; i++) {
 		if (m_tasks[i] == task) {
-			index = 0;
+			index = i;
 			break;
 		}
 	}

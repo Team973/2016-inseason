@@ -2,6 +2,8 @@
 #include "WrapDash.h"
 #include "WPILib.h"
 
+#include <stdio.h>
+
 #define DBSTRING_MAX_LENGTH		21
 
 const char *positionStrings[] = {

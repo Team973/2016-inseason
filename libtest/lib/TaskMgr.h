@@ -17,7 +17,7 @@
 #define FRCLIB_TASKMGR_H_
 
 #include "stdint.h"
-#include "util/Util.h"
+#include "lib/util/Util.h"
 
 #define MAX_NUM_TASKS			32
 #define MAX_TASK_NAME_LEN		31

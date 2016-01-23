@@ -28,18 +28,18 @@ double RampedOutput::GetValue(double input) {
 			Constants::SEC_PER_MSEC;
 
 	double maxOutputDiff = timeDiffSec * m_rampRate;
-	double requestedOutputDiff = abs(input - m_prevOutput);
+	double requestedOutputDiff = Util::abs(input - m_prevOutput);
 
 	if (m_prevTimeMs != 0) {
 		m_rampFinished = requestedOutputDiff < maxOutputDiff;
 
 		if (input > m_prevOutput) {
 			m_prevOutput +=
-					min(maxOutputDiff, requestedOutputDiff);
+					Util::min(maxOutputDiff, requestedOutputDiff);
 		}
 		else {
 			m_prevOutput -=
-					min(maxOutputDiff, requestedOutputDiff);
+					Util::min(maxOutputDiff, requestedOutputDiff);
 		}
 	}
 
@@ -53,7 +53,7 @@ bool RampedOutput::IsRampFinished(void) {
 }
 
 void RampedOutput::SetRampRate(double rampRate) {
-	m_rampRate = abs(rampRate);
+	m_rampRate = Util::abs(rampRate);
 }
 
 double RampedOutput::GetRampRate(void) {

@@ -77,6 +77,6 @@ void StateSpaceController::CapU() {
 		double u_min = UMin->Get(i);
 
 		U->Set(i,
-				bound(u_i, u_min, u_max));
+				Util::bound(u_i, u_min, u_max));
 	}
 }
