@@ -17,8 +17,6 @@ class Robot : public CoopMTRobot
 private:
 	LogSpreadsheet *m_logger;
 
-	SingleThreadTaskMgr *m_hiFreq;
-
 	/**
 	 * Inputs (joysticks, sensors, etc...)
 	 */

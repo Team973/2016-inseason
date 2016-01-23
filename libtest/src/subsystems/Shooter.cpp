@@ -18,7 +18,7 @@
 #include "lib/filters/MedianFilter.h"
 #include "controllers/StateSpaceFlywheelController.h"
 
-static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 3500;
+static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 6000;
 
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_flywheelMotorA(nullptr),
@@ -72,9 +72,9 @@ void Shooter::SetFlywheelPIDShoot() {
 	printf("standard shoot\n");
 }
 
-void Shooter::SetFlywheelSSShoot() {
+void Shooter::SetFlywheelSSShoot(double goal) {
 	m_flywheelState = FlywheelState::ssControl;
-	m_flywheelTargetSpeed = FLYWHEEL_TELEOP_TARGET_SPEED;
+	m_flywheelTargetSpeed = goal;
 	m_controller->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
 }
 
@@ -130,16 +130,17 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 			"fw raw rate: %lf", GetFlywheelRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"Flywheel power: %lf", motorOutput);
-	/*
+
 	SmartDashboard::PutNumber("flywheel", GetFlywheelRate());
+	SmartDashboard::PutNumber("flyfilt", GetFlywheelMedianRate());
 	SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
-	*/
+
 	m_shooterPow->LogDouble(motorOutput);
 	m_shooterSpeed->LogDouble(GetFlywheelMedianRate());
 	m_shooterTime->LogPrintf("%ld", (long) GetUsecTime());
 }
-
 /**
+
  * GetFlywheelRate takes raw flywheel rate data and filters it becauze it's jittery
  *
  * There are 3 types of filtering happening
@@ -153,8 +154,11 @@ double Shooter::GetFlywheelRate(void) {
 
 double Shooter::GetFlywheelMedianRate(void) {
 	double s = GetFlywheelRate();
-	if (s > 6000.0) {
+	if (s > 9000.0) {
 		s = oldSpeed;
+	}
+	else {
+		oldSpeed = s;
 	}
 
 	return medFilter->Update(s);

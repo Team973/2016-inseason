@@ -8,16 +8,21 @@
 #include <subsystems/Intake.h>
 #include "RobotInfo.h"
 #include "lib/TaskMgr.h"
+#include "lib/WrapDash.h"
 
 Intake::Intake(TaskMgr *scheduler) :
 	m_intakeMotor(nullptr),
+	m_triggerMotor(nullptr),
 	m_armExtendSol(nullptr),
 	m_solenoidExtended(false),
 	m_intakeMode(IntakeMode::off),
-	m_scheduler(scheduler)
+	m_scheduler(scheduler),
+	m_pow(0.0),
+	m_trigPow(0.0)
 {
 	this->m_scheduler->RegisterTask("Intake", this, TASK_PERIODIC);
 
+	m_triggerMotor = new VictorSP(TRIGGER_PWM);
 	m_intakeMotor = new VictorSP(INTAKE_ROLLER_LEFT_PWM);
 	m_armExtendSol = new Solenoid(INTAKE_EXTEND_SOL_CHANNEL);
 }
@@ -44,20 +49,17 @@ void Intake::RetractIntake() {
 	}
 }
 
-void Intake::SetIntakeMode(IntakeMode mode) {
-	m_intakeMode = mode;
+void Intake::SetTriggerSpeed(double triggrPow) {
+	m_trigPow = triggrPow;
+}
+
+void Intake::SetIntakeMode(double pow) {
+	m_pow = pow;
 }
 
 void Intake::TaskPeriodic(RobotMode mode) {
-	switch (m_intakeMode) {
-	case IntakeMode::off:
-		m_intakeMotor->Set(0.0);
-		break;
-	case IntakeMode::intake:
-		m_intakeMotor->Set(INTAKE_FORWARD_SPEED);
-		break;
-	case IntakeMode::reverse:
-		m_intakeMotor->Set(INTAKE_REVERSE_SPEED);
-		break;
-	}
+	m_triggerMotor->Set(m_trigPow);
+	DBStringPrintf(DBStringPos::DB_LINE5,
+			"trigger pow: %lf", m_trigPow);
+	m_intakeMotor->Set(m_pow);
 }

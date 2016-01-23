@@ -10,13 +10,13 @@
 
 #include "lib/StateSpaceGains.h"
 
-double AAA[] = {1.0, 0.0, 3.133671, 0.942587};
+double AAA[] = {1.0, 0.0, 3.508416, 0.957147};
 double BBB[] = {1.0, 0.0};
 double CCC[] = {0.0, 1.0};
 double DDD[] = {0.0};
-double LLL[] = {0.015956, 0.392587};
-double KKK[] {0.922587, 0.048196};
-double UUUMAX[] = {12.000000};
+double LLL[] = {0.014251, 0.407147};
+double KKK[] {0.937147, 0.046699};
+double UUUMAX[] = {10.000000};
 double UUUMIN[] = {-2.000000};
 
 class FlywheelGains {

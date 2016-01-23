@@ -32,7 +32,7 @@ public:
 	virtual ~Shooter();
 
 	void SetFlywheelPIDShoot();
-	void SetFlywheelSSShoot();
+	void SetFlywheelSSShoot(double goal);
 	void SetFlywheelPower(double pow);
 	void SetFlywheelStop();
 

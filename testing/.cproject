@@ -25,11 +25,12 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.531667090" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1108438116" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/mockWPILib"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1145180214" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.1036625836" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.200331082" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.413384675" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -37,15 +38,14 @@
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.2040796936" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.1701197486" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/mockWPILib"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.dialect.std.1215749589" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.172160720" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.179032960" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.102877239" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.flags.377812949" superClass="gnu.cpp.link.option.flags" value="-pthread" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.377812949" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pthread" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1599429903" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -54,9 +54,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1517006341" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.1834268488" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/mockWPILib"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1242445039" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -100,6 +100,7 @@
 									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
 									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/src"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.other.other.1487637134" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2099037920" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.945235824" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
@@ -107,14 +108,14 @@
 								<option id="gnu.c.compiler.exe.release.option.debugging.level.330508098" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.634669564" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/src"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.dialect.std.1682987662" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.297430896" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1246119561" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.251005992" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
+								<option id="gnu.cpp.link.option.flags.1048116233" superClass="gnu.cpp.link.option.flags" value="-pthread" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1588849840" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -123,9 +124,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.368113324" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
 								<option id="gnu.both.asm.option.include.paths.2094073205" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/src"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1615241456" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

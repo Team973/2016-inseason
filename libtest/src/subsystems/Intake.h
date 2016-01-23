@@ -32,17 +32,22 @@ public:
 	void ExtendIntake();
 	void RetractIntake();
 
-	void SetIntakeMode(IntakeMode mode);
+	void SetTriggerSpeed(double pow);
+
+	void SetIntakeMode(double pow);
 
 	void TaskPeriodic(RobotMode mode);
 private:
 	VictorSP *m_intakeMotor;
+	VictorSP *m_triggerMotor;
 	Solenoid *m_armExtendSol;
 
 	bool m_solenoidExtended;
 	IntakeMode m_intakeMode;
 
 	TaskMgr *m_scheduler;
+	double m_pow;
+	double m_trigPow;
 };
 
 #endif /* SRC_SUBSYSTEMS_INTAKE_H_ */
