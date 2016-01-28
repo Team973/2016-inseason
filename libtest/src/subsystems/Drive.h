@@ -15,7 +15,8 @@ class PIDDriveController;
 class Drive :
 		public DriveBase,
 		public AngleProvider,
-		public DistProvider
+		public DistProvider,
+		public DriveOutput
 {
 public:
     Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
@@ -61,23 +62,39 @@ public:
      * All distances given in inches
      * All velocities given in inches/second
      */
-	double GetLeftDist();
-	double GetRightDist();
-	double GetLeftRate();
-	double GetRightRate();
-	double GetDist();
-	double GetRate();
+	double GetLeftDist() override;
+	double GetRightDist() override;
+	double GetLeftRate() override;
+	double GetRightRate() override;
+	double GetDist() override;
+	double GetRate() override;
 
 	/**
 	 * All angles given in degrees
 	 * All angular rates given in degrees/second
 	 */
-	double GetAngle();
-	double GetAngularRate();
+	double GetAngle() override;
+	double GetAngularRate() override;
+
+	/*
+	 * Used by the DriveController to set motor values
+	 *
+	 * @param left power (from -1.0 to 1.0) for left motor
+	 * @param right power (from -1.0 to 1.0) for right motor
+	 */
+	void SetDriveOutput(double left, double right) override;
+
+	void UpdateDriveOutput() override;
 private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
 	Encoder *m_gyro;
+
+	double m_leftPower;
+	double m_rightPower;
+
+	VictorSP *m_leftMotor;
+	VictorSP *m_rightMotor;
 
     ArcadeDriveController *m_arcadeDriveController;
     CheesyDriveController *m_cheesyDriveController;

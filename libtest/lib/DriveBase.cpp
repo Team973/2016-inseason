@@ -10,16 +10,12 @@
 
 #include "WPILib.h"
 
-DriveBase::DriveBase(TaskMgr *scheduler, VictorSP *leftMotor,
-		VictorSP *rightMotor, AngleProvider *angle, DistProvider *dist,
-		DriveController *controller):
+DriveBase::DriveBase(TaskMgr *scheduler, AngleProvider *angle, DistProvider *dist,
+		DriveOutput *outpt, DriveController *controller):
 	m_scheduler(scheduler),
-	m_leftPower(0.0),
-	m_rightPower(0.0),
-	m_leftMotor(leftMotor),
-	m_rightMotor(rightMotor),
 	m_angleProvider(angle),
 	m_distProvider(dist),
+	m_driveOutput(outpt),
 	m_controller(controller)
 {
 	m_scheduler->RegisterTask("DriveBase", this, TASK_POST_PERIODIC);
@@ -33,16 +29,10 @@ DriveBase::~DriveBase() {
 void DriveBase::TaskPostPeriodic(RobotMode mode) {
 	if (m_controller != nullptr) {
 		m_controller->CalcDriveOutput(m_angleProvider,
-				m_distProvider, this);
+				m_distProvider, m_driveOutput);
 	}
 
-	m_leftMotor->Set(Util::bound(m_leftPower, -1.0, 1.0));
-	m_rightMotor->Set(-Util::bound(m_rightPower, -1.0, 1.0));
-}
-
-void DriveBase::SetDriveOutput(double left, double right) {
-	m_leftPower = left;
-	m_rightPower = right;
+	m_driveOutput->UpdateDriveOutput();
 }
 
 void DriveBase::SetDriveController(DriveController *controller) {
