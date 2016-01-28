@@ -8,15 +8,23 @@ class CheesyDriveController;
 class PIDDriveController;
 
 /*
- * Drive contains within logic to talk to some drive controllers, as well as
- * logic to create some drive controllers, and some logic that makes it easy
- * to control those controllers.  Meta.
+ * Drive provides an interface to control the drive-base (to do both
+ * teleoperated and autonomous movements).  To do this, it makes
+ * a bunch of DriveControllers (autonomous pid, autonomous trap,
+ * teleop arcade, maybe someday a state space drive controller).  When
+ * a command is issued (one of these routines is called), Drive determines
+ * which controller is best suited to service that command and makes it
+ * the "active" controller.
+ *
+ *  * DriveBase... calls on the active controller to calculate motor output
+ *  * DriveStateProvider... provides the controller with position/angle/speed etc
+ *  * DrivecontrolSignalReceiver... translates controller output signal to motor
+ *  		input signal
  */
 class Drive :
 		public DriveBase,
-		public AngleProvider,
-		public DistProvider,
-		public DriveOutput
+		public DriveStateProvider,
+		public DriveControlSignalReceiver
 {
 public:
     Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
@@ -83,8 +91,6 @@ public:
 	 * @param right power (from -1.0 to 1.0) for right motor
 	 */
 	void SetDriveOutput(double left, double right) override;
-
-	void UpdateDriveOutput() override;
 private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;

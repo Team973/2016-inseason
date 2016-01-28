@@ -30,8 +30,8 @@ public:
 	 * CheesyDrive is open-loop, so it doesn't read angle or dist (they could
 	 * be null for all we care)
 	 */
-	void CalcDriveOutput(AngleProvider *angle, DistProvider *dist,
-			DriveOutput *out);
+	void CalcDriveOutput(DriveStateProvider *state,
+			DriveControlSignalReceiver *out);
 
 	/*
 	 * Since CheesyDrive is open-loop, OnTarget doesn't make sense here...

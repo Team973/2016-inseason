@@ -22,8 +22,8 @@ CheesyDriveController::CheesyDriveController() :
 CheesyDriveController::~CheesyDriveController() {
 }
 
-void CheesyDriveController::CalcDriveOutput(AngleProvider *angle, DistProvider *dist,
-		DriveOutput *out) {
+void CheesyDriveController::CalcDriveOutput(DriveStateProvider *state,
+		DriveControlSignalReceiver *out) {
 	out->SetDriveOutput(m_leftOutput, m_rightOutput);
 }
 

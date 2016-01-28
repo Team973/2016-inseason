@@ -12,7 +12,7 @@
 
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 			Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro)
-		 : DriveBase(scheduler, this, this, this, nullptr)
+		 : DriveBase(scheduler, this, this, nullptr)
 		 , m_leftEncoder(leftEncoder)
 		 , m_rightEncoder(rightEncoder)
 		 , m_gyro(gyro)
@@ -70,7 +70,7 @@ void Drive::PIDTurn(double degrees) {
 }
 
 double Drive::GetLeftDist() {
-	return -m_leftEncoder->Get() * 4.0* Constants::PI / 360.0;
+	return -m_leftEncoder->Get() * 4.0 * Constants::PI / 360.0;
 }
 
 double Drive::GetRightDist() {
@@ -106,9 +106,7 @@ double Drive::GetAngularRate() {
 void Drive::SetDriveOutput(double left, double right) {
 	m_leftPower = left;
 	m_rightPower = right;
-}
 
-void Drive::UpdateDriveOutput() {
 	m_leftMotor->Set(Util::bound(m_leftPower, -1.0, 1.0));
 	m_rightMotor->Set(-Util::bound(m_rightPower, -1.0, 1.0));
 }

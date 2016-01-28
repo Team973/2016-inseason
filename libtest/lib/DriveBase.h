@@ -16,23 +16,15 @@ class VictorSP;
 class Encoder;
 
 /*
- * Interface for a class can determine the angle of the robot
+ * Interface for a class can determine the current statae of the drive
+ * plant
 */
-class AngleProvider {
+class DriveStateProvider {
 public:
-	AngleProvider() {}
-	virtual ~AngleProvider() {}
+	DriveStateProvider() {}
+	virtual ~DriveStateProvider() {}
 	virtual double GetAngle() = 0;
 	virtual double GetAngularRate() = 0;
-};
-
-/*
- * Interface for a class that can determine the distance of the robot
-*/
-class DistProvider {
-public:
-	DistProvider() {}
-	virtual ~DistProvider() {}
 	virtual double GetLeftDist() = 0;
 	virtual double GetRightDist() = 0;
 	virtual double GetLeftRate() = 0;
@@ -44,21 +36,15 @@ public:
 /*
  * Interface for a class that can take drive output
 */
-class DriveOutput {
+class DriveControlSignalReceiver {
 public:
-	DriveOutput() {}
-	virtual ~DriveOutput() {}
+	DriveControlSignalReceiver() {}
+	virtual ~DriveControlSignalReceiver() {}
 	/**
 	 * Receive calculated motor powers from a controller.
 	 * Should only be called from a child of DriveController.
 	 */
 	virtual void SetDriveOutput(double left, double right) = 0;
-	/**
-	 * Apply drive power to the motors.
-	 * Does this need to exist as a separate step?  whoever implements
-	 * SetDriveOutput probably knows how to apply that power to the motors...
-	 */
-	virtual void UpdateDriveOutput() = 0;
 };
 
 /*
@@ -77,7 +63,7 @@ public:
 	 * Use the input signals from |angle| and |dist| and calculate some output,
 	 * then send that output to |out|.
 	 */
-	virtual void CalcDriveOutput(AngleProvider *angle, DistProvider *dist, DriveOutput *out) = 0;
+	virtual void CalcDriveOutput(DriveStateProvider *state, DriveControlSignalReceiver *out) = 0;
 	/**
 	 * Check whether the controller thinks we are on target.
 	 */
@@ -90,8 +76,6 @@ public:
  * motors with those calculated values.
  *
  * CoopTask handles calling TaskPostPeriodic once a cycle
- * DriveOutput interface defines SetDriveOutput for the DriveController to use
- *
  */
 class DriveBase :
 		public CoopTask
@@ -102,8 +86,9 @@ public:
 	 * controller (an object capable of calculating motor outputs) and uses it
 	 * to calculate drive outputs, then drive those drive outputs.
 	 */
-	DriveBase(TaskMgr *scheduler, AngleProvider *angle, DistProvider *dist,
-			DriveOutput *outpt, DriveController *controller = nullptr);
+	DriveBase(TaskMgr *scheduler, DriveStateProvider *state,
+			DriveControlSignalReceiver *outpt,
+			DriveController *controller = nullptr);
 	virtual ~DriveBase();
 
 	/*
@@ -131,9 +116,8 @@ public:
 private:
 	TaskMgr *m_scheduler;
 
-	AngleProvider *m_angleProvider;
-	DistProvider *m_distProvider;
-	DriveOutput *m_driveOutput;
+	DriveStateProvider *m_stateProvider;
+	DriveControlSignalReceiver *m_driveOutput;
 
 	DriveController *m_controller;
 };

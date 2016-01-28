@@ -31,10 +31,10 @@ PIDDriveController::PIDDriveController():
 	m_turnPID = new PID(TURN_PID_KP, TURN_PID_KI, TURN_PID_KD);
 }
 
-void PIDDriveController::CalcDriveOutput(AngleProvider *angle,
-		DistProvider *dist, DriveOutput *out) {
-	m_prevDist = dist->GetDist();
-	m_prevAngle = angle->GetAngle();
+void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
+		DriveControlSignalReceiver *out) {
+	m_prevDist = state->GetDist();
+	m_prevAngle = state->GetAngle();
 
 	double throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -0.5, 0.5);
 	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
@@ -48,7 +48,7 @@ void PIDDriveController::CalcDriveOutput(AngleProvider *angle,
 
 	out->SetDriveOutput(throttle + turn, throttle - turn);
 
-	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(dist->GetRate()) < 0.5) {
+	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5) {
 		m_onTarget = true;
 	}
 	else {
