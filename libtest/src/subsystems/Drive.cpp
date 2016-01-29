@@ -11,14 +11,18 @@
 #include "RobotInfo.h"
 
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
-			Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro):
-		DriveBase(scheduler, left, right, this, this, nullptr),
-		m_leftEncoder(leftEncoder),
-		m_rightEncoder(rightEncoder),
-		m_gyro(gyro),
-		m_arcadeDriveController(nullptr),
-		m_cheesyDriveController(nullptr),
-		m_pidDriveController(nullptr)
+			Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro)
+		 : DriveBase(scheduler, this, this, nullptr)
+		 , m_leftEncoder(leftEncoder)
+		 , m_rightEncoder(rightEncoder)
+		 , m_gyro(gyro)
+		 , m_leftPower(0.0)
+		 , m_rightPower(0.0)
+		 , m_leftMotor(left)
+		 , m_rightMotor(right)
+		 , m_arcadeDriveController(nullptr)
+		 , m_cheesyDriveController(nullptr)
+		 , m_pidDriveController(nullptr)
 {
 	m_arcadeDriveController = new ArcadeDriveController();
 	m_cheesyDriveController = new CheesyDriveController();
@@ -66,7 +70,7 @@ void Drive::PIDTurn(double degrees) {
 }
 
 double Drive::GetLeftDist() {
-	return -m_leftEncoder->Get() * 4.0* Constants::PI / 360.0;
+	return -m_leftEncoder->Get() * 4.0 * Constants::PI / 360.0;
 }
 
 double Drive::GetRightDist() {
@@ -97,4 +101,12 @@ double Drive::GetAngle() {
 
 double Drive::GetAngularRate() {
 	return m_gyro->GetRate() * (360.0 / 1024.0);
+}
+
+void Drive::SetDriveOutput(double left, double right) {
+	m_leftPower = left;
+	m_rightPower = right;
+
+	m_leftMotor->Set(Util::bound(m_leftPower, -1.0, 1.0));
+	m_rightMotor->Set(-Util::bound(m_rightPower, -1.0, 1.0));
 }

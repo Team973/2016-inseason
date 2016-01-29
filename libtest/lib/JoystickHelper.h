@@ -75,8 +75,8 @@ class ObservableJoystick;
  */
 class JoystickObserver {
 public:
-	JoystickObserver();
-	virtual ~JoystickObserver();
+	JoystickObserver() {}
+	virtual ~JoystickObserver() {}
 
     /**
      * This function is provided by the subclass to handle a joystick
@@ -107,14 +107,14 @@ class ObservableJoystick: public CoopTask,
 {
 public:
 	static constexpr double DEADBAND_INPUT_THRESHOLD = 0.07;
-	static constexpr double VIRTUAL_JOYSTICK_THRESHOLD = 0.05;
+	static constexpr double VIRTUAL_JOYSTICK_THRESHOLD = 0.5;
 
 protected:
     uint32_t		m_port;
 
     /* For observer notification */
     JoystickObserver *m_observer;
-    DriverStation  &m_ds;
+    DriverStation  *m_ds;
     uint32_t        m_prevBtn;
     TaskMgr		   *m_scheduler;
 
@@ -139,7 +139,7 @@ public:
      * @param scheduler Points to the task manager this task will run on
      */
     ObservableJoystick(uint16_t port, JoystickObserver *observer,
-    		TaskMgr *scheduler);
+    		TaskMgr *scheduler, DriverStation *ds = nullptr);
 
     ~ObservableJoystick();
 
@@ -203,7 +203,7 @@ public:
      *
      * @param mode Specifies the CoopTask callback types.
      */
-    void TaskPrePeriodic(uint32_t mode);
+    void TaskPrePeriodic(RobotMode mode) override;
 };
 
 #endif /* LIB_JOYSTICKHELPER_H_ */

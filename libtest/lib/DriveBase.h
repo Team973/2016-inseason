@@ -16,23 +16,15 @@ class VictorSP;
 class Encoder;
 
 /*
- * Interface for a class can determine the angle of the robot
+ * Interface for a class can determine the current statae of the drive
+ * plant
 */
-class AngleProvider {
+class DriveStateProvider {
 public:
-	AngleProvider() {}
-	virtual ~AngleProvider() {}
+	DriveStateProvider() {}
+	virtual ~DriveStateProvider() {}
 	virtual double GetAngle() = 0;
 	virtual double GetAngularRate() = 0;
-};
-
-/*
- * Interface for a class that can determine the distance of the robot
-*/
-class DistProvider {
-public:
-	DistProvider() {}
-	virtual ~DistProvider() {}
 	virtual double GetLeftDist() = 0;
 	virtual double GetRightDist() = 0;
 	virtual double GetLeftRate() = 0;
@@ -44,10 +36,14 @@ public:
 /*
  * Interface for a class that can take drive output
 */
-class DriveOutput {
+class DriveControlSignalReceiver {
 public:
-	DriveOutput() {}
-	virtual ~DriveOutput() {}
+	DriveControlSignalReceiver() {}
+	virtual ~DriveControlSignalReceiver() {}
+	/**
+	 * Receive calculated motor powers from a controller.
+	 * Should only be called from a child of DriveController.
+	 */
 	virtual void SetDriveOutput(double left, double right) = 0;
 };
 
@@ -63,7 +59,14 @@ class DriveController {
 public:
 	DriveController() {}
 	virtual ~DriveController() {}
-	virtual void CalcDriveOutput(AngleProvider *angle, DistProvider *dist, DriveOutput *out) = 0;
+	/**
+	 * Use the input signals from |angle| and |dist| and calculate some output,
+	 * then send that output to |out|.
+	 */
+	virtual void CalcDriveOutput(DriveStateProvider *state, DriveControlSignalReceiver *out) = 0;
+	/**
+	 * Check whether the controller thinks we are on target.
+	 */
 	virtual bool OnTarget() = 0;
 };
 
@@ -73,12 +76,9 @@ public:
  * motors with those calculated values.
  *
  * CoopTask handles calling TaskPostPeriodic once a cycle
- * DriveOutput interface defines SetDriveOutput for the DriveController to use
- *
  */
 class DriveBase :
-		public CoopTask,
-		public DriveOutput
+		public CoopTask
 {
 public:
 	/**
@@ -86,8 +86,8 @@ public:
 	 * controller (an object capable of calculating motor outputs) and uses it
 	 * to calculate drive outputs, then drive those drive outputs.
 	 */
-	DriveBase(TaskMgr *scheduler, VictorSP *leftMotor, VictorSP *rightMotor,
-			AngleProvider *angle, DistProvider *dist,
+	DriveBase(TaskMgr *scheduler, DriveStateProvider *state,
+			DriveControlSignalReceiver *outpt,
 			DriveController *controller = nullptr);
 	virtual ~DriveBase();
 
@@ -97,15 +97,7 @@ public:
 	 *
 	 * @param mode The current operating mode of the robot
 	 */
-	void TaskPostPeriodic(RobotMode mode);
-
-	/*
-	 * Used by the DriveController to set motor values
-	 *
-	 * @param left power (from -1.0 to 1.0) for left motor
-	 * @param right power (from -1.0 to 1.0) for right motor
-	 */
-	void SetDriveOutput(double left, double right);
+	void TaskPostPeriodic(RobotMode mode) override;
 
 	/*
 	 * Change the DriveController currently active
@@ -124,14 +116,8 @@ public:
 private:
 	TaskMgr *m_scheduler;
 
-	double m_leftPower;
-	double m_rightPower;
-
-	VictorSP *m_leftMotor;
-	VictorSP *m_rightMotor;
-
-	AngleProvider *m_angleProvider;
-	DistProvider *m_distProvider;
+	DriveStateProvider *m_stateProvider;
+	DriveControlSignalReceiver *m_driveOutput;
 
 	DriveController *m_controller;
 };

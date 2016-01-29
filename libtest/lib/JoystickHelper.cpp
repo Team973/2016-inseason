@@ -4,11 +4,12 @@
 ObservableJoystick::ObservableJoystick(
 	uint16_t port,
 	JoystickObserver *observer,
-	TaskMgr *scheduler
+	TaskMgr *scheduler,
+	DriverStation *ds
 	): Joystick(port)
 	 , m_port(port)
 	 , m_observer(observer)
-	 , m_ds(DriverStation::GetInstance())
+	 , m_ds(ds)
 	 , m_scheduler(scheduler)
 	 , m_lastLXVal(false)
 	 , m_lastLYVal(false)
@@ -17,7 +18,11 @@ ObservableJoystick::ObservableJoystick(
 	 , m_lastDXVal(false)
 	 , m_lastDYVal(false)
 {
-	m_prevBtn = m_ds.GetStickButtons(port);
+	if (m_ds == nullptr) {
+		m_ds = &DriverStation::GetInstance();
+	}
+
+	m_prevBtn = m_ds->GetStickButtons(port);
 
 	if (scheduler != nullptr) {
 		scheduler->RegisterTask("JoystickHelper", this, TASK_PRE_PERIODIC);
@@ -114,7 +119,7 @@ bool ObservableJoystick::GetDYVirtButton() {
 }
 
 uint32_t ObservableJoystick::GetAllButtons() {
-	uint32_t btns = m_ds.GetStickButtons(m_port);
+	uint32_t btns = m_ds->GetStickButtons(m_port);
 
 	btns |= GetLXVirtButton() << (DualAction::LXAxisVirtButton - 1);
 	btns |= GetLYVirtButton() << (DualAction::LYAxisVirtButton - 1);
@@ -131,7 +136,7 @@ uint32_t ObservableJoystick::GetAllButtons() {
  *    X&~(X^-X) extracts the least significant set bit from X in mask form
  *    __builtin_ffs(Y) gets the position of the least significant set bit
  */
-void ObservableJoystick::TaskPrePeriodic(uint32_t mode) {
+void ObservableJoystick::TaskPrePeriodic(RobotMode mode) {
 	uint32_t currBtn = GetAllButtons();
 
 	if (m_observer != nullptr) {

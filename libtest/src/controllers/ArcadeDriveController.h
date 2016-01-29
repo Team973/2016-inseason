@@ -19,8 +19,8 @@ public:
 	 * Calculate motor output given the most recent joystick commands.
 	 * In this case just return the most recent joystick commands.
 	 */
-	void CalcDriveOutput(AngleProvider *angle, DistProvider *dist,
-			DriveOutput *out);
+	void CalcDriveOutput(DriveStateProvider *state,
+			DriveControlSignalReceiver *out);
 
 	/*
 	 * This controller is open-loop so OnTarget doesn't make sense here...

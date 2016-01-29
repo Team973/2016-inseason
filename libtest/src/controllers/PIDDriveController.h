@@ -23,8 +23,8 @@ public:
 	 * This reads in position data from the angle and dist providers and uses
 	 * the pid object to decide on an ideal set of outputs
 	 */
-	void CalcDriveOutput(AngleProvider *angle, DistProvider *dist,
-			DriveOutput *out);
+	void CalcDriveOutput(DriveStateProvider *state,
+			DriveControlSignalReceiver *out);
 
 	/*
 	 * On CalcDriveOutput, the robot sets the internal m_onTarget flag if it

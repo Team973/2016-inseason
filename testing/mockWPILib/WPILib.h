@@ -42,10 +42,12 @@ class IterativeRobot {
 
 class Joystick {
 public:
-	Joystick(int chan) {}
+	Joystick(int chan) : m_chan(chan) {}
 	virtual ~Joystick() {}
 	bool GetRawButton(int btn) { return false; }
-	double GetRawAxis(int axis) { return 0.0; }
+	double GetRawAxis(int axis) { return DriverStation::GetInstance().GetStickAxis(m_chan, axis); }
+private:
+	int m_chan;
 };
 
 class Relay {
@@ -86,6 +88,7 @@ public:
 	static void init() {}
 
 	static void PutString(std::string pos, std::string msg) {}
+	static void PutNumber(std::string pos, double number) {}
 };
 
 class DigitalInput {
