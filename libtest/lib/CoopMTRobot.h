@@ -22,6 +22,7 @@
 #include "WPILib.h"
 #include "TaskMgr.h"
 #include "util/Util.h"
+#include <pthread.h>
 
 #ifndef PROGRAM_NAME
 #define PROGRAM_NAME "(unspecified)"
@@ -31,7 +32,8 @@
 
 class CoopMTRobot:
 	public IterativeRobot,
-	public TaskMgr
+	public TaskMgr,
+	public RobotStateInterface
 {
 public:
 	CoopMTRobot();
@@ -99,8 +101,18 @@ protected:
 	void ModeStop(RobotMode toStop);
 	void ModeStart(RobotMode toStart);
 
+	/**
+	 * Implement the RobotStateInterface interface so that we may
+	 * cache robor mode.
+	 */
+	bool IsDisabled() const;
+	bool IsEnabled() const;
+	bool IsOperatorControl() const;
+	bool IsAutonomous() const;
+	bool IsTest() const;
 private:
 	RobotMode m_prevMode;
+	mutable pthread_mutex_t m_robotModeMutex;
 };
 
 #endif /* FRCLIB_COOPMTROBOT_H_ */

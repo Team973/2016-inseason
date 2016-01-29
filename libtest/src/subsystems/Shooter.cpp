@@ -37,7 +37,8 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_shooterTime(nullptr),
 		medFilter(nullptr),
 		oldSpeed(0.0),
-		m_controller(nullptr)
+		m_controller(nullptr),
+		m_lastTime()
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
@@ -60,6 +61,8 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 	medFilter = new MedianFilter();
 
 	this->m_controller = new StateSpaceFlywheelController(FlywheelGains::MakeGains());
+
+	m_lastTime = GetUsecTime();
 }
 
 Shooter::~Shooter() {
@@ -123,7 +126,7 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		break;
 	}
 
-	printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
+	//printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
 	DBStringPrintf(DBStringPos::DB_LINE0,
 			"fw med rate: %lf", GetFlywheelMedianRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,
@@ -131,9 +134,16 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"Flywheel power: %lf", motorOutput);
 
-	SmartDashboard::PutNumber("flywheel", GetFlywheelRate());
-	SmartDashboard::PutNumber("flyfilt", GetFlywheelMedianRate());
-	SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
+	uint64_t now = GetUsecTime();
+	SmartDashboard::PutNumber("timeSlice", now - m_lastTime);
+	//printf("%llu\n", now - m_lastTime);
+	if (abs(now - m_lastTime - 5000) > 500) {
+		printf("bad interval of %llu\n", now - m_lastTime);
+	}
+	m_lastTime = now;
+	//SmartDashboard::PutNumber("flywheel", GetFlywheelRate());
+	//SmartDashboard::PutNumber("flyfilt", GetFlywheelMedianRate());
+	//SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
 
 	m_shooterPow->LogDouble(motorOutput);
 	m_shooterSpeed->LogDouble(GetFlywheelMedianRate());

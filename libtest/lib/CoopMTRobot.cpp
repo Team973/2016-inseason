@@ -17,6 +17,7 @@
 
 CoopMTRobot::CoopMTRobot(void
 		): m_prevMode(RobotMode::MODE_DISABLED)
+		 , m_robotModeMutex(PTHREAD_MUTEX_INITIALIZER)
 {
 }
 
@@ -43,25 +44,33 @@ void CoopMTRobot::RobotInit(void) {
 
 void CoopMTRobot::DisabledInit(void) {
 	this->ModeStop(this->m_prevMode);
+	pthread_mutex_lock(&m_robotModeMutex);
 	this->m_prevMode = RobotMode::MODE_DISABLED;
+	pthread_mutex_unlock(&m_robotModeMutex);
 	this->ModeStart(this->m_prevMode);
 }
 
 void CoopMTRobot::AutonomousInit(void) {
 	this->ModeStop(this->m_prevMode);
+	pthread_mutex_lock(&m_robotModeMutex);
 	this->m_prevMode = RobotMode::MODE_AUTO;
+	pthread_mutex_unlock(&m_robotModeMutex);
 	this->ModeStart(this->m_prevMode);
 }
 
 void CoopMTRobot::TeleopInit(void) {
 	this->ModeStop(this->m_prevMode);
+	pthread_mutex_lock(&m_robotModeMutex);
 	this->m_prevMode = RobotMode::MODE_TELEOP;
+	pthread_mutex_unlock(&m_robotModeMutex);
 	this->ModeStart(this->m_prevMode);
 }
 
 void CoopMTRobot::TestInit(void) {
 	this->ModeStop(this->m_prevMode);
+	pthread_mutex_lock(&m_robotModeMutex);
 	this->m_prevMode = RobotMode::MODE_TEST;
+	pthread_mutex_unlock(&m_robotModeMutex);
 	this->ModeStart(this->m_prevMode);
 }
 
@@ -137,4 +146,36 @@ void CoopMTRobot::ModeStart(RobotMode toStart) {
 		TestStart();
 		break;
 	}
+}
+
+bool CoopMTRobot::IsDisabled() const {
+	pthread_mutex_lock(&m_robotModeMutex);
+	bool res = m_prevMode == MODE_DISABLED;
+	pthread_mutex_unlock(&m_robotModeMutex);
+	return res;
+}
+
+bool CoopMTRobot::IsEnabled() const {
+	return !IsDisabled();
+}
+
+bool CoopMTRobot::IsOperatorControl() const {
+	pthread_mutex_lock(&m_robotModeMutex);
+	bool res = m_prevMode == MODE_TELEOP;
+	pthread_mutex_unlock(&m_robotModeMutex);
+	return res;
+}
+
+bool CoopMTRobot::IsAutonomous() const {
+	pthread_mutex_lock(&m_robotModeMutex);
+	bool res = m_prevMode == MODE_AUTO;
+	pthread_mutex_unlock(&m_robotModeMutex);
+	return res;
+}
+
+bool CoopMTRobot::IsTest() const {
+	pthread_mutex_lock(&m_robotModeMutex);
+	bool res = m_prevMode == MODE_TEST;
+	pthread_mutex_unlock(&m_robotModeMutex);
+	return res;
 }

@@ -10,6 +10,7 @@
 
 #include "pthread.h"
 #include "TaskMgr.h"
+#include <stdio.h>
 
 class RobotStateInterface;
 
@@ -99,11 +100,12 @@ public:
 	 * scheduling algorithm.
 	 */
 	void SetHighPriority() {
-		//int max = sched_get_priority_max(SCHED_FIFO);
-		//printf("Setting thread max priority... %d\n", max);
-		/*
+		int max = sched_get_priority_max(SCHED_FIFO);
+		int min = sched_get_priority_min(SCHED_FIFO);
+		printf("Setting thread max priority... %d\n", max);
+
 		struct sched_param param;
-		param.sched_priority = max / 2;
+		param.sched_priority = min + 1;
 
 		printf("setting the origonal thread down\n");
 
@@ -115,7 +117,7 @@ public:
 		ret = pthread_setschedparam(m_thread, SCHED_FIFO, &param);
 
 		printf("setting thread returned status of %d\n", ret);
-		*/
+
 	}
 private:
 	static void *RunTasks(void*);

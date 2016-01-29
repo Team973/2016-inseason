@@ -15,6 +15,7 @@ class LogCell;
 class Robot : public CoopMTRobot
 {
 private:
+	SingleThreadTaskMgr *m_hiFreq;
 	LogSpreadsheet *m_logger;
 
 	/**

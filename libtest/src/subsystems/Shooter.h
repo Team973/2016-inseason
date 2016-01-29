@@ -75,6 +75,7 @@ private:
 	double oldSpeed;
 
 	StateSpaceFlywheelController *m_controller;
+	uint64_t m_lastTime;
 };
 
 #endif /* SRC_SUBSYSTEMS_SHOOTER_H_ */
