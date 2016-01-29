@@ -30,6 +30,9 @@ constexpr double DRIVE_DIST_PER_REVOLUTION = DRIVE_WHEEL_DIAMETER *
 constexpr double DRIVE_DIST_PER_CLICK = DRIVE_DIST_PER_REVOLUTION *
 		DRIVE_TICKS_PER_REVOLUTION;
 
+constexpr int DRIVER_JOYSTICK_PORT = 0;
+constexpr int OPERATOR_JOYSTICK_PORT = 1;
+
 /**
  * Intake subsystem
  */

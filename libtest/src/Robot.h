@@ -1,4 +1,5 @@
 #include "lib/CoopMTRobot.h"
+#include "lib/JoystickHelper.h"
 
 class VictorSP;
 class Accelerometer;
@@ -12,17 +13,19 @@ class Shooter;
 class GreyCompressor;
 class LogCell;
 
-class Robot : public CoopMTRobot
+class Robot:
+		public CoopMTRobot,
+		public JoystickObserver
 {
 private:
-	SingleThreadTaskMgr *m_hiFreq;
+	//SingleThreadTaskMgr *m_hiFreq;
 	LogSpreadsheet *m_logger;
 
 	/**
 	 * Inputs (joysticks, sensors, etc...)
 	 */
-	Joystick		*m_driverJoystick;
-	Joystick		*m_operatorJoystick;
+	ObservableJoystick		*m_driverJoystick;
+	ObservableJoystick		*m_operatorJoystick;
 
 	Accelerometer 	*m_accel;
 
@@ -72,21 +75,21 @@ public:
 	 */
 	Robot(void);
 	~Robot(void);
-	void Initialize(void);
+	void Initialize(void) override;
 
 	/**
 	 * Defined in Disabled.h
 	 */
-	void DisabledStart(void);
-	void DisabledStop(void);
-	void DisabledContinuous(void);
+	void DisabledStart(void) override;
+	void DisabledStop(void) override;
+	void DisabledContinuous(void) override;
 
 	/**
 	 * Defined in Autonomous.h
 	 */
-	void AutonomousStart(void);
-	void AutonomousStop(void);
-	void AutonomousContinuous(void);
+	void AutonomousStart(void) override;
+	void AutonomousStop(void) override;
+	void AutonomousContinuous(void) override;
 
 	void TwoBallAuto(void);
 	void OneBallAuto(void);
@@ -94,19 +97,22 @@ public:
 	/**
 	 * Defined in Teleop.h
 	 */
-	void TeleopStart(void);
-	void TeleopStop(void);
-	void TeleopContinuous(void);
+	void TeleopStart(void) override;
+	void TeleopStop(void) override;
+	void TeleopContinuous(void) override;
+
+	void ObserveJoystickStateChange(uint32_t port, uint32_t button,
+			bool newState) override;
 
 	/**
 	 * Defined in Test.h
 	 */
-	void TestStart(void);
-	void TestStop(void);
-	void TestContinuous(void);
+	void TestStart(void) override;
+	void TestStop(void) override;
+	void TestContinuous(void) override;
 
 	/**
 	 * Defined in Robot.cpp
 	 */
-	void AllStateContinuous(void);
+	void AllStateContinuous(void) override;
 };

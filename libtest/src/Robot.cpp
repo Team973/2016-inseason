@@ -14,7 +14,7 @@
 
 Robot::Robot(void
 	) :
-	m_hiFreq(nullptr),
+	//m_hiFreq(nullptr),
 	m_logger(nullptr),
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
@@ -39,10 +39,10 @@ Robot::Robot(void
 	m_accelCellY(nullptr),
 	m_accelCellZ(nullptr)
 {
-	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 200.0);
+	//m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 200.0);
 
-	m_driverJoystick = new Joystick(0);
-	m_operatorJoystick = new Joystick(1);
+	m_driverJoystick = new ObservableJoystick(DRIVER_JOYSTICK_PORT, this, this);
+	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
 
 	m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
 
@@ -81,7 +81,7 @@ Robot::Robot(void
 	m_logger->RegisterCell(m_accelCellZ);
 	m_logger->RegisterCell(m_messages);
 
-	m_shooter = new Shooter(m_hiFreq, m_logger);
+	m_shooter = new Shooter(this, m_logger);
 }
 
 Robot::~Robot(void) {
@@ -95,8 +95,8 @@ void Robot::Initialize(void) {
 	m_logger->InitializeTable();
 
 	SmartDashboard::init();
-	m_hiFreq->Start();
-	m_hiFreq->SetHighPriority();
+	//m_hiFreq->Start();
+	//m_hiFreq->SetHighPriority();
 }
 
 void Robot::AllStateContinuous(void) {
