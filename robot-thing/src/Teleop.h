@@ -33,6 +33,8 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
 	static double goal = 5500.0;
 
+	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
+
 	if (port == DRIVER_JOYSTICK_PORT) {
 		/* Add any bindings for the driver's joystick here */
 	}
@@ -83,18 +85,18 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			case DualAction::DPadUpVirtBtn:
 				if (pressedP) {
 					goal += 50.0;
-					m_shooter->SetFlywheelSSShoot(goal);
+					//m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadDownVirtBtn:
 				if (pressedP) {
 					goal -= 50.0;
-					m_shooter->SetFlywheelSSShoot(goal);
+					//m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadLeftVirtBtn:
 				if (pressedP) {
-					m_shooter->SetFlywheelStop();
+					//m_shooter->SetFlywheelStop();
 				}
 				break;
 		}

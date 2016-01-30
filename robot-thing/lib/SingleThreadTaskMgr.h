@@ -112,7 +112,7 @@ public:
 		int ret = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
 		printf("setting thread returned status of %d\n", ret);
 
-		param.sched_priority = max;
+		param.sched_priority = max - 1;
 		printf("setting new thread up\n");
 		ret = pthread_setschedparam(m_thread, SCHED_FIFO, &param);
 

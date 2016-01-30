@@ -10,6 +10,7 @@ ObservableJoystick::ObservableJoystick(
 	 , m_port(port)
 	 , m_observer(observer)
 	 , m_ds(ds)
+	 , m_prevBtn(0)
 	 , m_scheduler(scheduler)
 	 , m_lastLXVal(false)
 	 , m_lastLYVal(false)
@@ -47,19 +48,23 @@ float ObservableJoystick::GetRawAxisWithDeadband(int axis, bool fSquared,
 }
 
 bool ObservableJoystick::GetDPadUpVirtButton() {
-	return GetRawAxis(DualAction::DPadXAxis) > 0.5;
+	int pov = GetPOV();
+	return pov == 0 || pov == 315 || pov == 45;
 }
 
 bool ObservableJoystick::GetDPadDownVirtButton() {
-	return GetRawAxis(DualAction::DPadXAxis) < -0.5;
+	int pov = GetPOV();
+	return pov == 180 || pov == 225 || pov == 135;
 }
 
 bool ObservableJoystick::GetDPadLeftVirtButton() {
-	return GetRawAxis(DualAction::DPadYAxis) < -0.5;
+	int pov = GetPOV();
+	return pov == 270 || pov == 315 || pov == 225;
 }
 
 bool ObservableJoystick::GetDPadRightVirtButton() {
-	return GetRawAxis(DualAction::DPadYAxis) > 0.5;
+	int pov = GetPOV();
+	return pov == 90 || pov == 135 || pov == 45;
 }
 
 bool ObservableJoystick::GetLXVirtButton() {
@@ -75,7 +80,7 @@ bool ObservableJoystick::GetLXVirtButton() {
 }
 
 bool ObservableJoystick::GetLYVirtButton() {
-	double pos = this->GetRawAxis(DualAction::LeftYAxis);
+	double pos = -this->GetRawAxis(DualAction::LeftYAxis);
 
 	if (pos > VIRTUAL_JOYSTICK_THRESHOLD) {
 		m_lastLYVal = true;
@@ -99,7 +104,7 @@ bool ObservableJoystick::GetRXVirtButton() {
 }
 
 bool ObservableJoystick::GetRYVirtButton() {
-	double pos = this->GetRawAxis(DualAction::RightYAxis);
+	double pos = -this->GetRawAxis(DualAction::RightYAxis);
 
 	if (pos > VIRTUAL_JOYSTICK_THRESHOLD) {
 		m_lastRYVal = true;
@@ -111,11 +116,9 @@ bool ObservableJoystick::GetRYVirtButton() {
 }
 
 bool ObservableJoystick::GetDXVirtButton() {
-	double pos = this->GetRawAxis(DualAction::DPadXAxis);
-
-	if (pos > VIRTUAL_JOYSTICK_THRESHOLD) {
+	if (this->GetDPadRightVirtButton()) {
 		m_lastDXVal = true;
-	} else if (pos < -VIRTUAL_JOYSTICK_THRESHOLD) {
+	} else if (this->GetDPadLeftVirtButton()) {
 		m_lastDXVal = false;
 	}
 
@@ -123,11 +126,9 @@ bool ObservableJoystick::GetDXVirtButton() {
 }
 
 bool ObservableJoystick::GetDYVirtButton() {
-	double pos = this->GetRawAxis(DualAction::DPadYAxis);
-
-	if (pos > VIRTUAL_JOYSTICK_THRESHOLD) {
+	if (this->GetDPadUpVirtButton()) {
 		m_lastDYVal = true;
-	} else if (pos < -VIRTUAL_JOYSTICK_THRESHOLD) {
+	} else if (this->GetDPadDownVirtButton()) {
 		m_lastDYVal = false;
 	}
 

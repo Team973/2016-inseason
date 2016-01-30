@@ -136,9 +136,9 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 	uint64_t now = GetUsecTime();
 	SmartDashboard::PutNumber("timeSlice", now - m_lastTime);
-	//printf("%llu\n", now - m_lastTime);
+
 	if (abs(now - m_lastTime - 5000) > 500) {
-		printf("bad interval of %llu\n", now - m_lastTime);
+		//printf("bad interval of %llu\n", now - m_lastTime);
 	}
 	m_lastTime = now;
 	//SmartDashboard::PutNumber("flywheel", GetFlywheelRate());

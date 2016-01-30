@@ -19,7 +19,7 @@ class Robot:
 		public JoystickObserver
 {
 private:
-	//SingleThreadTaskMgr *m_hiFreq;
+	SingleThreadTaskMgr *m_hiFreq;
 	LogSpreadsheet *m_logger;
 
 	/**
