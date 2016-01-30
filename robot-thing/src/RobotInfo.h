@@ -21,9 +21,8 @@ constexpr int ARM_MOTOR_PWM = 2;
 constexpr int FLYWHEEL_TWO_PWM = 5;
 constexpr int FLYWHEEL_ONE_PWM = 6;
 
-constexpr int INTAKE_ROLLER_LEFT_PWM = 7;
-
-constexpr int INTAKE_TRIGGER_PWM = 9;
+constexpr int LOWER_INTAKE_PWM = 7;
+constexpr int UPPER_INTAKE_PWM = 8;
 
 /**
  * DIN pin-out

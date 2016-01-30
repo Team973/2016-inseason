@@ -46,6 +46,22 @@ float ObservableJoystick::GetRawAxisWithDeadband(int axis, bool fSquared,
 	return value;
 }
 
+bool ObservableJoystick::GetDPadUpVirtButton() {
+	return GetRawAxis(DualAction::DPadXAxis) > 0.5;
+}
+
+bool ObservableJoystick::GetDPadDownVirtButton() {
+	return GetRawAxis(DualAction::DPadXAxis) < -0.5;
+}
+
+bool ObservableJoystick::GetDPadLeftVirtButton() {
+	return GetRawAxis(DualAction::DPadYAxis) < -0.5;
+}
+
+bool ObservableJoystick::GetDPadRightVirtButton() {
+	return GetRawAxis(DualAction::DPadYAxis) > 0.5;
+}
+
 bool ObservableJoystick::GetLXVirtButton() {
 	double pos = this->GetRawAxis(DualAction::LeftXAxis);
 
@@ -127,6 +143,10 @@ uint32_t ObservableJoystick::GetAllButtons() {
 	btns |= GetRYVirtButton() << (DualAction::RYAxisVirtButton - 1);
 	btns |= GetDXVirtButton() << (DualAction::DXAxisVirtButton - 1);
 	btns |= GetDYVirtButton() << (DualAction::DYAxisVirtButton - 1);
+	btns |= GetDPadUpVirtButton() << (DualAction::DPadUpVirtBtn - 1);
+	btns |= GetDPadDownVirtButton() << (DualAction::DPadDownVirtBtn - 1);
+	btns |= GetDPadLeftVirtButton() << (DualAction::DPadLeftVirtBtn - 1);
+	btns |= GetDPadRightVirtButton() << (DualAction::DPadRightVirtBtn - 1);
 
 	return btns;
 }

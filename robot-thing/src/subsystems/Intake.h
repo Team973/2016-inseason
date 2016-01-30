@@ -20,37 +20,39 @@
 
 class Intake : public CoopTask {
 public:
-	enum IntakeMode {
+	enum class UpperIntakeMode {
 		off,
-		intake,
+		forward,
+		reverse
+	};
+
+	enum class LowerIntakeMode {
+		off,
+		forward,
 		reverse
 	};
 
 	Intake(TaskMgr *scheduler);
 	virtual ~Intake();
 
-	void ExtendIntake();
-	void RetractIntake();
+	void SetUpperIntakeMode(UpperIntakeMode mode);
 
-	void SetTriggerSpeed(double pow);
-
-	void SetIntakeMode(double pow);
+	void SetLowerIntakeMode(LowerIntakeMode mode);
 
 	void TaskPeriodic(RobotMode mode);
 private:
-	VictorSP *m_intakeMotor;
-	VictorSP *m_triggerMotor;
-	Solenoid *m_armExtendSol;
+	VictorSP *m_upperIntakeMotor;
+	VictorSP *m_lowerIntakeMotor;
 
-	bool m_solenoidExtended;
-	IntakeMode m_intakeMode;
+	UpperIntakeMode m_upperIntakeMode;
+	LowerIntakeMode m_lowerIntakeMode;
 
 	TaskMgr *m_scheduler;
-	double m_pow;
-	double m_trigPow;
-public:
-	static constexpr int INTAKE_FORWARD_SPEED = 1.0;
-	static constexpr int INTAKE_REVERSE_SPEED = -1.0;
+
+	static constexpr int UPPER_INTAKE_FORWARD_SPEED = 1.0;
+	static constexpr int UPPER_INTAKE_REVERSE_SPEED = -1.0;
+	static constexpr int LOWER_INTAKE_FORWARD_SPEED = 1.0;
+	static constexpr int LOWER_INTAKE_REVERSE_SPEED = -1.0;
 };
 
 #endif /* SRC_SUBSYSTEMS_INTAKE_H_ */

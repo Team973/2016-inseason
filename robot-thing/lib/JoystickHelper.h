@@ -37,6 +37,11 @@ namespace DualAction {
 	const unsigned int LJoystickBtn = 11;
 	const unsigned int RJoystickBtn = 12;
 
+	const unsigned int DPadUpVirtBtn = 22;
+	const unsigned int DPadDownVirtBtn = 23;
+	const unsigned int DPadLeftVirtBtn = 24;
+	const unsigned int DPadRightVirtBtn = 25;
+
 	/*
 	 * The following are 'virtual' buttons, one for each joystick axis.
 	 *  * Virtual buttons default to zero.
@@ -154,6 +159,26 @@ public:
      */
     float GetRawAxisWithDeadband(int axis, bool fSquared = false,
     		float threshold = DEADBAND_INPUT_THRESHOLD);
+
+    /*
+     * Check whether the up button on the d pad is pressed
+     */
+    bool GetDPadUpVirtButton();
+
+    /*
+     * Check whether the down btton on the d pad is pressed
+     */
+    bool GetDPadDownVirtButton();
+
+    /*
+     * Check whetehr the left button on the d pad is pressed
+     */
+    bool GetDPadLeftVirtButton();
+
+    /*
+     * Check whether the right button on the d pad is pressed
+     */
+    bool GetDPadRightVirtButton();
 
     /**
      * Pretend the Left X Axis is a button.  By default it is not pressed.

@@ -2,7 +2,8 @@ void Robot::AutonomousStart(void) {
     printf("***auto start\n");
 
     m_shooter->SetFlywheelStop();
-	m_intake->SetIntakeMode(Intake::IntakeMode::off);
+	m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+	m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::off);
 
 	m_drive->Zero();
 
@@ -29,7 +30,7 @@ void Robot::OneBallAuto(void) {
 	switch (m_autoState) {
 	case 0:
 		//Start driving
-		m_intake->RetractIntake();
+		//m_intake->RetractIntake();
 		m_drive->PIDDrive(15.5 * 12.0);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
@@ -55,7 +56,7 @@ void Robot::OneBallAuto(void) {
 		break;
 	case 4:
 		//shoot
-		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+		//m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoState++;
 		break;
 	default:
@@ -68,7 +69,7 @@ void Robot::TwoBallAuto() {
 	switch (m_autoState) {
 	case 0:
 		//start driving (and rev up flywheel)
-		m_intake->ExtendIntake();
+		//m_intake->ExtendIntake();
 		//m_shooter->SetFlywheelFarShoot();
 		m_drive->PIDDrive(15.5 * 12.0);
 		m_autoTimer = GetMsecTime();
@@ -83,8 +84,8 @@ void Robot::TwoBallAuto() {
 		break;
 	case 2:
 		//retract the intake
-		m_intake->RetractIntake();
-		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+		//m_intake->RetractIntake();
+		//m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -96,7 +97,7 @@ void Robot::TwoBallAuto() {
 	case 4:
 		//Fire first ball
 		//m_intake->RetractIntake();
-		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+		//m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -107,7 +108,7 @@ void Robot::TwoBallAuto() {
 		break;
 	case 6:
 		//pick up ball two
-		m_intake->ExtendIntake();
+		//m_intake->ExtendIntake();
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -120,8 +121,8 @@ void Robot::TwoBallAuto() {
 		break;
 	case 8:
 		//retract intake
-		m_intake->RetractIntake();
-		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+		//m_intake->RetractIntake();
+		//m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -133,7 +134,7 @@ void Robot::TwoBallAuto() {
 		break;
 	case 10:
 		//fire ball 2
-		m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+		//m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
 		m_autoState++;
 		break;
 	default:
