@@ -10,6 +10,7 @@ class SingleThreadTaskMgr;
 class Drive;
 class Intake;
 class Shooter;
+class Arm;
 class GreyCompressor;
 class LogCell;
 
@@ -43,6 +44,7 @@ private:
 	 */
 	Intake			*m_intake;
 	Shooter			*m_shooter;
+	Arm				*m_arm;
 
 	/*
 	 * Compressor

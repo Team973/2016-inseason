@@ -2,8 +2,7 @@
 #include "lib/filters/PID.h"
 #include "lib/util/Util.h"
 
-PID::PID(double Kp, double Ki, double Kd, uint32_t flags)
-{
+PID::PID(double Kp, double Ki, double Kd, uint32_t flags) {
     m_Kp = Kp;
     m_Ki = Ki;
     m_Kd = Kd;
@@ -13,7 +12,7 @@ PID::PID(double Kp, double Ki, double Kd, uint32_t flags)
     m_max = 1;
 
     m_timeLastUpdateSec = 0.0;
-    m_prevErr = 0;
+    m_prevPos = NAN;
     m_integral = 0;
     m_icap = 0;
 
@@ -21,8 +20,7 @@ PID::PID(double Kp, double Ki, double Kd, uint32_t flags)
     m_lastOutput = 0.0;
 }
 
-PID::PID(double gains[3], uint32_t flags)
-{
+PID::PID(double gains[3], uint32_t flags) {
     m_Kp = gains[0];
     m_Ki = gains[1];
     m_Kd = gains[2];
@@ -32,7 +30,7 @@ PID::PID(double gains[3], uint32_t flags)
     m_max = 1;
 
     m_timeLastUpdateSec = 0.0;
-    m_prevErr = 0;
+    m_prevPos = NAN;
     m_integral = 0;
     m_icap = 0;
 
@@ -40,45 +38,38 @@ PID::PID(double gains[3], uint32_t flags)
     m_lastOutput = 0.0;
 }
 
-void PID::SetGains(double Kp, double Ki, double Kd)
-{
+void PID::SetGains(double Kp, double Ki, double Kd) {
     m_Kp = Kp;
     m_Ki = Ki;
     m_Kd = Kd;
 }
 
-void PID::SetGains(double gains[3])
-{
+void PID::SetGains(double gains[3]) {
     m_Kp = gains[0];
     m_Ki = gains[1];
     m_Kd = gains[2];
 }
 
-void PID::SetTarget(double target)
-{
+void PID::SetTarget(double target) {
     m_target = target;
 }
 
-double PID::GetTarget()
-{
+double PID::GetTarget() {
     return m_target;
 }
 
-void PID::Reset()
-{
+void PID::Reset(double currPosition) {
     m_integral = 0.0;
-    m_prevErr = 0.0;
+    m_prevPos = currPosition;
     m_lastOutput = 0.0;
     m_timeLastUpdateSec = 0.0;
 }
 
-void PID::SetICap(double icap)
-{
+void PID::SetICap(double icap) {
     m_icap = icap;
 }
 
-void PID::SetBounds(double min, double max)
-{
+void PID::SetBounds(double min, double max) {
     m_min = min;
     m_max = max;
 }
@@ -102,10 +93,12 @@ double PID::CalcOutput(double actual, uint32_t time) {
 
 		m_integral += error * deltaTimeSec;
 
-		derivative = (error - m_prevErr) / deltaTimeSec;
+		if (m_prevPos != NAN) {
+			derivative = (actual - m_prevPos) / deltaTimeSec;
+		}
 	}
 	m_timeLastUpdateSec = GetSecTime();
-	m_prevErr = error;
+	m_prevPos = actual;
 
 	output =
     		m_Kp * error +

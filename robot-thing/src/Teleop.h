@@ -19,10 +19,9 @@ void Robot::TeleopContinuous(void) {
 			-m_driverJoystick->GetRawAxis(DualAction::RightXAxis), false,
 			m_driverJoystick->GetRawButton(DualAction::RightBumper));
 			*/
-	/*
+
 	m_drive->ArcadeDrive(m_driverJoystick->GetRawAxis(DualAction::LeftYAxis),
 			-m_driverJoystick->GetRawAxis(DualAction::RightXAxis));
-			*/
 
  	/*
 	printf("gyro reading %lf... raw counts %d\n", m_gyroEncoder->GetDistance(),
@@ -59,8 +58,14 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				printf("pressed Y");
 				break;
 			case DualAction::LeftBumper:
+				m_arm->SetTargetPosition(Arm::ARM_POS_UP);
+				break;
+			case DualAction::LeftTrigger:
+				m_arm->SetTargetPosition(Arm::ARM_POS_DOWN);
 				break;
 			case DualAction::RightBumper:
+				break;
+			case DualAction::RightTrigger:
 				break;
 		}
 	}

@@ -8,9 +8,10 @@
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Drive.h"
+#include "subsystems/Arm.h"
 
-#define ONE_BALL_AUTO	0
-#define TWO_BALL_AUTO	1
+constexpr int ONE_BALL_AUTO = 0;
+constexpr int TWO_BALL_AUTO = 1;
 
 Robot::Robot(void
 	) :
@@ -26,6 +27,7 @@ Robot::Robot(void
 	m_drive(nullptr),
 	m_intake(nullptr),
 	m_shooter(nullptr),
+	m_arm(nullptr),
 	m_airPressureSwitch(nullptr),
 	m_compressorRelay(nullptr),
 	m_compressor(nullptr),
@@ -58,6 +60,8 @@ Robot::Robot(void
 			m_leftDriveEncoder, nullptr, m_gyroEncoder);
 
 	m_intake = new Intake(this);
+
+	m_arm = new Arm(this);
 
 	m_airPressureSwitch = new DigitalInput(AIR_PRESSURE_DIN);
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);

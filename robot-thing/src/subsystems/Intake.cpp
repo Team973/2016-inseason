@@ -22,7 +22,7 @@ Intake::Intake(TaskMgr *scheduler) :
 {
 	this->m_scheduler->RegisterTask("Intake", this, TASK_PERIODIC);
 
-	m_triggerMotor = new VictorSP(TRIGGER_PWM);
+	m_triggerMotor = new VictorSP(INTAKE_TRIGGER_PWM);
 	m_intakeMotor = new VictorSP(INTAKE_ROLLER_LEFT_PWM);
 	m_armExtendSol = new Solenoid(INTAKE_EXTEND_SOL_CHANNEL);
 }

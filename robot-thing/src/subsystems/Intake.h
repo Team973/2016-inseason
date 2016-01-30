@@ -48,6 +48,9 @@ private:
 	TaskMgr *m_scheduler;
 	double m_pow;
 	double m_trigPow;
+public:
+	static constexpr int INTAKE_FORWARD_SPEED = 1.0;
+	static constexpr int INTAKE_REVERSE_SPEED = -1.0;
 };
 
 #endif /* SRC_SUBSYSTEMS_INTAKE_H_ */

@@ -14,6 +14,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <math.h>
+
 constexpr uint32_t PID_SPEED_CTRL = 0x00000001;
 
 class PID
@@ -72,7 +74,7 @@ public:
      * Reset the pid controller (forget any stateful information).
      * This could be helpful when setting a new, unrelated setpount.
      */
-    void Reset();
+    void Reset(double currPosition = NAN);
 
     /**
      * Set a cap on the integral term of PID.  This cap will be in the units
@@ -142,7 +144,7 @@ private:
     double m_max;
 
     double m_timeLastUpdateSec;
-    double m_prevErr;
+    double m_prevPos;
     double m_integral;
     double m_icap;
 
