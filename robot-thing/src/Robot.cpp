@@ -4,6 +4,8 @@
 #include "lib/GreyCompressor.h"
 #include "lib/logging/LogSpreadsheet.h"
 #include "lib/SingleThreadTaskMgr.h"
+#include "lib/SPIGyro.h"
+#include "lib/WrapDash.h"
 
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
@@ -20,6 +22,7 @@ Robot::Robot(void
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
+	m_austinGyro(nullptr),
 	m_leftDriveVictor(nullptr),
 	m_rightDriveVictor(nullptr),
 	m_leftDriveEncoder(nullptr),
@@ -47,6 +50,8 @@ Robot::Robot(void
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
 
 	m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
+
+	m_austinGyro = new SPIGyro();
 
 	m_leftDriveVictor = new VictorSP(DRIVE_LEFT_PWM);
 	m_rightDriveVictor = new VictorSP(DRIVE_RIGHT_PWM);
@@ -99,11 +104,13 @@ void Robot::Initialize(void) {
 	m_logger->InitializeTable();
 
 	SmartDashboard::init();
-	m_hiFreq->Start();
-	m_hiFreq->SetHighPriority();
+	//m_hiFreq->Start();
+	//m_hiFreq->SetHighPriority();
 }
 
 void Robot::AllStateContinuous(void) {
+	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_austinGyro->GetDegrees());
+
 	m_battery->LogPrintf("%f", DriverStation::GetInstance().GetBatteryVoltage());
 
 	m_time->LogPrintf("%u", GetMsecTime());

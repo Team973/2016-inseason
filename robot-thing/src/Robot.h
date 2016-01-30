@@ -3,6 +3,7 @@
 
 class VictorSP;
 class Accelerometer;
+class SPIGyro;
 class Encoder;
 class DigitalInput;
 class LogSpreadsheet;
@@ -29,6 +30,8 @@ private:
 	ObservableJoystick		*m_operatorJoystick;
 
 	Accelerometer 	*m_accel;
+
+	SPIGyro *m_austinGyro;
 
 	/**
 	 * Outputs (motors, solenoids, etc...)
