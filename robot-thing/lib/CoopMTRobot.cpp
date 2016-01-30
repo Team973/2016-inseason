@@ -14,6 +14,7 @@
 #include "util/Util.h"
 #include "WrapDash.h"
 #include <stdio.h>
+#include <unistd.h>
 
 CoopMTRobot::CoopMTRobot(void
 		): m_prevMode(RobotMode::MODE_DISABLED)

@@ -11,3 +11,8 @@
 uint64_t GetFPGATime() {
 	return 0;
 }
+
+int gethostname(char *name, size_t len) {
+	strncpy(name, "Test host", len);
+	return 0;
+}

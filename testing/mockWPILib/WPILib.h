@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <cstring>
 
 class RobotStateInterface;
 class VictorSP;
@@ -98,4 +99,6 @@ public:
 
 	bool Get() { return false; }
 };
+
+int gethostname(char *name, size_t len);
 #endif /* WPILIB_H_ */

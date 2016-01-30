@@ -10,6 +10,7 @@
 
 #include <cstdio>
 #include <cstdarg>
+#include <ctime>
 
 LogCell::LogCell(const char *name,
 	uint32_t size,

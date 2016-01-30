@@ -30,7 +30,7 @@
 		<link>
 			<name>libtest</name>
 			<type>2</type>
-			<location>/home/andrew/Documents/frc/2016-inseason/libtest</location>
+			<locationURI>PARENT-1-PROJECT_LOC/robot-thing</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
