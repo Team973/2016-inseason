@@ -14,8 +14,8 @@
 
 class RobotStateInterface;
 
-#define DEFAULT_FREQUENCY	200.0
-#define DEFAULT_PERIOD		(1.0 / (DEFAULT_FREQUENCY))
+static constexpr double DEFAULT_FREQUENCY = 200.0;
+static constexpr double DEFAULT_PERIOD = (1.0 / (DEFAULT_FREQUENCY));
 
 class SingleThreadTaskMgr: public TaskMgr {
 public:

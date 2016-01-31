@@ -3,6 +3,7 @@
 #include "subsystems/Drive.h"
 #include "WPILib.h"
 #include "lib/util/Util.h"
+#include "lib/SPIGyro.h"
 
 #include "src/controllers/ArcadeDriveController.h"
 #include "src/controllers/CheesyDriveController.h"
@@ -11,7 +12,7 @@
 #include "RobotInfo.h"
 
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
-			Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro)
+			Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro)
 		 : DriveBase(scheduler, this, this, nullptr)
 		 , m_leftEncoder(leftEncoder)
 		 , m_rightEncoder(rightEncoder)
@@ -96,17 +97,17 @@ double Drive::GetRate() {
 }
 
 double Drive::GetAngle() {
-	return -m_gyro->Get() * (360.0 / 1024.0);
+	return -m_gyro->GetDegrees();
 }
 
 double Drive::GetAngularRate() {
-	return m_gyro->GetRate() * (360.0 / 1024.0);
+	return -m_gyro->GetDegreesPerSec();
 }
 
 void Drive::SetDriveOutput(double left, double right) {
 	m_leftPower = left;
 	m_rightPower = right;
 
-	m_leftMotor->Set(Util::bound(m_leftPower, -1.0, 1.0));
-	m_rightMotor->Set(-Util::bound(m_rightPower, -1.0, 1.0));
+	m_leftMotor->Set(Util::bound(-m_leftPower, -1.0, 1.0));
+	m_rightMotor->Set(Util::bound(-m_rightPower, -1.0, 1.0));
 }

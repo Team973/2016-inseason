@@ -87,7 +87,6 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 
 		uint64_t t = GetUsecTime();
 		RobotMode nextState = GetRobotMode(inst->m_stateProvider);
-		printf("robotState took %llu us\n", GetUsecTime() - t);
 
 		t = GetUsecTime();
 		if (state != nextState) {
@@ -99,7 +98,6 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 		inst->TaskPrePeriodicAll(state);
 		inst->TaskPeriodicAll(state);
 		inst->TaskPostPeriodicAll(state);
-		printf("tasks took %llu us\n", GetUsecTime() - t);
 
 		pthread_mutex_unlock(&inst->m_mutex);
 
@@ -116,8 +114,6 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 			t = GetUsecTime();
 
 			usleep(timeSliceRemainingUs);
-
-			printf("waited %llu us out of %llu\n", GetUsecTime() - t, timeSliceRemainingUs);
 		}
 		else {
 			printf("TaskRunner (%fhz) taking too long.  "\

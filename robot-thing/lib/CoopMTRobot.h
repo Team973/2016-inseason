@@ -28,7 +28,7 @@
 #define PROGRAM_NAME "(unspecified)"
 #endif
 
-#define MAXHOSTNAMELEN	128
+static constexpr int MAXHOSTNAMELEN = 128;
 
 class CoopMTRobot:
 	public IterativeRobot,

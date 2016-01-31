@@ -6,6 +6,7 @@
 class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
+class SPIGyro;
 
 /*
  * Drive provides an interface to control the drive-base (to do both
@@ -28,7 +29,7 @@ class Drive :
 {
 public:
     Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
-    		Encoder *leftEncoder, Encoder *rightEncoder, Encoder *gyro);
+    		Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro);
 
     virtual ~Drive() {}
 
@@ -94,7 +95,7 @@ public:
 private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
-	Encoder *m_gyro;
+	SPIGyro *m_gyro;
 
 	double m_leftPower;
 	double m_rightPower;

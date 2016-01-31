@@ -62,7 +62,7 @@ Robot::Robot(void
 			false, CounterBase::k2X);
 
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
-			m_leftDriveEncoder, nullptr, m_gyroEncoder);
+			m_leftDriveEncoder, nullptr, m_austinGyro);
 
 	m_intake = new Intake(this);
 

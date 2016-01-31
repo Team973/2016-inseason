@@ -8,12 +8,13 @@
 #include <controllers/PIDDriveController.h>
 #include "lib/filters/PID.h"
 #include <stdio.h>
+#include "lib/WrapDash.h"
 
 static constexpr double DRIVE_PID_KP = 0.1;
 static constexpr double DRIVE_PID_KI = 0.0;
 static constexpr double DRIVE_PID_KD = 0.01;
 
-static constexpr double TURN_PID_KP = 0.1;
+static constexpr double TURN_PID_KP = 0.17;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0.0;
 
@@ -46,7 +47,9 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	printf("throttle %lf  turn %lf\n",
 			throttle, turn);
 
-	out->SetDriveOutput(throttle + turn, throttle - turn);
+	DBStringPrintf(DBStringPos::DB_LINE6, "error %lf", m_prevAngle - m_targetAngle);
+
+	out->SetDriveOutput(throttle - turn, throttle + turn);
 
 	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5) {
 		m_onTarget = true;
