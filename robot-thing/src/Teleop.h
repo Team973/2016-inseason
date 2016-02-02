@@ -10,11 +10,17 @@ void Robot::TeleopStop(void) {
 }
 
 static bool teleopDrive = true;
+static bool needsStop = false;
 
 void Robot::TeleopContinuous(void) {
 	double armSpeed = m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
 	if (armSpeed != 0.0) {
 		m_arm->SetTargetSpeed(armSpeed);
+		needsStop = true;
+	}
+	else if (needsStop) {
+		m_arm->SetTargetSpeed(0.0);
+		needsStop = false;
 	}
 	/*
 	m_drive->CheesyDrive(m_driverJoystick->GetRawAxis(DualAction::LeftYAxis),

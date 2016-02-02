@@ -10,6 +10,7 @@
 #include "lib/filters/PID.h"
 #include "RobotInfo.h"
 #include "WPILib.h"
+#include "lib/WrapDash.h"
 
 Arm::Arm(TaskMgr *scheduler)
 		 : m_scheduler(scheduler)
@@ -61,6 +62,8 @@ void Arm::TaskPostPeriodic(RobotMode mode) {
 
 	m_pid->SetTarget(m_targetPos);
 	double motorPower = m_pid->CalcOutput(GetArmAngle());
+
+	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
 
 	m_armMotor->Set(motorPower);
 }

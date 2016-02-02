@@ -74,6 +74,6 @@ constexpr double DRIVE_DIST_PER_CLICK = DRIVE_DIST_PER_REVOLUTION *
  * Distance (in degrees) of the arm per click of the encoder (after
  * compensating for sampling)
  */
-constexpr double ARM_DIST_PER_CLICK = 1.0;
+constexpr double ARM_DIST_PER_CLICK = 1.0 * 9.0 / 30.0;
 
 #endif /* SRC_ROBOTINFO_H_ */
