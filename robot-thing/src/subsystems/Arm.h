@@ -9,6 +9,7 @@
 #define SRC_SUBSYSTEMS_ARM_H_
 
 #include "lib/CoopTask.h"
+#include <stdio.h>
 
 class PID;
 class VictorSP;
@@ -42,8 +43,8 @@ public:
 	 * Some preset positions (in degrees) for other subsystems (or teleop)
 	 * to reference if they want to send the arm somewhere.
 	 */
-	static constexpr double ARM_POS_UP = 0.0;
-	static constexpr double ARM_POS_DOWN = 90.0;
+	static constexpr double ARM_POS_UP = 90.0;
+	static constexpr double ARM_POS_DOWN = 0.0;
 
 	/**
 	 * Get the current angle (in degrees) of the arm
@@ -59,7 +60,11 @@ public:
 	 */
 	double GetArmVelocity();
 
-	void TaskPostPeriodic(RobotMode mode) override;
+	void TaskPeriodic(RobotMode mode) override;
+
+	void PrintStats() {
+		printf("Arm position: %lf\n", GetArmAngle());
+	}
 private:
 	/**
 	 * Whenever the zero-stop gets clicked, this should get called to zero
@@ -78,7 +83,6 @@ private:
 
 	VictorSP *m_armMotor;
 	Encoder *m_armEncoder;
-	DigitalInput *m_armZeroSwitch;
 
 	ArmMode m_mode;
 	double m_targetSpeed;
@@ -91,27 +95,27 @@ public:
 	 * maximum speed that the arm should go when the user presses full
 	 * forward or full back on joystick.  Units degrees/sec.
 	 */
-	static constexpr double MAX_ARM_SPEED = 90.0;
+	static constexpr double MAX_ARM_SPEED = 40.0;
 
 	/**
 	 * The angle that the arm starts at in degrees (because it doesn't
 	 * start at zero degrees).
 	 */
-	static constexpr double ARM_OFFSET = 17.0;
+	static constexpr double ARM_OFFSET = 0.0;
 
 	/**
 	 * Software stop the arm if it tries to go further back than this
 	 */
-	static constexpr double ARM_SOFT_MIN_POS = -45.0;
+	static constexpr double ARM_SOFT_MIN_POS = 0.0;
 
 	/**
 	 * Software stop the arm if it tries to go further forward than this
 	 */
 	static constexpr double ARM_SOFT_MAX_POS = 110.0;
 
-	static constexpr double ARM_PID_KP = 0.1;
-	static constexpr double ARM_PID_KI = 0.0001;
-	static constexpr double ARM_PID_KD = 0.02;
+	static constexpr double ARM_PID_KP = 0.04;
+	static constexpr double ARM_PID_KI = 0.0000;
+	static constexpr double ARM_PID_KD = 0.00;
 };
 
 #endif /* SRC_SUBSYSTEMS_ARM_H_ */

@@ -11,8 +11,8 @@
 #include "lib/WrapDash.h"
 
 Intake::Intake(TaskMgr *scheduler) :
-	m_upperIntakeMotor(new VictorSP(UPPER_INTAKE_PWM)),
-	m_lowerIntakeMotor(new VictorSP(LOWER_INTAKE_PWM)),
+	m_upperIntakeMotor(new VictorSP(FRONT_INTAKE_PWM)),
+	m_lowerIntakeMotor(new VictorSP(BACK_INTAKE_PWM)),
 	m_upperIntakeMode(UpperIntakeMode::off),
 	m_lowerIntakeMode(LowerIntakeMode::off),
 	m_scheduler(scheduler)

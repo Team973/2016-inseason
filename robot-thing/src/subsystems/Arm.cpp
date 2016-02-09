@@ -16,8 +16,7 @@ Arm::Arm(TaskMgr *scheduler)
 		 : m_scheduler(scheduler)
 		 , m_lastTimeSec(GetSecTime())
 		 , m_armMotor(new VictorSP(ARM_MOTOR_PWM))
-		 , m_armEncoder(new Encoder(ARM_ENCODER_A_DIN, ARM_ENCODER_B_DIN))
-		 , m_armZeroSwitch(new DigitalInput(ARM_ZERO_STOP_SWITCH_DIN))
+		 , m_armEncoder(new Encoder(ARM_ENCODER_A_DIN, ARM_ENCODER_B_DIN, true))
 		 , m_mode(ArmMode::position_control)
 		 , m_targetSpeed(0.0)
 		 , m_targetPos(0.0)
@@ -49,13 +48,17 @@ double Arm::GetArmVelocity() {
 	return m_armEncoder->GetRate();
 }
 
-void Arm::TaskPostPeriodic(RobotMode mode) {
+void Arm::TaskPeriodic(RobotMode mode) {
+	static double lastTime = 0;
 	double currTimeSec = GetSecTime();
 
+
 	if (m_mode == ArmMode::velocity_control) {
-		double timeStepSec = currTimeSec - m_lastTimeSec;
+		double timeStepSec = currTimeSec - lastTime;
 		double positionStep = m_targetSpeed * timeStepSec;
 		m_targetPos += positionStep;
+		printf("target speed %lf\n", m_targetSpeed);
+		printf("time step %lf position step %lf\n", timeStepSec, positionStep);
 	}
 
 	m_targetPos = Util::bound(m_targetPos, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
@@ -64,8 +67,13 @@ void Arm::TaskPostPeriodic(RobotMode mode) {
 	double motorPower = m_pid->CalcOutput(GetArmAngle());
 
 	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
+	DBStringPrintf(DBStringPos::DB_LINE7, "arm setpt %lf", m_targetPos);
+
+	DBStringPrintf(DBStringPos::DB_LINE9, "time %lf", GetSecTime());
 
 	m_armMotor->Set(motorPower);
+
+	lastTime = currTimeSec;
 }
 
 void Arm::Zero() {

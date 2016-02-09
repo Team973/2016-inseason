@@ -13,7 +13,7 @@ static bool teleopDrive = true;
 static bool needsStop = false;
 
 void Robot::TeleopContinuous(void) {
-	double armSpeed = m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
+	double armSpeed = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
 	if (armSpeed != 0.0) {
 		m_arm->SetTargetSpeed(armSpeed);
 		needsStop = true;
@@ -68,6 +68,13 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				m_drive->ArcadeDrive(0.0, 0.0);
 			}
 			break;
+		case DualAction::BtnB:
+			if (pressedP) {
+				m_shooter->SetFlywheelPower(1.0);
+			}
+			else {
+				m_shooter->SetFlywheelPower(0.0);
+			}
 		}
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
@@ -90,18 +97,22 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				break;
 			case DualAction::BtnX:
 				if (pressedP) {
-					m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
+					m_shooter->SetConveyerPower(-1.0);
+					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
 				}
 				else {
-					m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+					m_shooter->SetConveyerPower(0.0);
+					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
 				}
 				break;
 			case DualAction::BtnY:
 				if (pressedP) {
-					m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::reverse);
+					m_shooter->SetConveyerPower(1.0);
+					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::reverse);
 				}
 				else {
-					m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+					m_shooter->SetConveyerPower(0.0);
+					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
 				}
 				break;
 			case DualAction::LeftBumper:
@@ -111,24 +122,32 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				m_arm->SetTargetPosition(Arm::ARM_POS_DOWN);
 				break;
 			case DualAction::RightBumper:
+				if (pressedP) {
+					m_shooter->SetFlywheelPower(1.0);
+				}
+				else {
+					m_shooter->SetFlywheelPower(0.0);
+				}
 				break;
 			case DualAction::RightTrigger:
+				m_shooter->Print();
+				m_arm->PrintStats();
 				break;
 			case DualAction::DPadUpVirtBtn:
 				if (pressedP) {
 					goal += 50.0;
-					//m_shooter->SetFlywheelSSShoot(goal);
+					m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadDownVirtBtn:
 				if (pressedP) {
 					goal -= 50.0;
-					//m_shooter->SetFlywheelSSShoot(goal);
+					m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadLeftVirtBtn:
 				if (pressedP) {
-					//m_shooter->SetFlywheelStop();
+					m_shooter->SetFlywheelStop();
 				}
 				break;
 		}

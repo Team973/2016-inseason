@@ -13,45 +13,50 @@
 /**
  * PWM pin-out
  */
-constexpr int DRIVE_LEFT_PWM = 0;
-constexpr int DRIVE_RIGHT_PWM = 1;
+constexpr int DRIVE_RIGHT_PWM = 0;
+constexpr int DRIVE_LEFT_PWM = 1;
 
-constexpr int ARM_MOTOR_PWM = 2;
+constexpr int FRONT_SHOOTER_PWM = 2;
+constexpr int BACK_SHOOTER_PWM = 3;
 
-constexpr int FLYWHEEL_TWO_PWM = 5;
-constexpr int FLYWHEEL_ONE_PWM = 6;
+constexpr int LINEAR_EXTENSION_PWM = 5;
 
-constexpr int LOWER_INTAKE_PWM = 7;
-constexpr int UPPER_INTAKE_PWM = 8;
+constexpr int SHOOTER_CONVEYER = 6;
+
+constexpr int FRONT_INTAKE_PWM = 7;
+constexpr int BACK_INTAKE_PWM = 4;
+
+constexpr int ARM_MOTOR_PWM = 8;
+
+constexpr int SHOOTER_ACTUATOR_PWM = 9;
 
 /**
  * DIN pin-out
  */
 constexpr int AIR_PRESSURE_DIN = 0;
 
-constexpr int FLYWHEEL_BANNERSENSOR_DIN = 1;
+constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 10;
+constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 11;
 
-constexpr int GYRO_ENCODER_A_DIN = 2;
-constexpr int GYRO_ENCODER_B_DIN = 3;
+constexpr int LEFT_DRIVE_ENCODER_A_DIN = 13;
+constexpr int LEFT_DRIVE_ENCODER_B_DIN = 14;
 
-constexpr int LEFT_DRIVE_ENCODER_A_DIN = 4;
-constexpr int LEFT_DRIVE_ENCODER_B_DIN = 5;
+constexpr int ARM_ENCODER_A_DIN = 20;
+constexpr int ARM_ENCODER_B_DIN = 21;
 
-constexpr int ARM_ENCODER_A_DIN = 6;
-constexpr int ARM_ENCODER_B_DIN = 7;
-
-constexpr int ARM_ZERO_STOP_SWITCH_DIN = 8;
+constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 19;
+constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 18;
 
 /**
  * Relay pin-out
  */
 constexpr int COMPRESSOR_RELAY = 0;
-constexpr int READY_LIGHT_RELAY = 1;
 
 /**
  * Solenoid channels
  */
-constexpr int INTAKE_EXTEND_SOL_CHANNEL = 6;
+constexpr int DRIVE_SHIFT_SOL = 0;
+constexpr int POWER_TAKEOFF = 1;
 
 /**
  * USB port-out (driver-station)

@@ -58,8 +58,6 @@ Robot::Robot(void
 
 	m_leftDriveEncoder = new Encoder(LEFT_DRIVE_ENCODER_A_DIN,
 			LEFT_DRIVE_ENCODER_B_DIN, false, CounterBase::k4X);
-	m_gyroEncoder = new Encoder(GYRO_ENCODER_A_DIN, GYRO_ENCODER_B_DIN,
-			false, CounterBase::k2X);
 
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_austinGyro);

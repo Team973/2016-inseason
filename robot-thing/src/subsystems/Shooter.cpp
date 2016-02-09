@@ -9,7 +9,8 @@
 #include "RobotInfo.h"
 #include "lib/util/Util.h"
 #include "lib/WrapDash.h"
-#include "controllers/FlywheelGains.h"
+#include "controllers/ShooterGains_front.h"
+#include "controllers/ShooterGains_back.h"
 #include "lib/TaskMgr.h"
 #include "lib/filters/MovingAverageFilter.h"
 #include "lib/filters/DelaySwitch.h"
@@ -21,46 +22,59 @@
 static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 6000;
 
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
-		m_flywheelMotorA(nullptr),
-		m_flywheelMotorB(nullptr),
+		m_frontFlywheelMotor(nullptr),
+		m_backFlywheelMotorB(nullptr),
+		m_conveyor(nullptr),
 		m_flywheelRunning(false),
-		m_flywheelEncoder(nullptr),
+		m_frontFlywheelEncoder(nullptr),
+		m_backFlywheelEncoder(nullptr),
 		m_flywheelTargetSpeed(0.0),
 		m_flywheelSetPower(0.0),
 		m_scheduler(scheduler),
-		m_pidCtrl(nullptr),
 		m_flywheelState(FlywheelState::openLoop),
 		m_flywheelReady(false),
 		m_maxObservedRPM(0.0),
-		m_shooterSpeed(nullptr),
+		m_frontFlywheelSpeed(nullptr),
 		m_shooterPow(nullptr),
 		m_shooterTime(nullptr),
-		medFilter(nullptr),
-		oldSpeed(0.0),
-		m_controller(nullptr),
+		frontMeanFilter(nullptr),
+		frontMedFilter(nullptr),
+		frontOldSpeed(0.0),
+		rearMeanFilter(nullptr),
+		rearMedFilter(nullptr),
+		rearOldSpeed(0.0),
+		m_frontController(nullptr),
+		m_backController(nullptr),
 		m_lastTime()
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
-	m_flywheelMotorA = new VictorSP(FLYWHEEL_ONE_PWM);
-	m_flywheelMotorB = new VictorSP(FLYWHEEL_TWO_PWM);
+	m_frontFlywheelMotor = new VictorSP(FRONT_SHOOTER_PWM);
+	m_backFlywheelMotorB = new VictorSP(BACK_SHOOTER_PWM);
+	m_conveyor = new VictorSP(SHOOTER_CONVEYER);
 
-	m_flywheelEncoder= new Counter(FLYWHEEL_BANNERSENSOR_DIN);
-
-	m_pidCtrl = new PID(0.0005 / 60.0, 0.0, 0.0, PID_SPEED_CTRL);
+	m_frontFlywheelEncoder= new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN);
+	m_backFlywheelEncoder = new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN);
 
 	m_shooterPow = new LogCell("shooter power");
 	logger->RegisterCell(m_shooterPow);
 
-	m_shooterSpeed = new LogCell("shooter speed (RPM)");
-	logger->RegisterCell(m_shooterSpeed);
+	m_frontFlywheelSpeed = new LogCell("front shooter speed (RPM)");
+	logger->RegisterCell(m_frontFlywheelSpeed);
+
+	m_rearFlywheelSpeed = new LogCell("rear shooter speed (RPM)");
+	logger->RegisterCell(m_rearFlywheelSpeed);
 
 	m_shooterTime = new LogCell("Shooter Time (ms)");
 	logger->RegisterCell(m_shooterTime);
 
-	medFilter = new MedianFilter();
+	frontMeanFilter = new MovingAverageFilter(0.9);
+	frontMedFilter = new MedianFilter();
+	rearMeanFilter = new MovingAverageFilter(0.9);
+	rearMedFilter = new MedianFilter();
 
-	this->m_controller = new StateSpaceFlywheelController(FlywheelGains::MakeGains());
+	this->m_frontController = new StateSpaceFlywheelController(FlywheelGainsFront::MakeGains());
+	this->m_backController = new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains());
 
 	m_lastTime = GetUsecTime();
 }
@@ -78,7 +92,8 @@ void Shooter::SetFlywheelPIDShoot() {
 void Shooter::SetFlywheelSSShoot(double goal) {
 	m_flywheelState = FlywheelState::ssControl;
 	m_flywheelTargetSpeed = goal;
-	m_controller->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
+	m_frontController->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
+	m_backController->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0 * 1.0);
 }
 
 void Shooter::SetFlywheelPower(double pow) {
@@ -94,45 +109,50 @@ void Shooter::SetFlywheelStop() {
 }
 
 void Shooter::TaskPeriodic(RobotMode mode) {
-	double motorOutput;
+	double frontMotorOutput;
+	double rearMotorOutput;
 
 	switch(m_flywheelState) {
 	case FlywheelState::pidControl:
-		m_maxObservedRPM = Util::max(m_maxObservedRPM, this->GetFlywheelRate());
-		if (this->GetFlywheelRate() < m_flywheelTargetSpeed) {
-			motorOutput = 1.0;
+		m_maxObservedRPM = Util::max(m_maxObservedRPM, this->GetFrontFlywheelRate());
+		if (this->GetFrontFlywheelRate() < m_flywheelTargetSpeed) {
+			frontMotorOutput = 1.0;
 		}
 		else {
-			motorOutput = m_flywheelTargetSpeed / (m_maxObservedRPM + 1000.0);
+			frontMotorOutput = m_flywheelTargetSpeed / (m_maxObservedRPM + 1000.0);
 		}
 		printf("Max observed RPM %lf... target RPM %lf\n", m_maxObservedRPM, m_flywheelTargetSpeed);
 		m_maxObservedRPM -= 5.0;
 
-		m_flywheelMotorA->Set(motorOutput);
-		m_flywheelMotorB->Set(motorOutput);
+		m_frontFlywheelMotor->Set(frontMotorOutput);
+		m_backFlywheelMotorB->Set(frontMotorOutput);
 		break;
 	case FlywheelState::ssControl:
-		motorOutput = m_controller->Update(
-				this->GetFlywheelMedianRate() * Constants::PI / 30.0);
+		frontMotorOutput = m_frontController->Update(
+				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
+		rearMotorOutput = m_backController->Update(
+				this->GetRearFlywheelFilteredRate() * Constants::PI / 30.0);
 
-		m_flywheelMotorA->Set(motorOutput);
-		m_flywheelMotorB->Set(motorOutput);
+		m_frontFlywheelMotor->Set(frontMotorOutput);
+		m_backFlywheelMotorB->Set(rearMotorOutput);
 		break;
 	case FlywheelState::openLoop:
-		motorOutput = m_flywheelSetPower;
+		frontMotorOutput = m_flywheelSetPower;
 
-		m_flywheelMotorA->Set(motorOutput);
-		m_flywheelMotorB->Set(motorOutput);
+		m_frontFlywheelMotor->Set(frontMotorOutput);
+		m_backFlywheelMotorB->Set(frontMotorOutput);
 		break;
 	}
 
 	//printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
 	DBStringPrintf(DBStringPos::DB_LINE0,
-			"fw med rate: %lf", GetFlywheelMedianRate());
+			"fw med rate: %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,
-			"fw raw rate: %lf", GetFlywheelRate());
+			"fw raw rate: %lf", GetFrontFlywheelRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
-			"Flywheel power: %lf", motorOutput);
+			"f Flywheel power: %lf", frontMotorOutput);
+	DBStringPrintf(DBStringPos::DB_LINE3,
+			"r Flywheel power: %lf", rearMotorOutput);
 
 	uint64_t now = GetUsecTime();
 	SmartDashboard::PutNumber("timeSlice", now - m_lastTime);
@@ -141,12 +161,16 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		//printf("bad interval of %llu\n", now - m_lastTime);
 	}
 	m_lastTime = now;
-	//SmartDashboard::PutNumber("flywheel", GetFlywheelRate());
+	SmartDashboard::PutNumber("front flywheel raw", GetFrontFlywheelRate());
+	SmartDashboard::PutNumber("rear flywheel raw", GetRearFlywheelRate());
+	SmartDashboard::PutNumber("front flywheel med", GetFrontFlywheelFilteredRate());
+	SmartDashboard::PutNumber("rear flywheel med", GetRearFlywheelFilteredRate());
 	//SmartDashboard::PutNumber("flyfilt", GetFlywheelMedianRate());
 	//SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
 
-	m_shooterPow->LogDouble(motorOutput);
-	m_shooterSpeed->LogDouble(GetFlywheelMedianRate());
+	m_shooterPow->LogDouble(frontMotorOutput);
+	m_frontFlywheelSpeed->LogDouble(GetFrontFlywheelFilteredRate());
+	m_rearFlywheelSpeed->LogDouble(GetRearFlywheelFilteredRate());
 	m_shooterTime->LogPrintf("%ld", (long) GetUsecTime());
 }
 /**
@@ -158,18 +182,34 @@ void Shooter::TaskPeriodic(RobotMode mode) {
  *  * If we read anything more than 1000 times our previous value, it must be false... ignore it
  *  * If this value looks good, we do a moving average filter on it
  */
-double Shooter::GetFlywheelRate(void) {
-	return (1.0 / m_flywheelEncoder->GetPeriod()) * 60.0;
+double Shooter::GetFrontFlywheelRate(void) {
+	return (1.0 / m_frontFlywheelEncoder->GetPeriod()) * 60.0;
 }
 
-double Shooter::GetFlywheelMedianRate(void) {
-	double s = GetFlywheelRate();
+double Shooter::GetFrontFlywheelFilteredRate(void) {
+	double s = GetFrontFlywheelRate();
 	if (s > 9000.0) {
-		s = oldSpeed;
+		s = frontOldSpeed;
 	}
 	else {
-		oldSpeed = s;
+		frontOldSpeed = s;
 	}
 
-	return medFilter->Update(s);
+	return frontMeanFilter->GetValue(frontMedFilter->Update(s));
+}
+
+double Shooter::GetRearFlywheelRate(void) {
+	return (1.0 / m_backFlywheelEncoder->GetPeriod()) * 60.0;
+}
+
+double Shooter::GetRearFlywheelFilteredRate(void) {
+	double s = GetRearFlywheelRate();
+	if (s > 9000.0) {
+		s = frontOldSpeed;
+	}
+	else {
+		frontOldSpeed = s;
+	}
+
+	return rearMeanFilter->GetValue(rearMedFilter->Update(s));
 }
