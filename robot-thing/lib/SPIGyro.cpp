@@ -5,6 +5,7 @@
 #include "lib/SPIGyro.h"
 #include <unistd.h>
 
+#include "lib/util/Util.h"
 #include "WPILib.h"
 
 
@@ -235,22 +236,28 @@ void SPIGyro::CollectZeroData() {
  */
 void SPIGyro::UpdateReading() {
 	static int startup_cycles_left = 2 * kReadingRate;
+	static uint64_t lastCall;
 
     const uint32_t result = GetReading();
     if (startup_cycles_left > 0) {
     	startup_cycles_left--;
+    	lastCall = GetUsecTime();
     	return;
     }
     if (CheckErrors(result) == false) {
+    	uint64_t now = GetUsecTime();
+    	uint64_t diff = now - lastCall;
+    	double diffSec = ((double) (diff / 1000)) / 1000.0;
 
 		double new_angle =
-			ExtractAngle(result) / (double) kReadingRate;
+			ExtractAngle(result) * diffSec;
 		new_angle += zero_offset;
 
 		pthread_mutex_lock(&mutex);
 		angle += new_angle;
 		angularMomentum = new_angle;
 
+		lastCall = now;
 		pthread_mutex_unlock(&mutex);
     }
 }
