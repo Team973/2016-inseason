@@ -6,6 +6,7 @@
 class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
+class RampPIDDriveController;
 class SPIGyro;
 
 /*
@@ -67,6 +68,9 @@ public:
 
     void PIDTurn(double angle);
 
+    void RampPIDDrive(double dist);
+    void RampPIDTurn(double angle);
+
     /**
      * All distances given in inches
      * All velocities given in inches/second
@@ -106,6 +110,7 @@ private:
     ArcadeDriveController *m_arcadeDriveController;
     CheesyDriveController *m_cheesyDriveController;
     PIDDriveController *m_pidDriveController;
+    RampPIDDriveController *m_rampPidDriveController;
 };
 
 #endif

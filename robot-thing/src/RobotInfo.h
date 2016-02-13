@@ -35,11 +35,11 @@ constexpr int SHOOTER_ACTUATOR_PWM = 9;
  */
 constexpr int AIR_PRESSURE_DIN = 0;
 
-constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 10;
-constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 11;
+constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 12;
+constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 13;
 
-constexpr int LEFT_DRIVE_ENCODER_A_DIN = 13;
-constexpr int LEFT_DRIVE_ENCODER_B_DIN = 14;
+constexpr int LEFT_DRIVE_ENCODER_A_DIN = 10;
+constexpr int LEFT_DRIVE_ENCODER_B_DIN = 11;
 
 constexpr int ARM_ENCODER_A_DIN = 20;
 constexpr int ARM_ENCODER_B_DIN = 21;

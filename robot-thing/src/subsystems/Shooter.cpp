@@ -113,20 +113,6 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	double rearMotorOutput;
 
 	switch(m_flywheelState) {
-	case FlywheelState::pidControl:
-		m_maxObservedRPM = Util::max(m_maxObservedRPM, this->GetFrontFlywheelRate());
-		if (this->GetFrontFlywheelRate() < m_flywheelTargetSpeed) {
-			frontMotorOutput = 1.0;
-		}
-		else {
-			frontMotorOutput = m_flywheelTargetSpeed / (m_maxObservedRPM + 1000.0);
-		}
-		printf("Max observed RPM %lf... target RPM %lf\n", m_maxObservedRPM, m_flywheelTargetSpeed);
-		m_maxObservedRPM -= 5.0;
-
-		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotorB->Set(frontMotorOutput);
-		break;
 	case FlywheelState::ssControl:
 		frontMotorOutput = m_frontController->Update(
 				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
@@ -141,6 +127,11 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
 		m_backFlywheelMotorB->Set(frontMotorOutput);
+		break;
+	case FlywheelState::pidControl:
+		double vvel = this->GetFrontFlywheelFilteredRate();
+		double motorpower = control.CalculateOutput(vvel);
+		m_frontFlywheelMotor->Set(motorpower);
 		break;
 	}
 

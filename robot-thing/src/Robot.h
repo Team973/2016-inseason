@@ -14,6 +14,7 @@ class Shooter;
 class Arm;
 class GreyCompressor;
 class LogCell;
+class PowerDistributionPanel;
 
 class Robot:
 		public CoopMTRobot,
@@ -22,6 +23,8 @@ class Robot:
 private:
 	SingleThreadTaskMgr *m_hiFreq;
 	LogSpreadsheet *m_logger;
+
+	PowerDistributionPanel *m_pdp;
 
 	/**
 	 * Inputs (joysticks, sensors, etc...)
@@ -120,4 +123,6 @@ public:
 	 * Defined in Robot.cpp
 	 */
 	void AllStateContinuous(void) override;
+
+	void PrintState();
 };

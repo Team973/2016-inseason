@@ -19,6 +19,7 @@ Robot::Robot(void
 	) :
 	m_hiFreq(nullptr),
 	m_logger(nullptr),
+	m_pdp(new PowerDistributionPanel()),
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
@@ -108,6 +109,9 @@ void Robot::Initialize(void) {
 
 void Robot::AllStateContinuous(void) {
 	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_austinGyro->GetDegrees());
+	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
+
+	//DBStringPrintf(DBStringPos::DB_LINE8, "port 10 cur %lf", m_pdp->GetCurrent(10));
 
 	m_battery->LogPrintf("%f", DriverStation::GetInstance().GetBatteryVoltage());
 

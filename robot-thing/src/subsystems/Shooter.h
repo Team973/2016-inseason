@@ -21,6 +21,22 @@ class StateSpaceFlywheelController;
 class LogCell;
 class LogSpreadsheet;
 
+class Thepcont{
+public:
+	Thepcont() {
+		accErr = 0;
+	};
+	~Thepcont() {};
+
+	double CalculateOutput(double vel) {
+		double error = 5500 - vel;
+		accErr = accErr + error;
+		return error * 0.0008 + accErr * 0.0000010;
+	}
+	double accErr;
+};
+
+
 /**
  * Open loop control on flywheel at the moment... will do fine tuning
  * once it's shown that everything else works
@@ -95,6 +111,8 @@ private:
 	StateSpaceFlywheelController *m_frontController;
 	StateSpaceFlywheelController *m_backController;
 	uint64_t m_lastTime;
+
+	Thepcont control = Thepcont();
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 };

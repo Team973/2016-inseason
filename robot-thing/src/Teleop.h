@@ -56,25 +56,33 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 
 	if (port == DRIVER_JOYSTICK_PORT) {
 		switch (button) {
-		case DualAction::BtnA:
+		case DualAction::BtnB:
 			if (pressedP) {
-				teleopDrive = false;
-				m_drive->PIDTurn(5.0);
+				//teleopDrive = false;
+				//m_drive->RampPIDTurn(5.0);
 			}
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				teleopDrive = true;
-				m_drive->ArcadeDrive(0.0, 0.0);
+				//teleopDrive = false;
+				//m_drive->RampPIDTurn(-5.0);
 			}
 			break;
-		case DualAction::BtnB:
+		case DualAction::BtnY:
 			if (pressedP) {
-				m_shooter->SetFlywheelPower(1.0);
+				//teleopDrive = false;
+				//m_drive->RampPIDDrive(5.0);
 			}
-			else {
-				m_shooter->SetFlywheelPower(0.0);
+			break;
+		case DualAction::BtnA:
+			if (pressedP) {
+				//teleopDrive = false;
+				//m_drive->RampPIDDrive(-5.0);
 			}
+			break;
+		case DualAction::RightTrigger:
+			teleopDrive = true;
+			break;
 		}
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
@@ -97,7 +105,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				break;
 			case DualAction::BtnX:
 				if (pressedP) {
-					m_shooter->SetConveyerPower(-1.0);
+					m_shooter->SetConveyerPower(-8.0);
 					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
 				}
 				else {
@@ -132,6 +140,11 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			case DualAction::RightTrigger:
 				m_shooter->Print();
 				m_arm->PrintStats();
+				break;
+			case DualAction::DPadRightVirtBtn:
+				if (pressedP) {
+					m_shooter->SetFlywheelPIDShoot();
+				}
 				break;
 			case DualAction::DPadUpVirtBtn:
 				if (pressedP) {

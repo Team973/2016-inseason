@@ -45,6 +45,16 @@ public:
 	double GetValue(double input);
 
 	/**
+	 * Get the previous value returned by this ramp.  Doesn't accoutn for
+	 * the time since that value was calculated.
+	 *
+	 * @return whatever value was last returned by GetValue
+	 */
+	double GetPreviousValue() {
+		return m_prevOutput;
+	}
+
+	/**
 	 * Check whether (with the most recent call of GetValue) we've reached our
 	 * target output value
 	 */

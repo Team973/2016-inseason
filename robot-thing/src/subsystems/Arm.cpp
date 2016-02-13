@@ -57,8 +57,6 @@ void Arm::TaskPeriodic(RobotMode mode) {
 		double timeStepSec = currTimeSec - lastTime;
 		double positionStep = m_targetSpeed * timeStepSec;
 		m_targetPos += positionStep;
-		printf("target speed %lf\n", m_targetSpeed);
-		printf("time step %lf position step %lf\n", timeStepSec, positionStep);
 	}
 
 	m_targetPos = Util::bound(m_targetPos, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
@@ -68,8 +66,6 @@ void Arm::TaskPeriodic(RobotMode mode) {
 
 	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
 	DBStringPrintf(DBStringPos::DB_LINE7, "arm setpt %lf", m_targetPos);
-
-	DBStringPrintf(DBStringPos::DB_LINE9, "time %lf", GetSecTime());
 
 	m_armMotor->Set(motorPower);
 
