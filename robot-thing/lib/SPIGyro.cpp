@@ -250,7 +250,7 @@ void SPIGyro::UpdateReading() {
     	double diffSec = ((double) (diff / 1000)) / 1000.0;
 
 		double new_angle =
-			ExtractAngle(result) * diffSec;
+			ExtractAngle(result) / (double) kReadingRate;
 		new_angle += zero_offset;
 
 		pthread_mutex_lock(&mutex);

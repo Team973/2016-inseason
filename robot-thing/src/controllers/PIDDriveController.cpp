@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include "lib/WrapDash.h"
 
-static constexpr double DRIVE_PID_KP = 0.1;
+static constexpr double DRIVE_PID_KP = 0.05;
 static constexpr double DRIVE_PID_KI = 0.0;
-static constexpr double DRIVE_PID_KD = 0.01;
+static constexpr double DRIVE_PID_KD = 0;
 
-static constexpr double TURN_PID_KP = 0.17;
+static constexpr double TURN_PID_KP = 0.14;
 static constexpr double TURN_PID_KI = 0.0;
-static constexpr double TURN_PID_KD = 0.0;
+static constexpr double TURN_PID_KD = 0;
 
 PIDDriveController::PIDDriveController():
 	m_prevDist(0.0),
@@ -40,6 +40,8 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	double throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -0.5, 0.5);
 	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
 
+	DBStringPrintf(DBStringPos::DB_LINE9, "pow %lf", throttle);
+
 	printf("dist target %lf, dist curr %lf, dist error: %lf \n",
 			m_targetDist, m_prevDist, m_targetDist - m_prevDist);
 	printf("angle target %lf, angle curr %lf, turn error %lf\n",
@@ -51,7 +53,8 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 
 	out->SetDriveOutput(throttle - turn, throttle + turn);
 
-	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5) {
+	if (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5 &&
+			Util::abs(m_targetAngle - m_prevAngle) < 2 && Util::abs(state->GetAngularRate())) {
 		m_onTarget = true;
 	}
 	else {

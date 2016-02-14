@@ -99,8 +99,8 @@ public:
 	void AutonomousStop(void) override;
 	void AutonomousContinuous(void) override;
 
-	void TwoBallAuto(void);
-	void OneBallAuto(void);
+	void TurnTest(void);
+	void Flappers(void);
 
 	/**
 	 * Defined in Teleop.h
