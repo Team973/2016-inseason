@@ -64,7 +64,7 @@ void Arm::TaskPeriodic(RobotMode mode) {
 	m_pid->SetTarget(m_targetPos);
 	double motorPower = m_pid->CalcOutput(GetArmAngle());
 
-	//DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
+	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
 	DBStringPrintf(DBStringPos::DB_LINE7, "arm setpt %lf", m_targetPos);
 
 	m_armMotor->Set(motorPower);

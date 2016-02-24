@@ -2,7 +2,6 @@ void Robot::AutonomousStart(void) {
     printf("***auto start\n");
 
     m_shooter->SetFlywheelStop();
-	m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
 	m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::off);
 
 	m_drive->Zero();

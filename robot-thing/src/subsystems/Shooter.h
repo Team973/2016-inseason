@@ -44,6 +44,13 @@ public:
 class Shooter : public CoopTask
 {
 public:
+	enum ElevatorState {
+		wayHigh,
+		midHigh,
+		midLow,
+		wayLow
+	};
+
 	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
@@ -70,6 +77,8 @@ public:
 		printf("front flywheel dist %d speed %lf\n", m_frontFlywheelEncoder->Get(), GetFrontFlywheelFilteredRate());
 		printf("back flywheel dist %d\n", m_backFlywheelEncoder->Get());
 	}
+
+	void SetElevatorHeight(ElevatorState newState);
 private:
 	enum FlywheelState {
 		openLoop,
@@ -96,7 +105,7 @@ private:
 	double m_maxObservedRPM;
 
 	LogCell *m_frontFlywheelSpeed;
-	LogCell *m_rearFlywheelSpeed;
+	LogCell *m_frontFlywheelFilteredSpeed;
 	LogCell *m_shooterPow;
 	LogCell *m_shooterTime;
 
@@ -109,10 +118,13 @@ private:
 	double rearOldSpeed;
 
 	StateSpaceFlywheelController *m_frontController;
-	StateSpaceFlywheelController *m_backController;
 	uint64_t m_lastTime;
 
 	Thepcont control = Thepcont();
+
+	ElevatorState m_elevatorState;
+	Solenoid *m_upperSolenoid;
+	Solenoid *m_lowerSolenoid;
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 };

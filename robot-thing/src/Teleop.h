@@ -50,16 +50,36 @@ void Robot::TeleopContinuous(void) {
 
 void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
-	static double goal = 5500.0;
+	static double power = 0.98;
+	static double goal = 5000.0;
 
 	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
 
 	if (port == DRIVER_JOYSTICK_PORT) {
 		switch (button) {
+		case DualAction::DPadRightVirtBtn:
+			if (pressedP) {
+				m_shooter->SetElevatorHeight(Shooter::ElevatorState::midLow);
+			}
+			break;
+		case DualAction::DPadUpVirtBtn:
+			if (pressedP) {
+				m_shooter->SetElevatorHeight(Shooter::ElevatorState::wayHigh);
+			}
+			break;
+		case DualAction::DPadDownVirtBtn:
+			if (pressedP) {
+				m_shooter->SetElevatorHeight(Shooter::ElevatorState::wayLow);
+			}
+			break;
+		case DualAction::DPadLeftVirtBtn:
+			if (pressedP) {
+				m_shooter->SetElevatorHeight(Shooter::ElevatorState::midHigh);
+			}
+			break;
 		case DualAction::BtnB:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->RampPIDTurn(5.0);
+				m_drive->SetGearing(Drive::DriveGearing::LowGear);
 			}
 			break;
 		case DualAction::BtnX:
@@ -76,8 +96,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnA:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->RampPIDDrive(-5.0);
+				m_drive->SetGearing(Drive::DriveGearing::HighGear);
 			}
 			break;
 		case DualAction::RightTrigger:
@@ -113,6 +132,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
 				}
 				break;
+				/*
 			case DualAction::BtnY:
 				if (pressedP) {
 					m_shooter->SetConveyerPower(1.0);
@@ -123,6 +143,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
 				}
 				break;
+				*/
 			case DualAction::LeftBumper:
 				m_arm->SetTargetPosition(Arm::ARM_POS_UP);
 				break;
@@ -148,14 +169,18 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				break;
 			case DualAction::DPadUpVirtBtn:
 				if (pressedP) {
+					power += 0.02;
 					goal += 50.0;
-					m_shooter->SetFlywheelSSShoot(goal);
+					m_shooter->SetFlywheelPower(power);
+					//m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadDownVirtBtn:
 				if (pressedP) {
+					power -= 0.02;
 					goal -= 50.0;
-					m_shooter->SetFlywheelSSShoot(goal);
+					m_shooter->SetFlywheelPower(power);
+					//m_shooter->SetFlywheelSSShoot(goal);
 				}
 				break;
 			case DualAction::DPadLeftVirtBtn:
@@ -166,7 +191,12 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		}
 	}
 
+
+	DBStringPrintf(DBStringPos::DB_LINE4,
+			"Flywheel pow: %lf", power);
+			/*
 	DBStringPrintf(DBStringPos::DB_LINE4,
 			"Flywheel goal: %lf", goal);
+			*/
 
 }

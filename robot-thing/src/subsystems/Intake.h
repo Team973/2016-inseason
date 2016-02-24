@@ -20,12 +20,6 @@
 
 class Intake : public CoopTask {
 public:
-	enum class UpperIntakeMode {
-		off,
-		forward,
-		reverse
-	};
-
 	enum class LowerIntakeMode {
 		off,
 		forward,
@@ -35,16 +29,12 @@ public:
 	Intake(TaskMgr *scheduler);
 	virtual ~Intake();
 
-	void SetUpperIntakeMode(UpperIntakeMode mode);
-
 	void SetLowerIntakeMode(LowerIntakeMode mode);
 
 	void TaskPeriodic(RobotMode mode);
 private:
-	VictorSP *m_upperIntakeMotor;
 	VictorSP *m_lowerIntakeMotor;
 
-	UpperIntakeMode m_upperIntakeMode;
 	LowerIntakeMode m_lowerIntakeMode;
 
 	TaskMgr *m_scheduler;

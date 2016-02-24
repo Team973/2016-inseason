@@ -4,6 +4,7 @@
 class VictorSP;
 class Accelerometer;
 class SPIGyro;
+//class ADXRS450_Gyro;
 class Encoder;
 class DigitalInput;
 class LogSpreadsheet;
@@ -35,6 +36,7 @@ private:
 	Accelerometer 	*m_accel;
 
 	SPIGyro *m_austinGyro;
+	//ADXRS450_Gyro *m_spiGyro;
 
 	/**
 	 * Outputs (motors, solenoids, etc...)

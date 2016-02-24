@@ -8,6 +8,8 @@ class CheesyDriveController;
 class PIDDriveController;
 class RampPIDDriveController;
 class SPIGyro;
+class Solenoid;
+//class ADXRS450_Gyro;
 
 /*
  * Drive provides an interface to control the drive-base (to do both
@@ -33,6 +35,13 @@ public:
     		Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro);
 
     virtual ~Drive() {}
+
+    enum DriveGearing {
+    	HighGear,
+		LowGear
+    };
+
+    void SetGearing(DriveGearing newGearing);
 
     /**
      * Zero encoders and gyroscope.
@@ -100,6 +109,9 @@ private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
 	SPIGyro *m_gyro;
+
+	DriveGearing m_gearing;
+	Solenoid *m_gearingSolenoid;
 
 	double m_leftPower;
 	double m_rightPower;

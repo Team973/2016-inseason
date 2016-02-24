@@ -18,6 +18,8 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_leftEncoder(leftEncoder)
 		 , m_rightEncoder(rightEncoder)
 		 , m_gyro(gyro)
+		 , m_gearing(DriveGearing::LowGear)
+		 , m_gearingSolenoid(new Solenoid(DRIVE_SHIFT_SOL))
 		 , m_leftPower(0.0)
 		 , m_rightPower(0.0)
 		 , m_leftMotor(left)
@@ -34,6 +36,18 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 
 	m_leftEncoder->SetDistancePerPulse(1.0);
 	this->SetDriveController(m_arcadeDriveController);
+}
+
+void Drive::SetGearing(DriveGearing newGearing) {
+	if (newGearing != m_gearing) {
+		switch (newGearing) {
+		case DriveGearing::HighGear:
+			m_gearingSolenoid->Set(true);
+			break;
+		case DriveGearing::LowGear:
+			m_gearingSolenoid->Set(false);
+		}
+	}
 }
 
 void Drive::Zero() {

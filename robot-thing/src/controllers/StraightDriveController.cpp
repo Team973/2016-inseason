@@ -1,34 +1,31 @@
 /*
- * ArcadeDrive.cpp
- *
  *  Created on: Oct 30, 2015
  *      Author: Andrew
  */
 
-#include "controllers/ArcadeDriveController.h"
+#include "controllers/StraightDriveController.h"
 #include "lib/util/Util.h"
+#include "lib/filters/pid.h"
 #include <stdio.h>
 
-ArcadeDriveController::ArcadeDriveController():
+StraightDriveController::StraightDriveController():
 	m_leftOutput(0.0),
-	m_rightOutput(0.0)
+	m_rightOutput(0.0),
+	m_turnPid(new PID(0.0001, 0.0, 0.0)),
+	m_targetHeading(0.0),
+	m_throttle(0.0)
 {
-
+	;
 }
 
-ArcadeDriveController::~ArcadeDriveController() {
-
+StraightDriveController::~StraightDriveController() {
+	;
 }
 
-void ArcadeDriveController::CalcDriveOutput(DriveStateProvider *state,
+void StraightDriveController::CalcDriveOutput(DriveStateProvider *state,
 		DriveControlSignalReceiver *out) {
-	out->SetDriveOutput(m_leftOutput, m_rightOutput);
-}
-
-void ArcadeDriveController::SetJoysticks(double throttle, double turn) {
-	throttle = Util::bound(throttle, -1.0, 1.0);
-	turn = Util::bound(turn, -1.0, 1.0);
-
+	double throttle = m_throttle;
+	double turn = m_turnPid->CalcOutput(state->GetAngle());
 
 	if (throttle < 0.0) {
 		if (turn > 0.0) {
@@ -57,4 +54,15 @@ void ArcadeDriveController::SetJoysticks(double throttle, double turn) {
 	//m_leftOutput = throttle + turn;
 	//m_rightOutput = throttle - turn;
 	printf("left %lf  right %lf\n", m_leftOutput, m_rightOutput);
+
+	out->SetDriveOutput(m_leftOutput, m_rightOutput);
+}
+
+void StraightDriveController::SetJoysticks(double throttle) {
+	m_throttle = Util::bound(throttle, -1.0, 1.0);
+}
+
+void StraightDriveController::SetTargetHeading(double headingDegrees) {
+	m_targetHeading = headingDegrees;
+	m_turnPid->SetTarget(m_targetHeading);
 }

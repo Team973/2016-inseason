@@ -23,6 +23,7 @@ Robot::Robot(void
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
+	//m_spiGyro(nullptr),
 	m_austinGyro(nullptr),
 	m_leftDriveVictor(nullptr),
 	m_rightDriveVictor(nullptr),
@@ -53,6 +54,7 @@ Robot::Robot(void
 	m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
 
 	m_austinGyro = new SPIGyro();
+	//m_spiGyro = new ADXRS450_Gyro(SPI::kOnboardCS0);
 
 	m_leftDriveVictor = new VictorSP(DRIVE_LEFT_PWM);
 	m_rightDriveVictor = new VictorSP(DRIVE_RIGHT_PWM);
@@ -81,13 +83,13 @@ Robot::Robot(void
 	m_accelCellZ = new LogCell("Z-acceleration");
 	m_messages = new LogCell("Robot messages", 100, true);
 
-	m_logger->RegisterCell(m_battery);
+	//m_logger->RegisterCell(m_battery);
 	m_logger->RegisterCell(m_time);
-	m_logger->RegisterCell(m_state);
-	m_logger->RegisterCell(m_accelCellX);
-	m_logger->RegisterCell(m_accelCellY);
-	m_logger->RegisterCell(m_accelCellZ);
-	m_logger->RegisterCell(m_messages);
+	//m_logger->RegisterCell(m_state);
+	//m_logger->RegisterCell(m_accelCellX);
+	//m_logger->RegisterCell(m_accelCellY);
+	//m_logger->RegisterCell(m_accelCellZ);
+	//m_logger->RegisterCell(m_messages);
 
 	m_shooter = new Shooter(this, m_logger);
 }
@@ -99,6 +101,9 @@ void Robot::Initialize(void) {
 	printf("initializing the roboto\n");
 
 	//SmartDashboard::PutString("DB/String 0", "Two ball auto");
+	//m_spiGyro->Calibrate();
+
+	m_compressor->Enable();
 
 	m_logger->InitializeTable();
 
@@ -109,13 +114,14 @@ void Robot::Initialize(void) {
 
 void Robot::AllStateContinuous(void) {
 	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_austinGyro->GetDegrees());
+	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
 	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
 
 	//DBStringPrintf(DBStringPos::DB_LINE8, "port 10 cur %lf", m_pdp->GetCurrent(10));
 
 	m_battery->LogPrintf("%f", DriverStation::GetInstance().GetBatteryVoltage());
 
-	m_time->LogPrintf("%u", GetMsecTime());
+	m_time->LogDouble(GetSecTime());
 	m_state->LogPrintf("%s", GetRobotModeString());
 
 	m_accelCellX->LogDouble(m_accel->GetX());

@@ -9,8 +9,7 @@
 #include "RobotInfo.h"
 #include "lib/util/Util.h"
 #include "lib/WrapDash.h"
-#include "controllers/ShooterGains_front.h"
-#include "controllers/ShooterGains_back.h"
+#include "controllers/ShooterGainsValentines.h"
 #include "lib/TaskMgr.h"
 #include "lib/filters/MovingAverageFilter.h"
 #include "lib/filters/DelaySwitch.h"
@@ -44,8 +43,10 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		rearMedFilter(nullptr),
 		rearOldSpeed(0.0),
 		m_frontController(nullptr),
-		m_backController(nullptr),
-		m_lastTime()
+		m_lastTime(),
+		m_elevatorState(ElevatorState::wayLow),
+		m_upperSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
+		m_lowerSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL))
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
@@ -60,21 +61,20 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 	logger->RegisterCell(m_shooterPow);
 
 	m_frontFlywheelSpeed = new LogCell("front shooter speed (RPM)");
-	logger->RegisterCell(m_frontFlywheelSpeed);
+	//logger->RegisterCell(m_frontFlywheelSpeed);
 
-	m_rearFlywheelSpeed = new LogCell("rear shooter speed (RPM)");
-	logger->RegisterCell(m_rearFlywheelSpeed);
+	m_frontFlywheelFilteredSpeed = new LogCell("front shooter filtered speed (RPM)");
+	logger->RegisterCell(m_frontFlywheelFilteredSpeed);
 
 	m_shooterTime = new LogCell("Shooter Time (ms)");
-	logger->RegisterCell(m_shooterTime);
+	//logger->RegisterCell(m_shooterTime);
 
-	frontMeanFilter = new MovingAverageFilter(0.9);
+	frontMeanFilter = new MovingAverageFilter(0.85);
 	frontMedFilter = new MedianFilter();
-	rearMeanFilter = new MovingAverageFilter(0.9);
+	rearMeanFilter = new MovingAverageFilter(0.95);
 	rearMedFilter = new MedianFilter();
 
-	this->m_frontController = new StateSpaceFlywheelController(FlywheelGainsFront::MakeGains());
-	this->m_backController = new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains());
+	this->m_frontController = new StateSpaceFlywheelController(FlywheelGainsValentines::MakeGains());
 
 	m_lastTime = GetUsecTime();
 }
@@ -93,7 +93,6 @@ void Shooter::SetFlywheelSSShoot(double goal) {
 	m_flywheelState = FlywheelState::ssControl;
 	m_flywheelTargetSpeed = goal;
 	m_frontController->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
-	m_backController->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0 * 1.0);
 }
 
 void Shooter::SetFlywheelPower(double pow) {
@@ -116,11 +115,9 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	case FlywheelState::ssControl:
 		frontMotorOutput = m_frontController->Update(
 				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
-		rearMotorOutput = m_backController->Update(
-				this->GetRearFlywheelFilteredRate() * Constants::PI / 30.0);
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotorB->Set(rearMotorOutput);
+		m_backFlywheelMotorB->Set(frontMotorOutput * 0.666);
 		break;
 	case FlywheelState::openLoop:
 		frontMotorOutput = m_flywheelSetPower;
@@ -137,21 +134,12 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 	//printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
 	DBStringPrintf(DBStringPos::DB_LINE0,
-			"fw med rate: %lf", GetFrontFlywheelFilteredRate());
+			"ff med rate: %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,
-			"fw raw rate: %lf", GetFrontFlywheelRate());
+			"rf raw rate: %lf", GetRearFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"f Flywheel power: %lf", frontMotorOutput);
-	DBStringPrintf(DBStringPos::DB_LINE3,
-			"r Flywheel power: %lf", rearMotorOutput);
 
-	uint64_t now = GetUsecTime();
-	SmartDashboard::PutNumber("timeSlice", now - m_lastTime);
-
-	if (abs(now - m_lastTime - 5000) > 500) {
-		//printf("bad interval of %llu\n", now - m_lastTime);
-	}
-	m_lastTime = now;
 	SmartDashboard::PutNumber("front flywheel raw", GetFrontFlywheelRate());
 	SmartDashboard::PutNumber("rear flywheel raw", GetRearFlywheelRate());
 	SmartDashboard::PutNumber("front flywheel med", GetFrontFlywheelFilteredRate());
@@ -160,8 +148,8 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	//SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
 
 	m_shooterPow->LogDouble(frontMotorOutput);
-	m_frontFlywheelSpeed->LogDouble(GetFrontFlywheelFilteredRate());
-	m_rearFlywheelSpeed->LogDouble(GetRearFlywheelFilteredRate());
+	m_frontFlywheelSpeed->LogDouble(GetFrontFlywheelRate());
+	m_frontFlywheelFilteredSpeed->LogDouble(GetFrontFlywheelFilteredRate());
 	m_shooterTime->LogPrintf("%ld", (long) GetUsecTime());
 }
 /**
@@ -182,6 +170,9 @@ double Shooter::GetFrontFlywheelFilteredRate(void) {
 	if (s > 9000.0) {
 		s = frontOldSpeed;
 	}
+	else if (s == 0.0) {
+		s = frontOldSpeed;
+	}
 	else {
 		frontOldSpeed = s;
 	}
@@ -196,11 +187,36 @@ double Shooter::GetRearFlywheelRate(void) {
 double Shooter::GetRearFlywheelFilteredRate(void) {
 	double s = GetRearFlywheelRate();
 	if (s > 9000.0) {
-		s = frontOldSpeed;
+		s = rearOldSpeed;
 	}
 	else {
-		frontOldSpeed = s;
+		rearOldSpeed = s;
 	}
 
 	return rearMeanFilter->GetValue(rearMedFilter->Update(s));
+}
+
+void Shooter::SetElevatorHeight(ElevatorState newHeight) {
+	if (newHeight != m_elevatorState) {
+		m_elevatorState = newHeight;
+
+		switch (m_elevatorState) {
+		case ElevatorState::wayHigh:
+			m_upperSolenoid->Set(true);
+			m_lowerSolenoid->Set(true);
+			break;
+		case ElevatorState::midHigh:
+			m_upperSolenoid->Set(true);
+			m_lowerSolenoid->Set(false);
+			break;
+		case ElevatorState::midLow:
+			m_upperSolenoid->Set(false);
+			m_lowerSolenoid->Set(true);
+			break;
+		case ElevatorState::wayLow:
+			m_upperSolenoid->Set(false);
+			m_lowerSolenoid->Set(false);
+			break;
+		}
+	}
 }

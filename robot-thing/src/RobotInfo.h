@@ -10,6 +10,8 @@
 
 #include "lib/util/Util.h"
 
+//#define PROTO_BOT_PINOUT
+
 /**
  * PWM pin-out
  */
@@ -19,12 +21,12 @@ constexpr int DRIVE_LEFT_PWM = 1;
 constexpr int FRONT_SHOOTER_PWM = 2;
 constexpr int BACK_SHOOTER_PWM = 3;
 
+constexpr int BACK_INTAKE_PWM = 4;
 constexpr int LINEAR_EXTENSION_PWM = 5;
 
 constexpr int SHOOTER_CONVEYER = 6;
 
 constexpr int FRONT_INTAKE_PWM = 7;
-constexpr int BACK_INTAKE_PWM = 4;
 
 constexpr int ARM_MOTOR_PWM = 8;
 
@@ -35,17 +37,28 @@ constexpr int SHOOTER_ACTUATOR_PWM = 9;
  */
 constexpr int AIR_PRESSURE_DIN = 0;
 
+/*
 constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 12;
 constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 13;
+*/
 
 constexpr int LEFT_DRIVE_ENCODER_A_DIN = 10;
 constexpr int LEFT_DRIVE_ENCODER_B_DIN = 11;
 
+
+#ifdef PROTO_BOT_PINOUT
+constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 6;
+constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 7;
+
 constexpr int ARM_ENCODER_A_DIN = 20;
 constexpr int ARM_ENCODER_B_DIN = 21;
+#else
+constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 7;
+constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 8;
 
-constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 19;
-constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 18;
+constexpr int ARM_ENCODER_A_DIN = 12;
+constexpr int ARM_ENCODER_B_DIN = 13;
+#endif
 
 /**
  * Relay pin-out
@@ -55,8 +68,9 @@ constexpr int COMPRESSOR_RELAY = 0;
 /**
  * Solenoid channels
  */
-constexpr int DRIVE_SHIFT_SOL = 0;
-constexpr int POWER_TAKEOFF = 1;
+constexpr int SHOOTER_ANGLE_UPPER_SOL = 0;
+constexpr int SHOOTER_ANGLE_LOWER_SOL = 1;
+constexpr int DRIVE_SHIFT_SOL = 2;
 
 /**
  * USB port-out (driver-station)
