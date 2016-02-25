@@ -26,7 +26,7 @@ DelaySwitch::~DelaySwitch() {
  * are in significant disagreement, change output to match moving average.
  */
 bool DelaySwitch::GetValue(bool currentValue) {
-	double val = m_filter.GetValue(currentValue? 1.0 : 0.0);
+	double val = m_filter.Update(currentValue? 1.0 : 0.0);
 
 	if (m_prevValue && val < 0.25) {
 		m_prevValue = false;

@@ -59,22 +59,22 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		switch (button) {
 		case DualAction::DPadRightVirtBtn:
 			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorState::midLow);
+				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::midLow);
 			}
 			break;
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorState::wayHigh);
+				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::wayHigh);
 			}
 			break;
 		case DualAction::DPadDownVirtBtn:
 			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorState::wayLow);
+				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::wayLow);
 			}
 			break;
 		case DualAction::DPadLeftVirtBtn:
 			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorState::midHigh);
+				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::midHigh);
 			}
 			break;
 		case DualAction::BtnB:
@@ -106,88 +106,93 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
 		switch (button) {
-			case DualAction::BtnA:
-				if (pressedP) {
-					m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::forward);
-				}
-				else {
-					m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::off);
-				}
-				break;
-			case DualAction::BtnB:
-				if (pressedP) {
-					m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::reverse);
-				}
-				else {
-					m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::off);
-				}
-				break;
-			case DualAction::BtnX:
-				if (pressedP) {
-					m_shooter->SetConveyerPower(-8.0);
-					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
-				}
-				else {
-					m_shooter->SetConveyerPower(0.0);
-					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
-				}
-				break;
-				/*
-			case DualAction::BtnY:
-				if (pressedP) {
-					m_shooter->SetConveyerPower(1.0);
-					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::reverse);
-				}
-				else {
-					m_shooter->SetConveyerPower(0.0);
-					//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
-				}
-				break;
-				*/
-			case DualAction::LeftBumper:
+		case DualAction::LXAxisVirtButton:
+			if (pressedP) {
+				m_intake->SetIntakePosition(Intake::IntakePosition::extended);
+			}
+			else {
+				m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
+			}
+			break;
+		case DualAction::BtnA:
+			if (pressedP) {
+				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+			}
+			else {
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+			}
+			break;
+		case DualAction::BtnB:
+			if (pressedP) {
+				m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
+			}
+			else {
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+			}
+			break;
+		case DualAction::BtnX:
+			if (pressedP) {
+				m_shooter->SetConveyerPower(-8.0);
+				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
+			}
+			else {
+				m_shooter->SetConveyerPower(0.0);
+				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+			}
+			break;
+		case DualAction::BtnY:
+			if (pressedP) {
+				m_shooter->SetConveyerPower(1.0);
+				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::reverse);
+			}
+			else {
+				m_shooter->SetConveyerPower(0.0);
+				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+			}
+			break;
+		case DualAction::LeftBumper:
+			if (pressedP) {
 				m_arm->SetTargetPosition(Arm::ARM_POS_UP);
-				break;
-			case DualAction::LeftTrigger:
+			}
+			break;
+		case DualAction::LeftTrigger:
+			if (pressedP) {
 				m_arm->SetTargetPosition(Arm::ARM_POS_DOWN);
-				break;
-			case DualAction::RightBumper:
-				if (pressedP) {
-					m_shooter->SetFlywheelPower(1.0);
-				}
-				else {
-					m_shooter->SetFlywheelPower(0.0);
-				}
-				break;
-			case DualAction::RightTrigger:
-				m_shooter->Print();
-				m_arm->PrintStats();
-				break;
-			case DualAction::DPadRightVirtBtn:
-				if (pressedP) {
-					m_shooter->SetFlywheelPIDShoot();
-				}
-				break;
-			case DualAction::DPadUpVirtBtn:
-				if (pressedP) {
-					power += 0.02;
-					goal += 50.0;
-					m_shooter->SetFlywheelPower(power);
-					//m_shooter->SetFlywheelSSShoot(goal);
-				}
-				break;
-			case DualAction::DPadDownVirtBtn:
-				if (pressedP) {
-					power -= 0.02;
-					goal -= 50.0;
-					m_shooter->SetFlywheelPower(power);
-					//m_shooter->SetFlywheelSSShoot(goal);
-				}
-				break;
-			case DualAction::DPadLeftVirtBtn:
-				if (pressedP) {
-					m_shooter->SetFlywheelStop();
-				}
-				break;
+			}
+			break;
+		case DualAction::RightBumper:
+			if (pressedP) {
+				m_shooter->SetFlywheelPower(1.0);
+			}
+			else {
+				m_shooter->SetFlywheelPower(0.0);
+			}
+			break;
+		case DualAction::RightTrigger:
+			m_shooter->Print();
+			m_arm->PrintStats();
+			break;
+		case DualAction::DPadUpVirtBtn:
+			if (pressedP) {
+				power += 0.02;
+				goal += 50.0;
+				m_shooter->SetFlywheelPower(power);
+				//m_shooter->SetFlywheelSSShoot(goal);
+			}
+			break;
+		case DualAction::DPadDownVirtBtn:
+			if (pressedP) {
+				power -= 0.02;
+				goal -= 50.0;
+				m_shooter->SetFlywheelPower(power);
+				//m_shooter->SetFlywheelSSShoot(goal);
+			}
+			break;
+		case DualAction::DPadLeftVirtBtn:
+			if (pressedP) {
+				m_shooter->SetFlywheelStop();
+			}
+			break;
 		}
 	}
 

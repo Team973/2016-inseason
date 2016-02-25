@@ -21,22 +21,6 @@ class StateSpaceFlywheelController;
 class LogCell;
 class LogSpreadsheet;
 
-class Thepcont{
-public:
-	Thepcont() {
-		accErr = 0;
-	};
-	~Thepcont() {};
-
-	double CalculateOutput(double vel) {
-		double error = 5500 - vel;
-		accErr = accErr + error;
-		return error * 0.0008 + accErr * 0.0000010;
-	}
-	double accErr;
-};
-
-
 /**
  * Open loop control on flywheel at the moment... will do fine tuning
  * once it's shown that everything else works
@@ -44,7 +28,7 @@ public:
 class Shooter : public CoopTask
 {
 public:
-	enum ElevatorState {
+	enum ElevatorHeight {
 		wayHigh,
 		midHigh,
 		midLow,
@@ -54,7 +38,6 @@ public:
 	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
-	void SetFlywheelPIDShoot();
 	void SetFlywheelSSShoot(double goal);
 	void SetFlywheelPower(double pow);
 	void SetFlywheelStop();
@@ -78,11 +61,10 @@ public:
 		printf("back flywheel dist %d\n", m_backFlywheelEncoder->Get());
 	}
 
-	void SetElevatorHeight(ElevatorState newState);
+	void SetElevatorHeight(ElevatorHeight newHeight);
 private:
 	enum FlywheelState {
 		openLoop,
-		pidControl,
 		ssControl
 	};
 
@@ -90,24 +72,16 @@ private:
 	VictorSP *m_backFlywheelMotorB;
 	VictorSP *m_conveyor;
 
-	bool m_flywheelRunning;
 	Counter *m_frontFlywheelEncoder;
 	Counter *m_backFlywheelEncoder;
-	double m_flywheelTargetSpeed;
-	double m_flywheelSetPower;
-
-	TaskMgr *m_scheduler;
 
 	FlywheelState m_flywheelState;
 
+	double m_flywheelTargetSpeed;
+	StateSpaceFlywheelController *m_frontController;
+	double m_flywheelSetPower;
+
 	bool m_flywheelReady;
-
-	double m_maxObservedRPM;
-
-	LogCell *m_frontFlywheelSpeed;
-	LogCell *m_frontFlywheelFilteredSpeed;
-	LogCell *m_shooterPow;
-	LogCell *m_shooterTime;
 
 	MovingAverageFilter *frontMeanFilter;
 	MedianFilter *frontMedFilter;
@@ -117,14 +91,17 @@ private:
 	MedianFilter *rearMedFilter;
 	double rearOldSpeed;
 
-	StateSpaceFlywheelController *m_frontController;
-	uint64_t m_lastTime;
 
-	Thepcont control = Thepcont();
+	ElevatorHeight m_elevatorState;
+	Solenoid *m_longSolenoid;
+	Solenoid *m_shortSolenoid;
 
-	ElevatorState m_elevatorState;
-	Solenoid *m_upperSolenoid;
-	Solenoid *m_lowerSolenoid;
+	LogCell *m_frontFlywheelSpeed;
+	LogCell *m_frontFlywheelFilteredSpeed;
+	LogCell *m_shooterPow;
+	LogCell *m_shooterTime;
+
+	TaskMgr *m_scheduler;
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 };

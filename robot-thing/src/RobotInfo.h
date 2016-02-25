@@ -21,12 +21,12 @@ constexpr int DRIVE_LEFT_PWM = 1;
 constexpr int FRONT_SHOOTER_PWM = 2;
 constexpr int BACK_SHOOTER_PWM = 3;
 
-constexpr int BACK_INTAKE_PWM = 4;
+//constexpr int UNUSED_PWM = 4;
+
 constexpr int LINEAR_EXTENSION_PWM = 5;
 
-constexpr int SHOOTER_CONVEYER = 6;
-
-constexpr int FRONT_INTAKE_PWM = 7;
+constexpr int SHOOTER_CONVEYER_MOTOR_PWM = 6;
+constexpr int BALL_INTAKE_MOTOR_PWM = 7;
 
 constexpr int ARM_MOTOR_PWM = 8;
 
@@ -42,9 +42,8 @@ constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 12;
 constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 13;
 */
 
-constexpr int LEFT_DRIVE_ENCODER_A_DIN = 10;
-constexpr int LEFT_DRIVE_ENCODER_B_DIN = 11;
-
+constexpr int LEFT_DRIVE_ENCODER_A_DIN = 24;
+constexpr int LEFT_DRIVE_ENCODER_B_DIN = 25;
 
 #ifdef PROTO_BOT_PINOUT
 constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 6;
@@ -56,8 +55,8 @@ constexpr int ARM_ENCODER_B_DIN = 21;
 constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 7;
 constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 8;
 
-constexpr int ARM_ENCODER_A_DIN = 12;
-constexpr int ARM_ENCODER_B_DIN = 13;
+constexpr int ARM_ENCODER_A_DIN = 22;
+constexpr int ARM_ENCODER_B_DIN = 23;
 #endif
 
 /**
@@ -71,6 +70,7 @@ constexpr int COMPRESSOR_RELAY = 0;
 constexpr int SHOOTER_ANGLE_UPPER_SOL = 0;
 constexpr int SHOOTER_ANGLE_LOWER_SOL = 1;
 constexpr int DRIVE_SHIFT_SOL = 2;
+constexpr int INTAKE_EXTENSION_SOL = 4;
 
 /**
  * USB port-out (driver-station)

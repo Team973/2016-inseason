@@ -4,7 +4,7 @@ void Robot::DisabledStart(void) {
     printf("***disable start\n");
 
     m_shooter->SetFlywheelStop();
-	m_intake->SetLowerIntakeMode(Intake::LowerIntakeMode::off);
+	m_intake->SetIntakeMode(Intake::IntakeMode::off);
 	printf("disable start end \n");
 }
 

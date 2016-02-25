@@ -18,41 +18,37 @@
 #include "lib/filters/MedianFilter.h"
 #include "controllers/StateSpaceFlywheelController.h"
 
-static constexpr double FLYWHEEL_TELEOP_TARGET_SPEED = 6000;
-
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_frontFlywheelMotor(nullptr),
 		m_backFlywheelMotorB(nullptr),
 		m_conveyor(nullptr),
-		m_flywheelRunning(false),
 		m_frontFlywheelEncoder(nullptr),
 		m_backFlywheelEncoder(nullptr),
-		m_flywheelTargetSpeed(0.0),
-		m_flywheelSetPower(0.0),
-		m_scheduler(scheduler),
 		m_flywheelState(FlywheelState::openLoop),
+		m_flywheelTargetSpeed(0.0),
+		m_frontController(nullptr),
+		m_flywheelSetPower(0.0),
 		m_flywheelReady(false),
-		m_maxObservedRPM(0.0),
-		m_frontFlywheelSpeed(nullptr),
-		m_shooterPow(nullptr),
-		m_shooterTime(nullptr),
 		frontMeanFilter(nullptr),
 		frontMedFilter(nullptr),
 		frontOldSpeed(0.0),
 		rearMeanFilter(nullptr),
 		rearMedFilter(nullptr),
 		rearOldSpeed(0.0),
-		m_frontController(nullptr),
-		m_lastTime(),
-		m_elevatorState(ElevatorState::wayLow),
-		m_upperSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
-		m_lowerSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL))
+		m_elevatorState(ElevatorHeight::wayLow),
+		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
+		m_shortSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL)),
+		m_frontFlywheelSpeed(nullptr),
+		m_frontFlywheelFilteredSpeed(nullptr),
+		m_shooterPow(nullptr),
+		m_shooterTime(nullptr),
+		m_scheduler(scheduler)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
 	m_frontFlywheelMotor = new VictorSP(FRONT_SHOOTER_PWM);
 	m_backFlywheelMotorB = new VictorSP(BACK_SHOOTER_PWM);
-	m_conveyor = new VictorSP(SHOOTER_CONVEYER);
+	m_conveyor = new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM);
 
 	m_frontFlywheelEncoder= new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN);
 	m_backFlywheelEncoder = new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN);
@@ -75,18 +71,10 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 	rearMedFilter = new MedianFilter();
 
 	this->m_frontController = new StateSpaceFlywheelController(FlywheelGainsValentines::MakeGains());
-
-	m_lastTime = GetUsecTime();
 }
 
 Shooter::~Shooter() {
 	m_scheduler->UnregisterTask(this);
-}
-
-void Shooter::SetFlywheelPIDShoot() {
-	m_flywheelState = FlywheelState::pidControl;
-	m_flywheelTargetSpeed = FLYWHEEL_TELEOP_TARGET_SPEED;
-	printf("standard shoot\n");
 }
 
 void Shooter::SetFlywheelSSShoot(double goal) {
@@ -109,7 +97,6 @@ void Shooter::SetFlywheelStop() {
 
 void Shooter::TaskPeriodic(RobotMode mode) {
 	double frontMotorOutput;
-	double rearMotorOutput;
 
 	switch(m_flywheelState) {
 	case FlywheelState::ssControl:
@@ -124,11 +111,6 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
 		m_backFlywheelMotorB->Set(frontMotorOutput);
-		break;
-	case FlywheelState::pidControl:
-		double vvel = this->GetFrontFlywheelFilteredRate();
-		double motorpower = control.CalculateOutput(vvel);
-		m_frontFlywheelMotor->Set(motorpower);
 		break;
 	}
 
@@ -177,7 +159,7 @@ double Shooter::GetFrontFlywheelFilteredRate(void) {
 		frontOldSpeed = s;
 	}
 
-	return frontMeanFilter->GetValue(frontMedFilter->Update(s));
+	return frontMeanFilter->Update(frontMedFilter->Update(s));
 }
 
 double Shooter::GetRearFlywheelRate(void) {
@@ -193,29 +175,29 @@ double Shooter::GetRearFlywheelFilteredRate(void) {
 		rearOldSpeed = s;
 	}
 
-	return rearMeanFilter->GetValue(rearMedFilter->Update(s));
+	return rearMeanFilter->Update(rearMedFilter->Update(s));
 }
 
-void Shooter::SetElevatorHeight(ElevatorState newHeight) {
+void Shooter::SetElevatorHeight(ElevatorHeight newHeight) {
 	if (newHeight != m_elevatorState) {
 		m_elevatorState = newHeight;
 
 		switch (m_elevatorState) {
-		case ElevatorState::wayHigh:
-			m_upperSolenoid->Set(true);
-			m_lowerSolenoid->Set(true);
+		case ElevatorHeight::wayHigh:
+			m_longSolenoid->Set(true);
+			m_shortSolenoid->Set(true);
 			break;
-		case ElevatorState::midHigh:
-			m_upperSolenoid->Set(true);
-			m_lowerSolenoid->Set(false);
+		case ElevatorHeight::midHigh:
+			m_longSolenoid->Set(true);
+			m_shortSolenoid->Set(false);
 			break;
-		case ElevatorState::midLow:
-			m_upperSolenoid->Set(false);
-			m_lowerSolenoid->Set(true);
+		case ElevatorHeight::midLow:
+			m_longSolenoid->Set(false);
+			m_shortSolenoid->Set(true);
 			break;
-		case ElevatorState::wayLow:
-			m_upperSolenoid->Set(false);
-			m_lowerSolenoid->Set(false);
+		case ElevatorHeight::wayLow:
+			m_longSolenoid->Set(false);
+			m_shortSolenoid->Set(false);
 			break;
 		}
 	}

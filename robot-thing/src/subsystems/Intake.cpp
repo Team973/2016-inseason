@@ -11,8 +11,10 @@
 #include "lib/WrapDash.h"
 
 Intake::Intake(TaskMgr *scheduler) :
-	m_lowerIntakeMotor(new VictorSP(FRONT_INTAKE_PWM)),
-	m_lowerIntakeMode(LowerIntakeMode::off),
+	m_intakeMotor(new VictorSP(BALL_INTAKE_MOTOR_PWM)),
+	m_intakeSolenoid(new Solenoid(INTAKE_EXTENSION_SOL)),
+	m_intakeMode(IntakeMode::off),
+	m_intakePosition(IntakePosition::retracted),
 	m_scheduler(scheduler)
 {
 	this->m_scheduler->RegisterTask("Intake", this, TASK_PERIODIC);
@@ -22,20 +24,35 @@ Intake::~Intake() {
 	this->m_scheduler->UnregisterTask(this);
 }
 
-void Intake::SetLowerIntakeMode(LowerIntakeMode mode) {
-	m_lowerIntakeMode = mode;
+void Intake::SetIntakeMode(IntakeMode mode) {
+	m_intakeMode = mode;
+}
+
+void Intake::SetIntakePosition(IntakePosition newPos) {
+	if (newPos != m_intakePosition) {
+		switch (newPos) {
+		case IntakePosition::extended:
+			m_intakeSolenoid->Set(true);
+			break;
+		case IntakePosition::retracted:
+			m_intakeSolenoid->Set(false);
+			break;
+		}
+	}
+
+	m_intakePosition = newPos;
 }
 
 void Intake::TaskPeriodic(RobotMode mode) {
-	switch (m_lowerIntakeMode) {
-	case LowerIntakeMode::off:
-		m_lowerIntakeMotor->Set(0.0);
+	switch (m_intakeMode) {
+	case IntakeMode::off:
+		m_intakeMotor->Set(0.0);
 		break;
-	case LowerIntakeMode::forward:
-		m_lowerIntakeMotor->Set(LOWER_INTAKE_FORWARD_SPEED);
+	case IntakeMode::forward:
+		m_intakeMotor->Set(INTAKE_FORWARD_SPEED);
 		break;
-	case LowerIntakeMode::reverse:
-		m_lowerIntakeMotor->Set(LOWER_INTAKE_REVERSE_SPEED);
+	case IntakeMode::reverse:
+		m_intakeMotor->Set(INTAKE_REVERSE_SPEED);
 		break;
 	}
 }

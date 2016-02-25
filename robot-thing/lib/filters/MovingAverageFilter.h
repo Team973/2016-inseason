@@ -11,6 +11,8 @@
 #ifndef LIB_MOVINGAVERAGEFILTER_H_
 #define LIB_MOVINGAVERAGEFILTER_H_
 
+#include "lib/filters/FilterBase.h"
+
 class MovingAverageFilter {
 public:
 	/**
@@ -30,14 +32,14 @@ public:
 	 *
 	 * @return result of filtering calculation.
 	 */
-	double GetValue(double currentValue);
+	double Update(double input);
 
 	/**
 	 * Remember the latest value calculated by filtering
 	 *
 	 * @return result of previous filtering calcuation
 	 */
-	double GetLatestValue(void);
+	double GetLast(void);
 
 private:
 	double m_weight;

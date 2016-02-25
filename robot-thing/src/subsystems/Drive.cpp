@@ -47,6 +47,7 @@ void Drive::SetGearing(DriveGearing newGearing) {
 		case DriveGearing::LowGear:
 			m_gearingSolenoid->Set(false);
 		}
+		m_gearing = newGearing;
 	}
 }
 

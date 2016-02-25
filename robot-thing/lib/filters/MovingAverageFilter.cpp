@@ -17,11 +17,11 @@ MovingAverageFilter::~MovingAverageFilter() {
 }
 
 
-double MovingAverageFilter::GetValue(double currentValue) {
+double MovingAverageFilter::Update(double currentValue) {
 	m_prevValue = (m_weight) * m_prevValue + (1.0 - m_weight) * currentValue;
 	return m_prevValue;
 }
 
-double MovingAverageFilter::GetLatestValue(void) {
+double MovingAverageFilter::GetLast(void) {
 	return m_prevValue;
 }
