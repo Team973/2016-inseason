@@ -9,13 +9,20 @@
 #include "src/controllers/CheesyDriveController.h"
 #include "src/controllers/PIDDriveController.h"
 #include "src/controllers/RampedPIDDriveController.h"
+#include "src/controllers/VisionDriveController.h"
 
 #include "RobotInfo.h"
 
 namespace frc973 {
 
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
-			Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro)
+			Encoder *leftEncoder, Encoder *rightEncoder,
+#ifdef PROTO_BOT_PINOUT
+			Encoder *gyro
+#else
+			SPIGyro *gyro
+#endif
+			)
 		 : DriveBase(scheduler, this, this, nullptr)
 		 , m_leftEncoder(leftEncoder)
 		 , m_rightEncoder(rightEncoder)
@@ -26,16 +33,12 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_rightPower(0.0)
 		 , m_leftMotor(left)
 		 , m_rightMotor(right)
-		 , m_arcadeDriveController(nullptr)
-		 , m_cheesyDriveController(nullptr)
-		 , m_pidDriveController(nullptr)
-		 , m_rampPidDriveController(nullptr)
+		 , m_arcadeDriveController(new ArcadeDriveController())
+		 , m_cheesyDriveController(new CheesyDriveController())
+		 , m_pidDriveController(new PIDDriveController())
+		 , m_rampPidDriveController(new RampPIDDriveController())
+		 , m_visionDriveController(new VisionDriveController())
 {
-	m_arcadeDriveController = new ArcadeDriveController();
-	m_cheesyDriveController = new CheesyDriveController();
-	m_pidDriveController = new PIDDriveController();
-	m_rampPidDriveController = new RampPIDDriveController();
-
 	m_leftEncoder->SetDistancePerPulse(1.0);
 	this->SetDriveController(m_arcadeDriveController);
 }
@@ -71,6 +74,10 @@ void Drive::CheesyDrive(double throttle, double turn) {
 
 void Drive::SetCheesyQuickTurn(bool quickturn) {
 	m_cheesyDriveController->SetQuickTurn(quickturn);
+}
+
+void Drive::SetVisionTargeting() {
+	this->SetDriveController(m_visionDriveController);
 }
 
 void Drive::ArcadeDrive(double throttle, double turn) {
@@ -129,11 +136,19 @@ double Drive::GetRate() {
 }
 
 double Drive::GetAngle() {
+#ifdef PROTO_BOT_PINOUT
+	return -m_gyro->Get();
+#else
 	return -m_gyro->GetDegrees();
+#endif
 }
 
 double Drive::GetAngularRate() {
+#ifdef PROTO_BOT_PINOUT
+	return -m_gyro->GetRate();
+#else
 	return -m_gyro->GetDegreesPerSec();
+#endif
 }
 
 void Drive::SetDriveOutput(double left, double right) {

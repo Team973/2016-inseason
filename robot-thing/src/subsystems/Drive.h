@@ -2,6 +2,7 @@
 #define DRIVE_H
 
 #include "lib/DriveBase.h"
+#include "RobotInfo.h"
 
 class Solenoid;
 
@@ -11,6 +12,7 @@ class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
 class RampPIDDriveController;
+class VisionDriveController;
 class SPIGyro;
 //class ADXRS450_Gyro;
 
@@ -35,7 +37,13 @@ class Drive :
 {
 public:
     Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
-    		Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro);
+    		Encoder *leftEncoder, Encoder *rightEncoder,
+#ifdef PROTO_BOT_PINOUT
+			Encoder *gyro
+#else
+			SPIGyro *gyro
+#endif
+			);
 
     virtual ~Drive() {}
 
@@ -66,6 +74,8 @@ public:
      * @param quickturn whether quickturn is active
      */
     void SetCheesyQuickTurn(bool quickturn);
+
+    void SetVisionTargeting();
 
     /*
      * Sets drive to use standard arcade drive controller if it doesn't already
@@ -111,7 +121,12 @@ public:
 private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
+
+#ifdef PROTO_BOT_PINOUT
+	Encoder *m_gyro;
+#else
 	SPIGyro *m_gyro;
+#endif
 
 	DriveGearing m_gearing;
 	Solenoid *m_gearingSolenoid;
@@ -126,6 +141,7 @@ private:
     CheesyDriveController *m_cheesyDriveController;
     PIDDriveController *m_pidDriveController;
     RampPIDDriveController *m_rampPidDriveController;
+    VisionDriveController *m_visionDriveController;
 };
 
 }

@@ -6,6 +6,7 @@
 #include "lib/SingleThreadTaskMgr.h"
 #include "lib/SPIGyro.h"
 #include "lib/WrapDash.h"
+#include "lib/SocketClient.h"
 
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
@@ -13,6 +14,13 @@
 #include "subsystems/Arm.h"
 
 namespace frc973 {
+
+
+void* Robot::runServer(void*)
+{
+	SocketClient::RunSocketClient(NULL);
+    return NULL;
+}
 
 constexpr int ONE_BALL_AUTO = 0;
 constexpr int TWO_BALL_AUTO = 1;
@@ -26,7 +34,11 @@ Robot::Robot(void
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
 	//m_spiGyro(nullptr),
-	m_austinGyro(nullptr),
+#ifdef PROTO_BOT_PINOUT
+	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN)),
+#else
+	m_austinGyro(new SPIGyro()),
+#endif
 	m_leftDriveVictor(nullptr),
 	m_rightDriveVictor(nullptr),
 	m_leftDriveEncoder(nullptr),
@@ -55,7 +67,6 @@ Robot::Robot(void
 
 	m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
 
-	m_austinGyro = new SPIGyro();
 	//m_spiGyro = new ADXRS450_Gyro(SPI::kOnboardCS0);
 
 	m_leftDriveVictor = new VictorSP(DRIVE_LEFT_PWM);
@@ -64,8 +75,13 @@ Robot::Robot(void
 	m_leftDriveEncoder = new Encoder(LEFT_DRIVE_ENCODER_A_DIN,
 			LEFT_DRIVE_ENCODER_B_DIN, false, CounterBase::k4X);
 
+#ifdef PROTO_BOT_PINOUT
+	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
+			m_leftDriveEncoder, nullptr, m_collinGyro);
+#else
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_austinGyro);
+#endif
 
 	m_intake = new Intake(this);
 
@@ -94,6 +110,9 @@ Robot::Robot(void
 	//m_logger->RegisterCell(m_messages);
 
 	m_shooter = new Shooter(this, m_logger);
+
+    pthread_t serverThread;
+    pthread_create(&serverThread, NULL, runServer, NULL);
 }
 
 Robot::~Robot(void) {
@@ -110,12 +129,18 @@ void Robot::Initialize(void) {
 	m_logger->InitializeTable();
 
 	SmartDashboard::init();
+
 	//m_hiFreq->Start();
 	//m_hiFreq->SetHighPriority();
 }
 
 void Robot::AllStateContinuous(void) {
+#ifdef PROTO_BOT_PINOUT
+	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_collinGyro->Get());
+#else
 	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_austinGyro->GetDegrees());
+#endif
+
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
 	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
 

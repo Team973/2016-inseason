@@ -71,7 +71,7 @@ private:
 	};
 
 	VictorSP *m_frontFlywheelMotor;
-	VictorSP *m_backFlywheelMotorB;
+	VictorSP *m_backFlywheelMotor;
 	VictorSP *m_conveyor;
 
 	Counter *m_frontFlywheelEncoder;

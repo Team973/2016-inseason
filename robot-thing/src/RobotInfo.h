@@ -12,7 +12,7 @@
 
 namespace frc973 {
 
-//#define PROTO_BOT_PINOUT
+#define PROTO_BOT_PINOUT
 
 /**
  * PWM pin-out
@@ -53,6 +53,9 @@ constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 7;
 
 constexpr int ARM_ENCODER_A_DIN = 20;
 constexpr int ARM_ENCODER_B_DIN = 21;
+
+constexpr int COLLIN_GYRO_A_DIN = 0;
+constexpr int COLLIN_GYRO_B_DIN = 1;
 #else
 constexpr int FLYWHEEL_FRONT_BANNERSENSOR_DIN = 7;
 constexpr int FLYWHEEL_BACK_BANNERSENSOR_DIN = 8;

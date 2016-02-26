@@ -25,6 +25,8 @@ class Robot:
 		public JoystickObserver
 {
 private:
+    static void* runServer(void*);
+
 	SingleThreadTaskMgr *m_hiFreq;
 	LogSpreadsheet *m_logger;
 
@@ -38,7 +40,11 @@ private:
 
 	Accelerometer 	*m_accel;
 
+#ifdef PROTO_BOT_PINOUT
+	Encoder *m_collinGyro;
+#else
 	SPIGyro *m_austinGyro;
+#endif
 	//ADXRS450_Gyro *m_spiGyro;
 
 	/**

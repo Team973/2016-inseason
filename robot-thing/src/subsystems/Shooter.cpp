@@ -21,58 +21,37 @@
 namespace frc973 {
 
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
-		m_frontFlywheelMotor(nullptr),
-		m_backFlywheelMotorB(nullptr),
-		m_conveyor(nullptr),
-		m_frontFlywheelEncoder(nullptr),
-		m_backFlywheelEncoder(nullptr),
+		m_frontFlywheelMotor(new VictorSP(FRONT_SHOOTER_PWM)),
+		m_backFlywheelMotor(new VictorSP(BACK_SHOOTER_PWM)),
+		m_conveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM)),
+		m_frontFlywheelEncoder(new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN)),
+		m_backFlywheelEncoder(new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN)),
 		m_flywheelState(FlywheelState::openLoop),
 		m_flywheelTargetSpeed(0.0),
-		m_frontController(nullptr),
+		m_frontController(new StateSpaceFlywheelController(FlywheelGainsValentines::MakeGains())),
 		m_flywheelSetPower(0.0),
 		m_flywheelReady(false),
-		frontMeanFilter(nullptr),
-		frontMedFilter(nullptr),
+		frontMeanFilter(new MovingAverageFilter(0.85)),
+		frontMedFilter(new MedianFilter()),
 		frontOldSpeed(0.0),
-		rearMeanFilter(nullptr),
-		rearMedFilter(nullptr),
+		rearMeanFilter(new MovingAverageFilter(0.85)),
+		rearMedFilter(new MedianFilter()),
 		rearOldSpeed(0.0),
 		m_elevatorState(ElevatorHeight::wayLow),
 		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
 		m_shortSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL)),
-		m_frontFlywheelSpeed(nullptr),
-		m_frontFlywheelFilteredSpeed(nullptr),
-		m_shooterPow(nullptr),
-		m_shooterTime(nullptr),
+		m_frontFlywheelSpeed(new LogCell("front shooter speed (RPM)")),
+		m_frontFlywheelFilteredSpeed(new LogCell("front shooter filtered speed (RPM)")),
+		m_shooterPow(new LogCell("shooter power")),
+		m_shooterTime(new LogCell("Shooter Time (ms)")),
 		m_scheduler(scheduler)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
-	m_frontFlywheelMotor = new VictorSP(FRONT_SHOOTER_PWM);
-	m_backFlywheelMotorB = new VictorSP(BACK_SHOOTER_PWM);
-	m_conveyor = new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM);
-
-	m_frontFlywheelEncoder= new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN);
-	m_backFlywheelEncoder = new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN);
-
-	m_shooterPow = new LogCell("shooter power");
 	logger->RegisterCell(m_shooterPow);
-
-	m_frontFlywheelSpeed = new LogCell("front shooter speed (RPM)");
-	//logger->RegisterCell(m_frontFlywheelSpeed);
-
-	m_frontFlywheelFilteredSpeed = new LogCell("front shooter filtered speed (RPM)");
+	logger->RegisterCell(m_frontFlywheelSpeed);
 	logger->RegisterCell(m_frontFlywheelFilteredSpeed);
-
-	m_shooterTime = new LogCell("Shooter Time (ms)");
 	//logger->RegisterCell(m_shooterTime);
-
-	frontMeanFilter = new MovingAverageFilter(0.85);
-	frontMedFilter = new MedianFilter();
-	rearMeanFilter = new MovingAverageFilter(0.95);
-	rearMedFilter = new MedianFilter();
-
-	this->m_frontController = new StateSpaceFlywheelController(FlywheelGainsValentines::MakeGains());
 }
 
 Shooter::~Shooter() {
@@ -106,13 +85,13 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotorB->Set(frontMotorOutput * 0.666);
+		m_backFlywheelMotor->Set(frontMotorOutput * 0.666);
 		break;
 	case FlywheelState::openLoop:
 		frontMotorOutput = m_flywheelSetPower;
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotorB->Set(frontMotorOutput);
+		m_backFlywheelMotor->Set(frontMotorOutput);
 		break;
 	}
 
