@@ -10,6 +10,8 @@
 
 #include "lib/DriveBase.h"
 
+namespace frc973 {
+
 class ArcadeDriveController : public DriveController {
 public:
 	ArcadeDriveController();
@@ -36,5 +38,7 @@ private:
 	double m_leftOutput;
 	double m_rightOutput;
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_ARCADEDRIVECONTROLLER_H_ */

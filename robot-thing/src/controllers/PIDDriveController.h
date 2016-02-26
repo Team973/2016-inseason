@@ -11,6 +11,8 @@
 
 #include "lib/DriveBase.h"
 
+namespace frc973 {
+
 class PID;
 
 class PIDDriveController : public DriveController {
@@ -77,5 +79,6 @@ private:
 	bool m_distEnabled;
 };
 
+}
 
 #endif /* SRC_CONTROLLERS_PIDDRIVECONTROLLER_H_ */

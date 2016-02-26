@@ -12,6 +12,8 @@
 
 #include "RobotInfo.h"
 
+namespace frc973 {
+
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 			Encoder *leftEncoder, Encoder *rightEncoder, SPIGyro *gyro)
 		 : DriveBase(scheduler, this, this, nullptr)
@@ -140,4 +142,6 @@ void Drive::SetDriveOutput(double left, double right) {
 
 	m_leftMotor->Set(Util::bound(-m_leftPower, -1.0, 1.0));
 	m_rightMotor->Set(Util::bound(-m_rightPower, -1.0, 1.0));
+}
+
 }

@@ -28,6 +28,8 @@
 #define TASK_PERIODIC			0x00000008
 #define TASK_POST_PERIODIC		0x00000010
 
+namespace frc973 {
+
 class CoopTask;
 
 class TaskMgr {
@@ -118,5 +120,7 @@ private:
 	CoopTask   *m_tasks[MAX_NUM_TASKS];
 	uint32_t	m_taskFlags[MAX_NUM_TASKS];
 };
+
+}
 
 #endif /* FRCLIB_TASKMGR_H_ */

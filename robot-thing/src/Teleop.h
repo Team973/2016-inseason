@@ -1,6 +1,8 @@
 #include "lib/JoystickHelper.h"
 #include "lib/WrapDash.h"
 
+namespace frc973 {
+
 void Robot::TeleopStart(void) {
     printf("***teleop start\n");
 }
@@ -203,5 +205,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 	DBStringPrintf(DBStringPos::DB_LINE4,
 			"Flywheel goal: %lf", goal);
 			*/
+
+}
 
 }

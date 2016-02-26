@@ -12,6 +12,8 @@
 #include "WPILib.h"
 #include "lib/WrapDash.h"
 
+namespace frc973 {
+
 Arm::Arm(TaskMgr *scheduler)
 		 : m_scheduler(scheduler)
 		 , m_lastTimeSec(GetSecTime())
@@ -75,4 +77,6 @@ void Arm::TaskPeriodic(RobotMode mode) {
 void Arm::Zero() {
 	m_zeroOffsetDeg = 0.0;
 	m_armEncoder->Reset();
+}
+
 }

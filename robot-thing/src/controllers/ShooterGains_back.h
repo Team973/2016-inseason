@@ -10,6 +10,8 @@
 
 #include "lib/StateSpaceGains.h"
 
+namespace frc973 {
+
 namespace Back {
 	double AAA[] = {1.0, 0.0, 2.790776, 0.964558};
 	double BBB[] = {1.0, 0.0};
@@ -29,5 +31,7 @@ public:
 				Back::LLL, 2, Back::KKK, 2, Back::UUUMAX, 1, Back::UUUMIN, 1);
 	}
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_FLYWHEELGAINS_H_ */

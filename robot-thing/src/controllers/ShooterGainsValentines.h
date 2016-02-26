@@ -10,6 +10,8 @@
 
 #include "lib/StateSpaceGains.h"
 
+namespace frc973 {
+
 namespace Valentines {
 	static double AAA[] = {1.000000, 0.000000, 5.482128, 0.930196};
 	static double BBB[] = {1.0, 0.0};
@@ -29,5 +31,7 @@ public:
 				Valentines::LLL, 2, Valentines::KKK, 2, Valentines::UUUMAX, 1, Valentines::UUUMIN, 1);
 	}
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_FLYWHEELGAINS_VALENTINES_H_ */

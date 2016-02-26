@@ -12,6 +12,8 @@
 #include "subsystems/Drive.h"
 #include "subsystems/Arm.h"
 
+namespace frc973 {
+
 constexpr int ONE_BALL_AUTO = 0;
 constexpr int TWO_BALL_AUTO = 1;
 
@@ -135,9 +137,11 @@ void Robot::AllStateContinuous(void) {
 	*/
 }
 
+}
+
 #include "Disabled.h"
 #include "Autonomous.h"
 #include "Teleop.h"
 #include "Test.h"
 
-START_ROBOT_CLASS(Robot);
+START_ROBOT_CLASS(frc973::Robot);

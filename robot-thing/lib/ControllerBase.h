@@ -19,6 +19,8 @@
 #include "CoopTask.h"
 #include "TaskMgr.h"
 
+namespace frc973 {
+
 class SimpleControlSystem;
 
 /**
@@ -118,5 +120,7 @@ private:
 	SimpleControlSignalReceiver *m_out;
 	SimpleController *m_activeController;
 };
+
+}
 
 #endif /* LIB_CONTROLLERBASE_H_ */

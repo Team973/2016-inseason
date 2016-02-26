@@ -8,6 +8,8 @@
 #include <lib/filters/RampedOutput.h>
 #include <lib/util/Util.h>
 
+namespace frc973 {
+
 RampedOutput::RampedOutput(double rampRate, double initialOutput):
 		m_rampRate(rampRate),
 		m_prevOutput(initialOutput),
@@ -62,4 +64,6 @@ double RampedOutput::GetRampRate(void) {
 
 void RampedOutput::OverridePrevOutput(double prevOutput) {
 	m_prevOutput = prevOutput;
+}
+
 }

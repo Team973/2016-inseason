@@ -28,6 +28,8 @@
 #define PROGRAM_NAME "(unspecified)"
 #endif
 
+namespace frc973 {
+
 static constexpr int MAXHOSTNAMELEN = 128;
 
 class CoopMTRobot:
@@ -114,5 +116,7 @@ private:
 	RobotMode m_prevMode;
 	mutable pthread_mutex_t m_robotModeMutex;
 };
+
+}
 
 #endif /* FRCLIB_COOPMTROBOT_H_ */

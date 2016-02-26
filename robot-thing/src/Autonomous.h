@@ -1,3 +1,5 @@
+namespace frc973 {
+
 void Robot::AutonomousStart(void) {
     printf("***auto start\n");
 
@@ -105,4 +107,6 @@ void Robot::TurnTest() {
 		}
 		break;
 	}
+}
+
 }

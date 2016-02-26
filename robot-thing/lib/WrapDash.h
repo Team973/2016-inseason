@@ -10,6 +10,8 @@
 #ifndef FRCLIB_WRAPDASH_H_
 #define FRCLIB_WRAPDASH_H_
 
+namespace frc973 {
+
 enum DBStringPos {
 	DB_LINE0,
 	DB_LINE1,
@@ -27,5 +29,7 @@ enum DBStringPos {
  * Use printf-like syntax to print to the smart dash debug string place
  */
 void DBStringPrintf(DBStringPos position, const char *formatstring, ...);
+
+}
 
 #endif

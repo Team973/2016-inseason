@@ -8,6 +8,8 @@
 #ifndef LIB_FILTERS_FILTERBASE_H_
 #define LIB_FILTERS_FILTERBASE_H_
 
+namespace frc973 {
+
 class FilterBase {
 public:
 	/**
@@ -26,5 +28,7 @@ public:
 	virtual double Update(double input) = 0;
 	virtual double GetLast() = 0;
 };
+
+}
 
 #endif /* LIB_FILTERS_FILTERBASE_H_ */

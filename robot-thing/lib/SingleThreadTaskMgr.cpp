@@ -13,6 +13,8 @@
 
 #include <stdio.h>
 
+namespace frc973 {
+
 SingleThreadTaskMgr::SingleThreadTaskMgr(
 		RobotStateInterface &stateProvider,
 		double loopPeriod
@@ -85,10 +87,8 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 	while (keepRunning) {
 		pthread_mutex_lock(&inst->m_mutex);
 
-		uint64_t t = GetUsecTime();
 		RobotMode nextState = GetRobotMode(inst->m_stateProvider);
 
-		t = GetUsecTime();
 		if (state != nextState) {
 			inst->TaskStopModeAll(state);
 			inst->TaskStartModeAll(nextState);
@@ -111,8 +111,6 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 				timeSliceAllotedUs - timeSliceUsedUs;
 
 		if (timeSliceUsedUs <= timeSliceAllotedUs) {
-			t = GetUsecTime();
-
 			usleep(timeSliceRemainingUs);
 		}
 		else {
@@ -134,4 +132,6 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 	pthread_mutex_unlock(&inst->m_mutex);
 
 	return NULL;
+}
+
 }

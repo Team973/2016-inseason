@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+namespace frc973 {
+
 CoopMTRobot::CoopMTRobot(void
 		): m_prevMode(RobotMode::MODE_DISABLED)
 		 , m_robotModeMutex(PTHREAD_MUTEX_INITIALIZER)
@@ -179,4 +181,6 @@ bool CoopMTRobot::IsTest() const {
 	bool res = m_prevMode == MODE_TEST;
 	pthread_mutex_unlock(&m_robotModeMutex);
 	return res;
+}
+
 }

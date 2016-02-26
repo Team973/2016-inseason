@@ -20,6 +20,8 @@
 
 #include "util/Util.h"
 
+namespace frc973 {
+
 class TaskMgr;
 
 class CoopTask {
@@ -33,5 +35,7 @@ public:
 	virtual void TaskPeriodic(RobotMode mode) {}
 	virtual void TaskPostPeriodic(RobotMode mode) {}
 };
+
+}
 
 #endif /* FRCLIB_COOPTASK_H_ */

@@ -18,6 +18,8 @@
 #include "WPILib.h"
 #include "lib/CoopTask.h"
 
+namespace frc973 {
+
 class Intake : public CoopTask {
 public:
 	enum class IntakeMode {
@@ -51,5 +53,7 @@ private:
 	static constexpr int INTAKE_FORWARD_SPEED = 1.0;
 	static constexpr int INTAKE_REVERSE_SPEED = -1.0;
 };
+
+}
 
 #endif /* SRC_SUBSYSTEMS_INTAKE_H_ */

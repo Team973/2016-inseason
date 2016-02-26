@@ -10,6 +10,8 @@
 
 #include "lib/DriveBase.h"
 
+namespace frc973 {
+
 /*
  * CheesyDrive does the calculations and maintains state for a cheesy drive
  * control scheme.  At the moment you need to call SetJoysticks and
@@ -60,5 +62,7 @@ private:
 	double m_negInertiaAccumulator;
 	double m_quickStopAccumulator;
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_CHEESYDRIVECONTROLLER_H_ */

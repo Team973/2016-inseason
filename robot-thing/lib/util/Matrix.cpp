@@ -1,5 +1,7 @@
 #include "lib/util/Matrix.h"
 
+namespace frc973 {
+
 Matrix::Matrix(int nRows, int nCols) {
 	int i;
 	m_width = nCols;
@@ -160,4 +162,6 @@ void Matrix::Display() {
 	}
 
 	printf("]\n");
+}
+
 }

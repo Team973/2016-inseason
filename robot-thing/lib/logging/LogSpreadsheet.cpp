@@ -12,6 +12,8 @@
 #include <cstdarg>
 #include <ctime>
 
+namespace frc973 {
+
 LogCell::LogCell(const char *name,
 	uint32_t size,
 	uint32_t flags):
@@ -142,4 +144,6 @@ void LogSpreadsheet::WriteRow() {
 		(*it)->ReleaseLock();
 	}
 	*m_oFile << std::endl;
+}
+
 }

@@ -8,6 +8,8 @@
 #include "lib/filters/pid.h"
 #include <stdio.h>
 
+namespace frc973 {
+
 StraightDriveController::StraightDriveController():
 	m_leftOutput(0.0),
 	m_rightOutput(0.0),
@@ -65,4 +67,6 @@ void StraightDriveController::SetJoysticks(double throttle) {
 void StraightDriveController::SetTargetHeading(double headingDegrees) {
 	m_targetHeading = headingDegrees;
 	m_turnPid->SetTarget(m_targetHeading);
+}
+
 }

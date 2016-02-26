@@ -2,6 +2,8 @@
 #include "lib/filters/PID.h"
 #include "lib/util/Util.h"
 
+namespace frc973 {
+
 PID::PID(double Kp, double Ki, double Kd, uint32_t flags) {
     m_Kp = Kp;
     m_Ki = Ki;
@@ -122,4 +124,6 @@ double PID::GetPrevOutput() {
 
 void PID::SetPrevOutput(double prev) {
 	m_lastOutput = Util::bound(prev, m_min, m_max);
+}
+
 }

@@ -6,6 +6,8 @@
 
 #define DBSTRING_MAX_LENGTH		21
 
+namespace frc973 {
+
 const char *positionStrings[] = {
 		"DB/String 0",
 		"DB/String 1",
@@ -28,4 +30,6 @@ void DBStringPrintf(DBStringPos position, const char *formatstring, ...) {
 	va_end(args);
 
 	SmartDashboard::PutString(positionStrings[position], msg);
+}
+
 }

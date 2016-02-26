@@ -11,6 +11,8 @@
 #include "WPILib.h"
 #include "lib/CoopTask.h"
 
+namespace frc973 {
+
 class TaskMgr;
 class MovingAverageFilter;
 class DelaySwitch;
@@ -105,5 +107,7 @@ private:
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 };
+
+}
 
 #endif /* SRC_SUBSYSTEMS_SHOOTER_H_ */

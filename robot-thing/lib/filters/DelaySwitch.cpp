@@ -7,6 +7,8 @@
 
 #include "lib/filters/DelaySwitch.h"
 
+namespace frc973 {
+
 DelaySwitch::DelaySwitch() :
 	m_prevValue(false),
 	m_filter(0.9)
@@ -43,4 +45,6 @@ bool DelaySwitch::GetValue(bool currentValue) {
 
 bool DelaySwitch::GetLatestValue(void) {
 	return m_prevValue;
+}
+
 }

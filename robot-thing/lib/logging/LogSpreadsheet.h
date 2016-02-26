@@ -22,6 +22,8 @@
 #include "lib/CoopTask.h"
 #include <pthread.h>
 
+namespace frc973 {
+
 constexpr uint32_t DEFAULT_MAX_LOG_CELL_SIZE = 32;
 
 constexpr uint32_t LOG_CELL_FLAG_CLEAR_ON_READ = 1;
@@ -163,5 +165,7 @@ private:
 	bool m_initialized;
 	RobotMode m_mode;
 };
+
+}
 
 #endif /* LIB_LOGSPREADSHEET_H_ */

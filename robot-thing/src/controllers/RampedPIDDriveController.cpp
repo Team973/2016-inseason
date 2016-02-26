@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include "lib/WrapDash.h"
 
+namespace frc973 {
+
 static constexpr double DRIVE_PID_KP = 0.1;
 static constexpr double DRIVE_PID_KI = 0.0;
 static constexpr double DRIVE_PID_KD = 0.01;
@@ -83,4 +85,6 @@ void RampPIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 void RampPIDDriveController::SetTarget(double dist, double angle) {
 	m_targetDist += dist;
 	m_targetAngle += angle;
+}
+
 }

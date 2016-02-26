@@ -18,6 +18,8 @@
 #include "lib/filters/MedianFilter.h"
 #include "controllers/StateSpaceFlywheelController.h"
 
+namespace frc973 {
+
 Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_frontFlywheelMotor(nullptr),
 		m_backFlywheelMotorB(nullptr),
@@ -201,4 +203,6 @@ void Shooter::SetElevatorHeight(ElevatorHeight newHeight) {
 			break;
 		}
 	}
+}
+
 }

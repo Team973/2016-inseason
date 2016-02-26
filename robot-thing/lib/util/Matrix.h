@@ -11,6 +11,8 @@
 #include "math.h"
 #include <stdio.h>
 
+namespace frc973 {
+
 /**
  * Matrix implementation. All fields are doubles.
  */
@@ -130,5 +132,7 @@ private:
 	int m_width;
 	int m_height;
 };
+
+}
 
 #endif /* LIB_MATRIX_H_ */

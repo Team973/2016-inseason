@@ -10,6 +10,8 @@
 
 #include "WPILib.h"
 
+namespace frc973 {
+
 DriveBase::DriveBase(TaskMgr *scheduler, DriveStateProvider *state,
 		DriveControlSignalReceiver *outpt, DriveController *controller)
 		 : m_scheduler(scheduler)
@@ -42,4 +44,6 @@ bool DriveBase::OnTarget() {
 	else {
 		return false;
 	}
+}
+
 }

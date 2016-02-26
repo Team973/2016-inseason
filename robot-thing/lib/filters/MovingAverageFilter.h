@@ -13,6 +13,8 @@
 
 #include "lib/filters/FilterBase.h"
 
+namespace frc973 {
+
 class MovingAverageFilter {
 public:
 	/**
@@ -45,5 +47,7 @@ private:
 	double m_weight;
 	double m_prevValue;
 };
+
+}
 
 #endif /* LIB_MOVINGAVERAGEFILTER_H_ */

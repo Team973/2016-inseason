@@ -5,6 +5,8 @@
 
 #include "WPILib.h"
 
+namespace frc973 {
+
 StateSpaceFlywheelController::StateSpaceFlywheelController(StateSpaceGains *gains) :
 	StateSpaceController(1, 1, 2, gains, 1.0 / 200.0) {
 	enabled = true;
@@ -85,4 +87,6 @@ void StateSpaceFlywheelController::Enable() {
 void StateSpaceFlywheelController::Disable() {
 	curVel = 0.0;
 	enabled = false;
+}
+
 }

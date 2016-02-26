@@ -8,6 +8,8 @@
 #ifndef LIB_FILTERS_MEDIANFILTER_H_
 #define LIB_FILTERS_MEDIANFILTER_H_
 
+namespace frc973 {
+
 class MedianFilter {
 public:
 	MedianFilter(int buffSize = 5);
@@ -21,5 +23,7 @@ private:
 	int m_idx;
 	double m_last;
 };
+
+}
 
 #endif /* LIB_FILTERS_MEDIANFILTER_H_ */

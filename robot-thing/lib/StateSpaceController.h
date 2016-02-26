@@ -8,6 +8,8 @@
 #ifndef LIB_STATESPACECONTROLLER_H_
 #define LIB_STATESPACECONTROLLER_H_
 
+namespace frc973 {
+
 class Matrix;
 class StateSpaceGains;
 
@@ -47,5 +49,7 @@ private:
 
 	void CapU();
 };
+
+}
 
 #endif /* LIB_STATESPACECONTROLLER_H_ */

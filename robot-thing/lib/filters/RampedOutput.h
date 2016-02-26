@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+namespace frc973 {
+
 class RampedOutput {
 public:
 	/**
@@ -87,5 +89,7 @@ private:
 	uint32_t m_prevTimeMs;
 	bool m_rampFinished;
 };
+
+}
 
 #endif /* LIB_RAMPEDOUTPUT_H_ */

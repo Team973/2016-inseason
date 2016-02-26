@@ -14,6 +14,8 @@
 
 #include "GreyCompressor.h"
 
+namespace frc973 {
+
 GreyCompressor::GreyCompressor(DigitalInput *pressureSwitch, Relay *compressor,
 		TaskMgr *scheduler) :
 				m_enabled(true),
@@ -47,4 +49,6 @@ void GreyCompressor::TaskPeriodic(RobotMode mode) {
 	else {
 		m_compressor->Set(Relay::kOff);
 	}
+}
+
 }

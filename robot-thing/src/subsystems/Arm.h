@@ -11,10 +11,13 @@
 #include "lib/CoopTask.h"
 #include <stdio.h>
 
-class PID;
 class VictorSP;
 class Encoder;
 class DigitalInput;
+
+namespace frc973 {
+
+class PID;
 
 class Arm:
 	public CoopTask{
@@ -117,5 +120,7 @@ public:
 	static constexpr double ARM_PID_KI = 0.0000;
 	static constexpr double ARM_PID_KD = 0.00;
 };
+
+}
 
 #endif /* SRC_SUBSYSTEMS_ARM_H_ */

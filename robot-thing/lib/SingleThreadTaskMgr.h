@@ -14,6 +14,8 @@
 
 class RobotStateInterface;
 
+namespace frc973 {
+
 static constexpr double DEFAULT_FREQUENCY = 200.0;
 static constexpr double DEFAULT_PERIOD = (1.0 / (DEFAULT_FREQUENCY));
 
@@ -129,5 +131,7 @@ private:
 	bool m_shouldBeRunning;
 	RobotStateInterface &m_stateProvider;
 };
+
+}
 
 #endif /* FRCLIB_SINGLETHREADTASKMGR_H_ */

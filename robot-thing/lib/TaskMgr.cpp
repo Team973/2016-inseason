@@ -9,6 +9,8 @@
 #include "TaskMgr.h"
 #include "CoopTask.h"
 
+namespace frc973 {
+
 TaskMgr::TaskMgr(
 	void
 	): m_numTasks(0)
@@ -117,4 +119,6 @@ int TaskMgr::FindTask(CoopTask *task) {
 	}
 
 	return index;
+}
+
 }

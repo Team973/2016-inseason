@@ -16,6 +16,8 @@
 
 #include <math.h>
 
+namespace frc973 {
+
 constexpr uint32_t PID_SPEED_CTRL = 0x00000001;
 
 class PID
@@ -151,5 +153,7 @@ private:
     uint32_t m_flags;
     double m_lastOutput;
 };
+
+}
 
 #endif

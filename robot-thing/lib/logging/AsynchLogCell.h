@@ -17,6 +17,8 @@
 
 #include "lib/logging/LogSpreadsheet.h"
 
+namespace frc973 {
+
 class AsynchLogCellListener;
 
 /**
@@ -62,5 +64,7 @@ public:
 	 */
 	virtual void NotifyAsynchLogCellListener(AsynchLogCell *cell) = 0;
 };
+
+}
 
 #endif /* LIB_ASYNCHLOGCELL_H_ */

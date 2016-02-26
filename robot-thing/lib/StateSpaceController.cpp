@@ -3,6 +3,8 @@
 #include "StateSpaceGains.h"
 #include "util/Util.h"
 
+namespace frc973 {
+
 StateSpaceController::StateSpaceController(int nIn, int nOut, int nStates,
 		StateSpaceGains *gains, double period) {
 	m_numInputs = nIn;
@@ -79,4 +81,6 @@ void StateSpaceController::CapU() {
 		U->Set(i,
 				Util::bound(u_i, u_min, u_max));
 	}
+}
+
 }

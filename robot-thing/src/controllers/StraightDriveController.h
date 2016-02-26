@@ -7,6 +7,9 @@
 #define SRC_CONTROLLERS_STRAIGHTDRIVECONTROLLER_H_
 
 #include "lib/DriveBase.h"
+
+namespace frc973 {
+
 class PID;
 
 class StraightDriveController : public DriveController {
@@ -44,5 +47,7 @@ private:
 	double m_targetHeading;
 	double m_throttle;
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_STRAIGHTDRIVECONTROLLER_H_ */

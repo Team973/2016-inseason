@@ -8,6 +8,8 @@
 
 #include "lib/filters/MedianFilter.h"
 
+namespace frc973 {
+
 MedianFilter::MedianFilter(int buffSize)
 		 : m_buffSize(buffSize)
 		 , m_samples(new double[buffSize])
@@ -48,4 +50,6 @@ double MedianFilter::Update(double in) {
 
 double MedianFilter::GetLast() {
 	return m_last;
+}
+
 }

@@ -9,6 +9,8 @@
 
 #include "lib/StateSpaceController.h"
 
+namespace frc973 {
+
 class Debouncer;
 class Matrix;
 
@@ -37,5 +39,7 @@ public:
 
 	void Disable();
 };
+
+}
 
 #endif /* SRC_CONTROLLERS_STATESPACEFLYWHEELCONTROLLER_H_ */

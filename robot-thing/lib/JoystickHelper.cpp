@@ -1,6 +1,8 @@
 #include "JoystickHelper.h"
 #include "TaskMgr.h"
 
+namespace frc973 {
+
 ObservableJoystick::ObservableJoystick(
 	uint16_t port,
 	JoystickObserver *observer,
@@ -182,4 +184,6 @@ void ObservableJoystick::TaskPrePeriodic(RobotMode mode) {
 		}
 	}
 	m_prevBtn = currBtn;
+}
+
 }

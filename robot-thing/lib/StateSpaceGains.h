@@ -8,6 +8,8 @@
 #ifndef LIB_STATESPACEGAINS_H_
 #define LIB_STATESPACEGAINS_H_
 
+namespace frc973 {
+
 class StateSpaceGains {
 public:
 	double *m_A;
@@ -59,5 +61,7 @@ public:
 		return r;
 	}
 };
+
+}
 
 #endif /* LIB_STATESPACEGAINS_H_ */

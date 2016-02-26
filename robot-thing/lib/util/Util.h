@@ -2,8 +2,13 @@
 #define FRCLIB_UTIL_H_
 
 #include <stdint.h>
+#include <math.h>
 
 class RobotStateInterface;
+
+uint64_t GetFPGATime();
+
+namespace frc973 {
 
 //#include "WPILib.h"
 
@@ -76,120 +81,110 @@ namespace Constants {
  * Macros
  */
 #define ARRAYSIZE(a)            (sizeof(a)/sizeof((a)[0]))
-#define MAGNITUDE(x,y)          sqrt(pow(x, 2) + pow(y, 2))
-#define RADIANS_TO_DEGREES(n)   ((n)*180.0/Constants::PI)
-// Forward is 0-radian
-#define DIR_RADIANS(x,y)        ((((x) == 0.0) && ((y) == 0.0))? \
-                                    0.0: atan2(x, y))
-#define DIR_DEGREES(x,y)        RADIANS_TO_DEGREES(DIR_RADIANS(x, y))
 
-/**
- * Defined in WPILib but this is a forward declaration so we can link
- * properly in the cpp.
- */
-uint64_t GetFPGATime();
+inline double magnitude(double x,double y) {
+	return sqrt(pow(x, 2.0) + pow(y, 2.0));
+}
 
+/* Get the current timestamp in microseconds */
 inline uint64_t GetUsecTime() {
 	return GetFPGATime();
 }
 
+/* Get the current time in milliseconds */
 inline uint32_t GetMsecTime() {
 	return GetUsecTime() * Constants::MSEC_PER_USEC;
 }
 
+/* Get the current time in seconds */
 inline double GetSecTime() {
 	return GetUsecTime() * Constants::SEC_PER_USEC;
 }
 
 namespace Util {
+	/* Return |val| coerced to be above |low| and below |high| inclusive */
+	inline double bound(double val, double low, double high) {
+		if (val < low) {
+			return low;
+		}
+		else if (val > high) {
+			return high;
+		}
+		else {
+			return val;
+		}
+	}
 
-/* Return |val| coerced to be above |low| and below |high| inclusive */
-inline double bound(double val, double low, double high) {
-	if (val < low) {
-		return low;
+	/* Return the lesser of the two given numbers */
+	inline double min(double a, double b) {
+		if (a < b) {
+			return a;
+		}
+		else {
+			return b;
+		}
 	}
-	else if (val > high) {
-		return high;
+
+	/* Return the greater of the two given numbers */
+	inline double max(double a, double b) {
+		if (a > b) {
+			return a;
+		}
+		else {
+			return b;
+		}
 	}
-	else {
-		return val;
+
+	/* Return the absolute of the given number */
+	inline double abs(double x) {
+		if (x > 0.0) {
+			return x;
+		}
+		else {
+			return -x;
+		}
+	}
+
+	/**
+	 * Return 0 if |n| is within +/- |threshold|, otherwise return |n|
+	 * Useful for joysticks that aren't quite centered at zero
+	 */
+	inline double deadband(double n, double threshold) {
+		if (abs(n) > threshold) {
+			return n;
+		}
+		else {
+			return 0.0;
+		}
+	}
+
+	/**
+	 * Square the given number, but keep the sign the same
+	 */
+	inline double signSquare(double n) {
+		if (n < 0.0) {
+			return -1.0 * n * n;
+		}
+		else {
+			return n * n;
+		}
+	}
+
+	/* returns true if a and b are close (within epsilon) to each other */
+	inline bool close(double a, double b, double epsilon = 0.00001) {
+		return abs(a - b) < epsilon;
+	}
+
+	/*
+	 * The NORMALIZE macro transforms a value (n) in the range between (sl) and
+	 * (sh) to the range between (tl) and (th).
+	*/
+	inline double normalize(double n, double sl, double sh,
+			double tl, double th) {
+		return (n - sl) * (th - tl) / (sh - sl) + tl;
 	}
 }
 
-/* Return the lesser of the two given numbers */
-inline double min(double a, double b) {
-	if (a < b) {
-		return a;
-	}
-	else {
-		return b;
-	}
 }
-
-/* Return the greater of the two given numbers */
-inline double max(double a, double b) {
-	if (a > b) {
-		return a;
-	}
-	else {
-		return b;
-	}
-}
-
-/* Return the absolute of the given number */
-inline double abs(double x) {
-	if (x > 0.0) {
-		return x;
-	}
-	else {
-		return -x;
-	}
-}
-
-/**
- * Return 0 if |n| is within +/- |threshold|, otherwise return |n|
- * Useful for joysticks that aren't quite centered at zero
- */
-inline double deadband(double n, double threshold) {
-	if (abs(n) > threshold) {
-		return n;
-	}
-	else {
-		return 0.0;
-	}
-}
-
-/**
- * Square the given number, but keep the sign the same
- */
-inline double signSquare(double n) {
-	if (n < 0.0) {
-		return -1.0 * n * n;
-	}
-	else {
-		return n * n;
-	}
-}
-
-inline bool close(double a, double b, double epsilon = 0.00001) {
-	return abs(a - b) < epsilon;
-}
-
-}
-
-//
-// The NORMALIZE macro transforms a value (n) in the range between (sl) and
-// (sh) to the range between (tl) and (th).
-//
-#define NORMALIZE(n,sl,sh,tl,th) (((n) - (sl))*((th) - (tl))/((sh) - (sl)) + (tl))
-#define NORMALIZE_DRIVE(n,m)    NORMALIZE(n, -1.0, 1.0, -(m), (m))
-
-#define MOTOR_RANGE_MIN         -1.0
-#define MOTOR_RANGE_MAX         1.0
-
-#define INPUT_RANGE_MIN         -1.0
-#define INPUT_RANGE_MAX         1.0
-
-#define BOUND_INPUT(n)          BOUND(n, INPUT_RANGE_MIN, INPUT_RANGE_MAX)
 
 #endif	/* FRCLIB_UTIL_H_ */

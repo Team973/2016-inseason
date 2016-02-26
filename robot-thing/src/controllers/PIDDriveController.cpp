@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include "lib/WrapDash.h"
 
+namespace frc973 {
+
 static constexpr double DRIVE_PID_KP = 0.05;
 static constexpr double DRIVE_PID_KI = 0.0;
 static constexpr double DRIVE_PID_KD = 0;
@@ -73,4 +75,6 @@ void PIDDriveController::SetTarget(double dist, double angle) {
 	m_turnPID->Reset();
 	m_turnPID->SetTarget(m_targetAngle + angle);
 	m_targetAngle += angle;
+}
+
 }

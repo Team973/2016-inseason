@@ -17,6 +17,8 @@
 #include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
 
+namespace frc973 {
+
 class GreyCompressor : public CoopTask {
 public:
 	/**
@@ -55,5 +57,7 @@ private:
 
 	TaskMgr *m_scheduler;
 };
+
+}
 
 #endif /* LIB_GREYCOMPRESSOR_H_ */

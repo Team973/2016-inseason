@@ -10,6 +10,8 @@
 #include "lib/TaskMgr.h"
 #include "lib/WrapDash.h"
 
+namespace frc973 {
+
 Intake::Intake(TaskMgr *scheduler) :
 	m_intakeMotor(new VictorSP(BALL_INTAKE_MOTOR_PWM)),
 	m_intakeSolenoid(new Solenoid(INTAKE_EXTENSION_SOL)),
@@ -55,4 +57,6 @@ void Intake::TaskPeriodic(RobotMode mode) {
 		m_intakeMotor->Set(INTAKE_REVERSE_SPEED);
 		break;
 	}
+}
+
 }

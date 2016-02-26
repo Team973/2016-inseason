@@ -9,6 +9,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+namespace frc973 {
 
 /*
  * Task that continually checks the gyro and serves that data out
@@ -143,5 +144,7 @@ class SPIGyro {
         static const unsigned int zero_data_buffer_size = 6 * kReadingRate;
         double zeroing_data[zero_data_buffer_size];
 };
+
+}
 
 #endif

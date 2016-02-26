@@ -8,6 +8,7 @@
 #include "lib/util/Util.h"
 #include "WPILib.h"
 
+namespace frc973 {
 
 uint32_t swapTheBytes(uint32_t dword) {
    return ((dword>>24)&0x000000FF) | ((dword>>8)&0x0000FF00) | ((dword<<8)&0x00FF0000) | ((dword<<24)&0xFF000000);
@@ -236,18 +237,18 @@ void SPIGyro::CollectZeroData() {
  */
 void SPIGyro::UpdateReading() {
 	static int startup_cycles_left = 2 * kReadingRate;
-	static uint64_t lastCall;
+	//static uint64_t lastCall;
 
     const uint32_t result = GetReading();
     if (startup_cycles_left > 0) {
     	startup_cycles_left--;
-    	lastCall = GetUsecTime();
+    	//lastCall = GetUsecTime();
     	return;
     }
     if (CheckErrors(result) == false) {
-    	uint64_t now = GetUsecTime();
-    	uint64_t diff = now - lastCall;
-    	double diffSec = ((double) (diff / 1000)) / 1000.0;
+    	//uint64_t now = GetUsecTime();
+    	//uint64_t diff = now - lastCall;
+    	//double diffSec = ((double) (diff / 1000)) / 1000.0;
 
 		double new_angle =
 			ExtractAngle(result) / (double) kReadingRate;
@@ -257,7 +258,7 @@ void SPIGyro::UpdateReading() {
 		angle += new_angle;
 		angularMomentum = new_angle;
 
-		lastCall = now;
+		//lastCall = now;
 		pthread_mutex_unlock(&mutex);
     }
 }
@@ -406,6 +407,8 @@ bool SPIGyro::DoTransaction(uint32_t to_write, uint32_t *result) {
  */
 uint32_t SPIGyro::ReadPartID() {
   return (DoRead(0x0E) << 16) | DoRead(0x10);
+}
+
 }
 
 #endif

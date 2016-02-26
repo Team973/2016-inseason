@@ -1,5 +1,7 @@
 #include "lib/JoystickHelper.h"
 
+namespace frc973 {
+
 void Robot::DisabledStart(void) {
     printf("***disable start\n");
 
@@ -34,3 +36,4 @@ void Robot::DisabledContinuous(void) {
 	*/
 }
 
+}

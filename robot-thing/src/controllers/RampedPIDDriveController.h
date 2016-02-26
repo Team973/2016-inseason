@@ -8,8 +8,9 @@
 #ifndef SRC_CONTROLLERS_RAMP_PIDDRIVECONTROLLER_H_
 #define SRC_CONTROLLERS_RAMP_PIDDRIVECONTROLLER_H_
 
-
 #include "lib/DriveBase.h"
+
+namespace frc973 {
 
 class PID;
 class RampedOutput;
@@ -81,5 +82,6 @@ private:
 	bool m_distEnabled;
 };
 
+}
 
 #endif /* SRC_CONTROLLERS_PIDDRIVECONTROLLER_H_ */

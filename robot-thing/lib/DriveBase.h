@@ -15,6 +15,8 @@
 class VictorSP;
 class Encoder;
 
+namespace frc973 {
+
 /*
  * Interface for a class can determine the current statae of the drive
  * plant
@@ -121,5 +123,7 @@ private:
 
 	DriveController *m_controller;
 };
+
+}
 
 #endif /* LIB_DRIVEBASE_H_ */

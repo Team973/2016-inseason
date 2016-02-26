@@ -15,6 +15,8 @@
 
 #include "lib/util/Util.h"
 
+namespace frc973 {
+
 class Debouncer {
 public:
 	/**
@@ -47,5 +49,7 @@ private:
 	double m_period;
 	bool m_first;
 };
+
+}
 
 #endif /* LIB_FILTERS_DEBOUNCER_H_ */

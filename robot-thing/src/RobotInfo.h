@@ -10,6 +10,8 @@
 
 #include "lib/util/Util.h"
 
+namespace frc973 {
+
 //#define PROTO_BOT_PINOUT
 
 /**
@@ -94,5 +96,7 @@ constexpr double DRIVE_DIST_PER_CLICK = DRIVE_DIST_PER_REVOLUTION *
  * compensating for sampling)
  */
 constexpr double ARM_DIST_PER_CLICK = 1.0 * 9.0 / 30.0;
+
+}
 
 #endif /* SRC_ROBOTINFO_H_ */

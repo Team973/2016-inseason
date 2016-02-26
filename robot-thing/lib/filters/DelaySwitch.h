@@ -17,6 +17,8 @@
 
 #include "MovingAverageFilter.h"
 
+namespace frc973 {
+
 class DelaySwitch {
 public:
 	DelaySwitch();
@@ -42,5 +44,7 @@ private:
 	bool m_prevValue;
 	MovingAverageFilter m_filter;
 };
+
+}
 
 #endif /* LIB_DELAYSWITCH_H_ */

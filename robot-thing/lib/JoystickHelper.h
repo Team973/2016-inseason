@@ -12,6 +12,10 @@
 #include "CoopTask.h"
 #include "WPILib.h"
 
+class DriverStation;
+
+namespace frc973 {
+
 /*
  * Button mapping for the DualAction joystick
  */
@@ -98,8 +102,6 @@ public:
 			bool newState
 			) = 0;
 };
-
-class DriverStation;
 
 /**
  * This class observes a given joystick and notifies the given callback
@@ -230,5 +232,7 @@ public:
      */
     void TaskPrePeriodic(RobotMode mode) override;
 };
+
+}
 
 #endif /* LIB_JOYSTICKHELPER_H_ */

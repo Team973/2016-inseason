@@ -3,12 +3,15 @@
 
 #include "lib/DriveBase.h"
 
+class Solenoid;
+
+namespace frc973 {
+
 class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
 class RampPIDDriveController;
 class SPIGyro;
-class Solenoid;
 //class ADXRS450_Gyro;
 
 /*
@@ -124,5 +127,7 @@ private:
     PIDDriveController *m_pidDriveController;
     RampPIDDriveController *m_rampPidDriveController;
 };
+
+}
 
 #endif

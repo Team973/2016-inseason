@@ -8,6 +8,8 @@
 #include <controllers/CheesyDriveController.h>
 #include <math.h>
 
+namespace frc973 {
+
 CheesyDriveController::CheesyDriveController() :
 		m_leftOutput(0.0),
 		m_rightOutput(0.0),
@@ -174,4 +176,6 @@ void CheesyDriveController::SetJoysticks(double throttle, double wheel) {
 
 void CheesyDriveController::SetQuickTurn(bool quickturn) {
 	m_quickTurn = quickturn;
+}
+
 }

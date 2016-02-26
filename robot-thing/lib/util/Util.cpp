@@ -2,6 +2,8 @@
 #include "WPILib.h"
 #include <stdio.h>
 
+namespace frc973 {
+
 const char *robotModes[] = {"Disabled", "Auto", "TeleOp"};
 
 const char *GetRobotModeString() {
@@ -29,4 +31,6 @@ RobotMode GetRobotMode(RobotStateInterface &stateProvider) {
 		printf("Could not determine robot state... see lib::Util::GetRobotMode :(\n");
 		return RobotMode::MODE_DISABLED;
 	}
+}
+
 }

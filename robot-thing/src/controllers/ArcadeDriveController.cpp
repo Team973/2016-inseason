@@ -9,6 +9,8 @@
 #include "lib/util/Util.h"
 #include <stdio.h>
 
+namespace frc973 {
+
 ArcadeDriveController::ArcadeDriveController():
 	m_leftOutput(0.0),
 	m_rightOutput(0.0)
@@ -57,4 +59,6 @@ void ArcadeDriveController::SetJoysticks(double throttle, double turn) {
 	//m_leftOutput = throttle + turn;
 	//m_rightOutput = throttle - turn;
 	printf("left %lf  right %lf\n", m_leftOutput, m_rightOutput);
+}
+
 }

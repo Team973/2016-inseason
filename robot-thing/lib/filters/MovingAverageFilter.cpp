@@ -7,6 +7,8 @@
 
 #include "lib/filters/MovingAverageFilter.h"
 
+namespace frc973 {
+
 MovingAverageFilter::MovingAverageFilter(double weight, double initial):
 	m_weight(weight),
 	m_prevValue(initial)
@@ -24,4 +26,6 @@ double MovingAverageFilter::Update(double currentValue) {
 
 double MovingAverageFilter::GetLast(void) {
 	return m_prevValue;
+}
+
 }

@@ -7,6 +7,8 @@
 
 #include <lib/filters/FilterBase.h>
 
+namespace frc973 {
+
 FilterBase::FilterBase() {
 	// TODO Auto-generated constructor stub
 
@@ -14,4 +16,6 @@ FilterBase::FilterBase() {
 
 FilterBase::~FilterBase() {
 	// TODO Auto-generated destructor stub
+}
+
 }

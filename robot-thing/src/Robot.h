@@ -3,10 +3,13 @@
 
 class VictorSP;
 class Accelerometer;
-class SPIGyro;
 //class ADXRS450_Gyro;
 class Encoder;
 class DigitalInput;
+class PowerDistributionPanel;
+
+namespace frc973 {
+
 class LogSpreadsheet;
 class SingleThreadTaskMgr;
 class Drive;
@@ -15,7 +18,7 @@ class Shooter;
 class Arm;
 class GreyCompressor;
 class LogCell;
-class PowerDistributionPanel;
+class SPIGyro;
 
 class Robot:
 		public CoopMTRobot,
@@ -128,3 +131,5 @@ public:
 
 	void PrintState();
 };
+
+}
