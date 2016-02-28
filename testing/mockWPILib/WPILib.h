@@ -13,6 +13,8 @@
 #include <string>
 #include <cstring>
 
+#include "MockTime.h"
+
 class RobotStateInterface;
 class VictorSP;
 
@@ -47,6 +49,7 @@ public:
 	virtual ~Joystick() {}
 	bool GetRawButton(int btn) { return false; }
 	double GetRawAxis(int axis) { return DriverStation::GetInstance().GetStickAxis(m_chan, axis); }
+	int GetPOV() { return 0; }
 private:
 	int m_chan;
 };
@@ -100,5 +103,42 @@ public:
 	bool Get() { return false; }
 };
 
+class SPI {
+public:
+	enum Port {
+		kOnboardCS0, kOnboardCS1, kOnboardCS2, kOnboardCS3, kMXP
+	};
+
+	SPI(Port SPIPort) {}
+	virtual ~SPI() {}
+
+	void SetMSBFirst() {}
+	int Transaction(void *to_send, void *to_receive, int numBytes) { return 0; }
+	void SetClockActiveHigh() {}
+	void SetSampleDataOnRising() {}
+	void SetClockRate(int something) {}
+	void SetChipSelectActiveLow() {}
+};
+
+class Timer {
+	double m_startTime;
+public:
+	Timer() : m_startTime(0.0) {}
+	virtual ~Timer() {}
+
+	void Start() { m_startTime = MockTime::GetSecTime(); }
+	double Get() { return MockTime::GetSecTime() - m_startTime; }
+	void Reset() { Start(); }
+};
+
+class PowerDistributionPanel {
+public:
+	PowerDistributionPanel() {}
+	virtual ~PowerDistributionPanel() {}
+};
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 int gethostname(char *name, size_t len);
+#endif
+
 #endif /* WPILIB_H_ */

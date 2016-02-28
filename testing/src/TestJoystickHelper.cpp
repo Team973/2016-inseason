@@ -10,6 +10,7 @@
 #include <vector>
 #include "MockTaskMgr.h"
 
+using namespace frc973;
 
 struct StateChangeCall {
 	uint32_t port;
@@ -17,6 +18,9 @@ struct StateChangeCall {
 	bool state;
 	bool operator==(const StateChangeCall &that) {
 		return port == that.port && button == that.button && state == that.state;
+	}
+	void print() {
+		printf("port %d, button 0x%x (%d), state %d\n", port, button, button, state);
 	}
 };
 
@@ -56,6 +60,9 @@ void TestJoystickHelper::TestButtonEventCallback() {
 	ObservableJoystick jsb = ObservableJoystick(1, &obs, &tasker, &ds);
 
 	tasker.TaskPrePeriodicAll(MODE_DISABLED);
+	for (int i = 0; i < 4; i++) {
+		obs.calls[i].print();
+	}
 	ASSERT_EQUAL(0, obs.calls.size());
 
 	printf("setting just button (0,1)\n");

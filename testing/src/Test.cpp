@@ -7,6 +7,7 @@
 #include "TestFilter.h"
 #include "TestTaskMgr.h"
 #include "TestJoystickHelper.h"
+#include "TestPoseManager.h"
 
 void runAllTests(int argc, char const *argv[]){
 	cute::suite s;
@@ -15,6 +16,7 @@ void runAllTests(int argc, char const *argv[]){
 	s += TestFilters().MakeSuite();
 	s += TestTaskMgr().MakeSuite();
 	s += TestJoystickHelper().MakeSuite();
+	s += TestPoseManager().MakeSuite();
 
 	cute::xml_file_opener xmlfile(argc,argv);
 	cute::xml_listener<cute::ide_listener<> >  lis(xmlfile.out);

@@ -22,6 +22,7 @@ Arm::Arm(TaskMgr *scheduler)
 		 , m_mode(ArmMode::position_control)
 		 , m_targetSpeed(0.0)
 		 , m_targetPos(0.0)
+		 , m_armPow(0.0)
 		 , m_pid(new PID(ARM_PID_KP, ARM_PID_KI, ARM_PID_KD))
 		 , m_zeroOffsetDeg(ARM_OFFSET) {
 	m_armEncoder->SetDistancePerPulse(ARM_DIST_PER_CLICK);
@@ -38,8 +39,15 @@ void Arm::SetTargetSpeed(double speed) {
 }
 
 void Arm::SetTargetPosition(double pos) {
-	m_targetPos = pos;
 	m_mode = ArmMode::position_control;
+
+	m_targetPos = Util::bound(pos, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
+	m_pid->SetTarget(m_targetPos);
+}
+
+void Arm::SetPower(double power) {
+	m_armPow = power;
+	m_mode = ArmMode::openLoop_control;
 }
 
 double Arm::GetArmAngle() {
@@ -50,26 +58,40 @@ double Arm::GetArmVelocity() {
 	return m_armEncoder->GetRate();
 }
 
+/**
+ * positionStep is only used in velocity_control but because of C++ weirdness
+ * it can't be declared inside the case statement.  I declare it outside and
+ * only use it in that one case.
+ *
+ * in velocity_control we do position pid but we move the position setpoint by
+ * some increment every iteration.
+ */
 void Arm::TaskPeriodic(RobotMode mode) {
 	static double lastTime = 0;
 	double currTimeSec = GetSecTime();
+	double timeStepSec = currTimeSec - lastTime;
+	double positionStep;
 
+	switch (m_mode) {
+	case ArmMode::velocity_control:
+		positionStep = m_targetSpeed * timeStepSec;
+		m_targetPos = Util::bound(m_targetPos + positionStep, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
 
-	if (m_mode == ArmMode::velocity_control) {
-		double timeStepSec = currTimeSec - lastTime;
-		double positionStep = m_targetSpeed * timeStepSec;
-		m_targetPos += positionStep;
+		m_pid->SetTarget(m_targetPos);
+		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		break;
+
+	case ArmMode::position_control:
+		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		break;
+
+	case ArmMode::openLoop_control:
+		m_armMotor->Set(m_armPow);
+		break;
 	}
-
-	m_targetPos = Util::bound(m_targetPos, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
-
-	m_pid->SetTarget(m_targetPos);
-	double motorPower = m_pid->CalcOutput(GetArmAngle());
 
 	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
 	DBStringPrintf(DBStringPos::DB_LINE7, "arm setpt %lf", m_targetPos);
-
-	m_armMotor->Set(motorPower);
 
 	lastTime = currTimeSec;
 }

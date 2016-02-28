@@ -8,6 +8,8 @@
 #include "lib/util/Matrix.h"
 #include "TestMatrix.h"
 
+using namespace frc973;
+
 void TestMatrix::TestMatrixSetGet() {
 	Matrix m = Matrix(4, 6);
 

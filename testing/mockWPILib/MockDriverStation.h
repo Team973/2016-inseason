@@ -12,42 +12,42 @@
 
 class RobotStateInterface {
 public:
-	RobotStateInterface(RobotMode mode) : m_mode(mode) {
+	RobotStateInterface(frc973::RobotMode mode) : m_mode(mode) {
 		;
 	}
 
-	RobotStateInterface() : m_mode(RobotMode::MODE_DISABLED) {
+	RobotStateInterface() : m_mode(frc973::RobotMode::MODE_DISABLED) {
 		;
 	}
 
 	virtual ~RobotStateInterface() {}
 
-	void SetRobotMode(RobotMode mode) {
+	void SetRobotMode(frc973::RobotMode mode) {
 		m_mode = mode;
 	}
 
 	bool IsDisabled() {
-		return m_mode == RobotMode::MODE_DISABLED;
+		return m_mode == frc973::RobotMode::MODE_DISABLED;
 	}
 
 	bool IsEnabled() {
-		return m_mode != RobotMode::MODE_DISABLED;
+		return m_mode != frc973::RobotMode::MODE_DISABLED;
 	}
 
 	bool IsOperatorControl() {
-		return m_mode == RobotMode::MODE_TELEOP;
+		return m_mode == frc973::RobotMode::MODE_TELEOP;
 	}
 
 	bool IsAutonomous() {
-		return m_mode == RobotMode::MODE_AUTO;
+		return m_mode == frc973::RobotMode::MODE_AUTO;
 	}
 
 	bool IsTest() {
-		return m_mode == RobotMode::MODE_TEST;
+		return m_mode == frc973::RobotMode::MODE_TEST;
 	}
 
 private:
-	RobotMode m_mode;
+	frc973::RobotMode m_mode;
 };
 
 

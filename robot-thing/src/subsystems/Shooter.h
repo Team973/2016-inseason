@@ -40,8 +40,22 @@ public:
 	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
-	void SetFlywheelSSShoot(double goal);
-	void SetFlywheelPower(double pow);
+	void SetFrontFlywheelSSShoot(double goal);
+	void SetBackFlywheelSSShoot(double goal);
+
+	void SetFlywheelSSShoot(double goal) {
+		SetFrontFlywheelSSShoot(goal);
+		SetBackFlywheelSSShoot(goal);
+	}
+
+	void SetFrontFlywheelPower(double pow);
+	void SetBackFlywheelPower(double pow);
+
+	void SetFlywheelPower(double pow) {
+		SetFrontFlywheelPower(pow);
+		SetBackFlywheelPower(pow);
+	}
+
 	void SetFlywheelStop();
 
 	void SetConveyerPower(double pow) {
@@ -64,11 +78,12 @@ public:
 	}
 
 	void SetElevatorHeight(ElevatorHeight newHeight);
-private:
+
 	enum FlywheelState {
 		openLoop,
 		ssControl
 	};
+private:
 
 	VictorSP *m_frontFlywheelMotor;
 	VictorSP *m_backFlywheelMotor;
@@ -77,11 +92,15 @@ private:
 	Counter *m_frontFlywheelEncoder;
 	Counter *m_backFlywheelEncoder;
 
-	FlywheelState m_flywheelState;
+	FlywheelState m_frontFlywheelState;
+	FlywheelState m_backFlywheelState;
 
-	double m_flywheelTargetSpeed;
+	double m_frontFlywheelTargetSpeed;
+	double m_backFlywheelTargetSpeed;
 	StateSpaceFlywheelController *m_frontController;
-	double m_flywheelSetPower;
+	StateSpaceFlywheelController *m_backController;
+	double m_frontFlywheelSetPower;
+	double m_backFlywheelSetPower;
 
 	bool m_flywheelReady;
 
@@ -106,6 +125,16 @@ private:
 	TaskMgr *m_scheduler;
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
+public:
+	ElevatorHeight GetElevatorState() {
+		return m_elevatorState;
+	}
+	FlywheelState GetFrontFlywheelState() {
+		return m_frontFlywheelState;
+	}
+	FlywheelState GetBackFlywheelState() {
+		return m_backFlywheelState;
+	}
 };
 
 }

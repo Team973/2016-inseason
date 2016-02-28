@@ -12,6 +12,7 @@
 
 #include "MockTaskMgr.h"
 
+using namespace frc973;
 
 void TestTaskMgr::TestRegisterUnregister() {
 	AllPublicTaskMgr m = AllPublicTaskMgr();

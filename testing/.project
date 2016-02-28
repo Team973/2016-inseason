@@ -3,19 +3,22 @@
 	<name>testing</name>
 	<comment></comment>
 	<projects>
-		<project>libtest</project>
+		<project>robot-thing</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
-			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
 			<triggers>full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -28,7 +31,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>libtest</name>
+			<name>robot-thing</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/robot-thing</locationURI>
 		</link>

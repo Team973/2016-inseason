@@ -11,6 +11,8 @@
 #include "lib/filters/MedianFilter.h"
 #include "lib/filters/MovingAverageFilter.h"
 
+using namespace frc973;
+
 #define ASSERT_CLOSE(expected,actual)\
 	ASSERTM(#expected " expected but was " #actual, Util::close(expected,actual))
 
@@ -49,12 +51,12 @@ void TestFilters::TestMedianOf3Filter() {
 void TestFilters::TestMovingAverageFilter() {
 	MovingAverageFilter f = MovingAverageFilter(0.8);
 
-	ASSERT_CLOSE(f.GetLatestValue(), 0.0);
-	ASSERT_CLOSE(f.GetValue(1.0), 0.2);
-	ASSERT_CLOSE(f.GetLatestValue(), 0.2);
-	ASSERT_CLOSE(f.GetValue(1.0), 0.36);
-	ASSERT_CLOSE(f.GetValue(1.0), 0.488);
-	ASSERT_CLOSE(f.GetValue(1.0), 0.5904);
+	ASSERT_CLOSE(f.GetLast(), 0.0);
+	ASSERT_CLOSE(f.Update(1.0), 0.2);
+	ASSERT_CLOSE(f.GetLast(), 0.2);
+	ASSERT_CLOSE(f.Update(1.0), 0.36);
+	ASSERT_CLOSE(f.Update(1.0), 0.488);
+	ASSERT_CLOSE(f.Update(1.0), 0.5904);
 }
 
 cute::suite TestFilters::MakeSuite(){

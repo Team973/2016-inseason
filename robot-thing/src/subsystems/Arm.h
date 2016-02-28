@@ -43,6 +43,13 @@ public:
 	void SetTargetPosition(double position);
 
 	/**
+	 * Set the power sent to the arm... good for teleop open loop control
+	 *
+	 * @param power to send to the arm
+	 */
+	void SetPower(double power);
+
+	/**
 	 * Some preset positions (in degrees) for other subsystems (or teleop)
 	 * to reference if they want to send the arm somewhere.
 	 */
@@ -77,7 +84,8 @@ private:
 
 	enum ArmMode {
 		position_control,
-		velocity_control
+		velocity_control,
+		openLoop_control
 	};
 
 	TaskMgr *m_scheduler;
@@ -90,6 +98,7 @@ private:
 	ArmMode m_mode;
 	double m_targetSpeed;
 	double m_targetPos;
+	double m_armPow;
 	PID *m_pid;
 
 	double m_zeroOffsetDeg;
@@ -97,6 +106,7 @@ public:
 	/**
 	 * maximum speed that the arm should go when the user presses full
 	 * forward or full back on joystick.  Units degrees/sec.
+	 * (only used in velocity_control mode... position mode is as fast as possible)
 	 */
 	static constexpr double MAX_ARM_SPEED = 40.0;
 

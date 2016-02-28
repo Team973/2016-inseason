@@ -5,7 +5,7 @@
 
 #include "controllers/StraightDriveController.h"
 #include "lib/util/Util.h"
-#include "lib/filters/pid.h"
+#include "lib/filters/PID.h"
 #include <stdio.h>
 
 namespace frc973 {

@@ -9,7 +9,8 @@
 #include "RobotInfo.h"
 #include "lib/util/Util.h"
 #include "lib/WrapDash.h"
-#include "controllers/ShooterGainsValentines.h"
+#include "controllers/ShooterGains_front.h"
+#include "controllers/ShooterGains_back.h"
 #include "lib/TaskMgr.h"
 #include "lib/filters/MovingAverageFilter.h"
 #include "lib/filters/DelaySwitch.h"
@@ -26,10 +27,14 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_conveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM)),
 		m_frontFlywheelEncoder(new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN)),
 		m_backFlywheelEncoder(new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN)),
-		m_flywheelState(FlywheelState::openLoop),
-		m_flywheelTargetSpeed(0.0),
-		m_frontController(new StateSpaceFlywheelController(FlywheelGainsValentines::MakeGains())),
-		m_flywheelSetPower(0.0),
+		m_frontFlywheelState(FlywheelState::openLoop),
+		m_backFlywheelState(FlywheelState::openLoop),
+		m_frontFlywheelTargetSpeed(0.0),
+		m_backFlywheelTargetSpeed(0.0),
+		m_frontController(new StateSpaceFlywheelController(FlywheelGainsFront::MakeGains())),
+		m_backController(new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains())),
+		m_frontFlywheelSetPower(0.0),
+		m_backFlywheelSetPower(0.0),
 		m_flywheelReady(false),
 		frontMeanFilter(new MovingAverageFilter(0.85)),
 		frontMedFilter(new MedianFilter()),
@@ -48,54 +53,80 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
-	logger->RegisterCell(m_shooterPow);
-	logger->RegisterCell(m_frontFlywheelSpeed);
-	logger->RegisterCell(m_frontFlywheelFilteredSpeed);
-	//logger->RegisterCell(m_shooterTime);
+	if (logger != nullptr) {
+		logger->RegisterCell(m_shooterPow);
+		logger->RegisterCell(m_frontFlywheelSpeed);
+		logger->RegisterCell(m_frontFlywheelFilteredSpeed);
+		//logger->RegisterCell(m_shooterTime);
+	}
 }
 
 Shooter::~Shooter() {
 	m_scheduler->UnregisterTask(this);
 }
 
-void Shooter::SetFlywheelSSShoot(double goal) {
-	m_flywheelState = FlywheelState::ssControl;
-	m_flywheelTargetSpeed = goal;
-	m_frontController->SetVelocityGoal(m_flywheelTargetSpeed * Constants::PI / 30.0);
+void Shooter::SetFrontFlywheelSSShoot(double goal) {
+	m_frontFlywheelState = FlywheelState::ssControl;
+	m_frontFlywheelTargetSpeed = goal;
+	m_frontController->SetVelocityGoal(m_frontFlywheelTargetSpeed * Constants::PI / 30.0);
 }
 
-void Shooter::SetFlywheelPower(double pow) {
-	m_flywheelState = FlywheelState::openLoop;
-	m_flywheelSetPower = pow;
+void Shooter::SetBackFlywheelSSShoot(double goal) {
+	m_backFlywheelState = FlywheelState::ssControl;
+	m_backFlywheelTargetSpeed = goal;
+	m_backController->SetVelocityGoal(m_backFlywheelTargetSpeed * Constants::PI / 30.0);
+}
 
+void Shooter::SetFrontFlywheelPower(double pow) {
+	m_frontFlywheelState = FlywheelState::openLoop;
+	m_frontFlywheelSetPower = pow;
+}
+
+void Shooter::SetBackFlywheelPower(double pow) {
+	m_backFlywheelState = FlywheelState::openLoop;
+	m_backFlywheelSetPower = pow;
 }
 
 void Shooter::SetFlywheelStop() {
-	m_flywheelState = FlywheelState::openLoop;
-	m_flywheelSetPower = 0.0;
+	m_frontFlywheelState = FlywheelState::openLoop;
+	m_backFlywheelState = FlywheelState::openLoop;
+	m_frontFlywheelSetPower = 0.0;
+	m_backFlywheelSetPower = 0.0;
 	printf("stop\n");
 }
 
 void Shooter::TaskPeriodic(RobotMode mode) {
 	double frontMotorOutput;
+	double backMotorOutput;
 
-	switch(m_flywheelState) {
+	switch(m_frontFlywheelState) {
 	case FlywheelState::ssControl:
 		frontMotorOutput = m_frontController->Update(
 				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotor->Set(frontMotorOutput * 0.666);
 		break;
 	case FlywheelState::openLoop:
-		frontMotorOutput = m_flywheelSetPower;
+		frontMotorOutput = m_frontFlywheelSetPower;
 
 		m_frontFlywheelMotor->Set(frontMotorOutput);
-		m_backFlywheelMotor->Set(frontMotorOutput);
 		break;
 	}
 
-	//printf("Flywheel rate: %lf motor out: %lf\n", GetFlywheelRate(), motorOutput);
+	switch(m_backFlywheelState) {
+	case FlywheelState::ssControl:
+		backMotorOutput = m_backController->Update(
+				this->GetRearFlywheelFilteredRate() * Constants::PI / 30.0);
+
+		m_backFlywheelMotor->Set(backMotorOutput);
+		break;
+	case FlywheelState::openLoop:
+		backMotorOutput = m_backFlywheelSetPower;
+
+		m_backFlywheelMotor->Set(backMotorOutput);
+		break;
+	}
+
 	DBStringPrintf(DBStringPos::DB_LINE0,
 			"ff med rate: %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,

@@ -37,7 +37,7 @@ bool SocketClient::Start() {
 
 	//fills hints with a linked list of possible connection methods
 	int rv;
-	if ((rv = getaddrinfo("fe80::aa20::66ff::fe0c::a612::%en0", SERVER_PORT, &hints, &res)) != 0) {
+	if ((rv = getaddrinfo("10.9.73.21", SERVER_PORT, &hints, &res)) != 0) {
 		printf("getaddrinfo %s\n", gai_strerror(rv));
 		return false;
 	}

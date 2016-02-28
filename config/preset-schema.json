@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Robot config file",
+    "description": "Configuration file for the robot Avilanche",
+    "type": "object",
+    "properties": {
+        "poses": {
+            "description": "List of preset poses the robot can take",
+            "type": "array",
+            "items": {
+                "title": "Pose",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "human-readable name of pose"
+                    },
+                    "armControl": {
+                        "type": "boolean",
+                        "description": "should we care about the position of the arm?  if so, go to the angle specified in |armControl|, otherwise, just let the arm go limp"
+                    },
+                    "armTarget": {
+                        "type": "number",
+                        "description": "(if |armControl|) what angle (in degrees) should the arm go to?"
+                    },
+                    "intakeExtended": {
+                        "type": "boolean",
+                        "description": "Should we extend the lower intake?"
+                    },
+                    "longCylinderExtended": {
+                        "type": "boolean",
+                        "description": "should we extend the long cylinder? true or false"
+                    },
+                    "shortCylinderExtended": {
+                        "type": "boolean",
+                        "description": "should we extend the short cylinder?"
+                    },
+                    "superiorFlywheelControl": {
+                        "enum": ["open", "closed"],
+                        "description": "should we do rpm control on the superior flywheel or just set the motors to constant power? (field can be either 'open' or 'closed')"
+                    },
+                    "inferiorFlywheelControl": {
+                        "enum": ["open", "closed"],
+                        "description": "should we do rpm control on the inferior flywheel or just set the motors to constant power? (field can be either 'open' or 'closed')"
+                    },
+                    "superiorFlywheelRPM": {
+                        "type": "number",
+                        "description": "if |superiorFlywheelControl| is true, this is the rpm to try to get the superior flywheel to be at... otherwise it's ignored"
+                    },
+                    "inferiorFlywheelRPM": {
+                        "type": "number",
+                        "description": "if |inferiorFlywheelControl| is true, this is the rpm to try to get the inferior flywheel to be at... otherwise it's ignored"
+                    },
+                    "superiorFlywheelPower": {
+                        "type": "number",
+                        "description": "if |superiorFlywheelControl| is false, this is the power to set the superior flywheel motors at... otherwise it's ignored"
+                    },
+                    "inferiorFlywheelPower": {
+                        "type": "number",
+                        "description": "if |inferiorFlywheelControl| is false, this is the power to set the inferior flywheel motor at... otherwise it's ignored"
+                    }
+                },
+                "required": [
+                    "name",
+                    "armControl",
+                    "armTarget",
+                    "intakeExtended",
+                    "longCylinderExtended",
+                    "shortCylinderExtended",
+                    "superiorFlywheelControl",
+                    "inferiorFlywheelControl",
+                    "superiorFlywheelRPM",
+                    "inferiorFlywheelRPM",
+                    "superiorFlywheelPower",
+                    "inferiorFlywheelPower"
+                ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "poses"
+    ]
+}

@@ -54,22 +54,22 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1517006341" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.1834268488" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/robot-thing}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/robot-thing/src}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1242445039" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libtest" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="libtest"/>
+						<entry excluding="robot-thing" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="robot-thing"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
-				<externalSettings containerId="libtest;cdt.managedbuild.config.gnu.cross.exe.debug.1104744751" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="robot-thing;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
 			</storageModule>
 		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.release.1693758399">
@@ -96,8 +96,8 @@
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.303485011" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1322160188" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest"/>
-									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/libtest/src"/>
+									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/robot-thing"/>
+									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/robot-thing/src"/>
 									<listOptionValue builtIn="false" value="/home/andrew/Documents/frc/2016-inseason/testing/src"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1487637134" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
@@ -124,8 +124,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.368113324" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
 								<option id="gnu.both.asm.option.include.paths.2094073205" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/cute}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libtest/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/robot-thing}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/robot-thing/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/mockWPILib}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1615241456" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>

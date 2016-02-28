@@ -1,0 +1,32 @@
+{
+    "poses": [
+        {
+            "name": "far-shot",
+            "armControl": false,
+            "armTarget": 0.0,
+            "intakeExtended": false,
+            "longCylinderExtended": true,
+            "shortCylinderExtended": false,
+            "superiorFlywheelControl": "closed",
+            "inferiorFlywheelControl": "open",
+            "superiorFlywheelRPM": 5500.0,
+            "inferiorFlywheelRPM": 0.0,
+            "superiorFlywheelPower": 0.6,
+            "inferiorFlywheelPower": 0.8
+        },
+        {
+            "name": "near-shot",
+            "armControl": true,
+            "armTarget": 90.0,
+            "intakeExtended": true,
+            "longCylinderExtended": true,
+            "shortCylinderExtended": true,
+            "superiorFlywheelControl": "open",
+            "inferiorFlywheelControl": "open",
+            "superiorFlywheelRPM": 5500.0,
+            "inferiorFlywheelRPM": 0.0,
+            "superiorFlywheelPower": 0.6,
+            "inferiorFlywheelPower": 0.8
+        }
+    ]
+}
