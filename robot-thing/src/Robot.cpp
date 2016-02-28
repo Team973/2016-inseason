@@ -13,6 +13,8 @@
 #include "subsystems/Drive.h"
 #include "subsystems/Arm.h"
 
+#include "PoseManager.h"
+
 namespace frc973 {
 
 
@@ -58,7 +60,8 @@ Robot::Robot(void
 	m_state(nullptr),
 	m_accelCellX(nullptr),
 	m_accelCellY(nullptr),
-	m_accelCellZ(nullptr)
+	m_accelCellZ(nullptr),
+	m_poseManager(nullptr)
 {
 	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 200.0);
 
@@ -113,6 +116,8 @@ Robot::Robot(void
 
     pthread_t serverThread;
     pthread_create(&serverThread, NULL, runServer, NULL);
+
+    m_poseManager = new PoseManager(m_arm, m_shooter, m_intake);
 }
 
 Robot::~Robot(void) {

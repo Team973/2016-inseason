@@ -27,10 +27,17 @@ PoseManager::~PoseManager() {
 }
 
 void PoseManager::ReloadConfiguration() {
-	std::ifstream fileStream ("~/presets.json", std::ifstream::in);
+	std::ifstream fileStream;// ("~/presets.json", std::ifstream::in);
+	fileStream.open("presets.json");
 	Json::Reader reader;
 
-	reader.parse(fileStream, m_configRoot);
+	if (fileStream) {
+		reader.parse(fileStream, m_configRoot);
+		printf("parsed config file correcly!\n");
+	}
+	else {
+		printf("No file found!\n");
+	}
 }
 
 void PoseManager::NextPose() {
@@ -38,6 +45,13 @@ void PoseManager::NextPose() {
 
 	printf("Pose now selected: %s\n",
 			m_configRoot["poses"][m_currPose]["name"].asCString());
+
+	/*
+	 * You might want to print the currently selected pose on the dash...
+	 * idk which line is open, though...
+	DBStringPrintf(DBStringPos::DB_LINE4,
+			"curr Pose%s", m_configRoot["poses"][m_currPose]["name"].asCString());
+	 */
 }
 
 void PoseManager::AssumePose() {

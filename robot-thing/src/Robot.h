@@ -19,6 +19,7 @@ class Arm;
 class GreyCompressor;
 class LogCell;
 class SPIGyro;
+class PoseManager;
 
 class Robot:
 		public CoopMTRobot,
@@ -87,6 +88,8 @@ private:
 	LogCell *m_accelCellY;
 	LogCell *m_accelCellZ;
 	LogCell *m_messages;
+
+	PoseManager *m_poseManager;
 
 public:
 	/**

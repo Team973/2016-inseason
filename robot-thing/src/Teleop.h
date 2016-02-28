@@ -86,14 +86,12 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->RampPIDTurn(-5.0);
+				m_poseManager->Chill();
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->RampPIDDrive(5.0);
+				m_poseManager->NextPose();
 			}
 			break;
 		case DualAction::BtnA:
@@ -102,7 +100,9 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			}
 			break;
 		case DualAction::RightTrigger:
-			teleopDrive = true;
+			if (pressedP) {
+				m_poseManager->AssumePose();
+			}
 			break;
 		}
 	}

@@ -30,20 +30,61 @@ void TestPoseManager::TestFirstPose() {
 }
 
 void TestPoseManager::TestSecondPose() {
+	AllPublicTaskMgr tasker = AllPublicTaskMgr();
+	Arm arm = Arm(&tasker);
+	Shooter shooter = Shooter(&tasker, nullptr);
+	Intake intake = Intake(&tasker);
+	printf("creating\n");
+	PoseManager pm = PoseManager(&arm, &shooter, &intake);
 
+	pm.NextPose();
+	pm.AssumePose();
+
+	ASSERT(shooter.GetFrontFlywheelState() == Shooter::FlywheelState::openLoop);
+	ASSERT(shooter.GetBackFlywheelState() == Shooter::FlywheelState::openLoop);
+	ASSERT(shooter.GetElevatorState() == Shooter::ElevatorHeight::wayHigh);
 }
 
 void TestPoseManager::TestWrapPose() {
+	AllPublicTaskMgr tasker = AllPublicTaskMgr();
+	Arm arm = Arm(&tasker);
+	Shooter shooter = Shooter(&tasker, nullptr);
+	Intake intake = Intake(&tasker);
+	printf("creating\n");
+	PoseManager pm = PoseManager(&arm, &shooter, &intake);
 
+	pm.NextPose();
+	pm.NextPose();
+	pm.AssumePose();
+
+	ASSERT(shooter.GetFrontFlywheelState() == Shooter::FlywheelState::ssControl);
+	ASSERT(shooter.GetBackFlywheelState() == Shooter::FlywheelState::openLoop);
+	ASSERT(shooter.GetElevatorState() == Shooter::ElevatorHeight::midHigh);
 }
 
 void TestPoseManager::TestRePose() {
+	AllPublicTaskMgr tasker = AllPublicTaskMgr();
+	Arm arm = Arm(&tasker);
+	Shooter shooter = Shooter(&tasker, nullptr);
+	Intake intake = Intake(&tasker);
+	printf("creating\n");
+	PoseManager pm = PoseManager(&arm, &shooter, &intake);
 
+	pm.AssumePose();
+	pm.NextPose();
+	pm.AssumePose();
+
+	ASSERT(shooter.GetFrontFlywheelState() == Shooter::FlywheelState::openLoop);
+	ASSERT(shooter.GetBackFlywheelState() == Shooter::FlywheelState::openLoop);
+	ASSERT(shooter.GetElevatorState() == Shooter::ElevatorHeight::wayHigh);
 }
 
 
 cute::suite TestPoseManager::MakeSuite(){
 	cute::suite s;
 	s.push_back(CUTE_SMEMFUN(TestPoseManager, TestFirstPose));
+	s.push_back(CUTE_SMEMFUN(TestPoseManager, TestSecondPose));
+	s.push_back(CUTE_SMEMFUN(TestPoseManager, TestWrapPose));
+	s.push_back(CUTE_SMEMFUN(TestPoseManager, TestRePose));
 	return s;
 }

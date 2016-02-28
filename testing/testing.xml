@@ -1,5 +1,5 @@
 <testsuites>
-	<testsuite name="AllTests" tests="13">
+	<testsuite name="AllTests" tests="16">
 		<testcase classname="AllTests" name="TestMatrix::TestMatrixFlash"/>
 		<testcase classname="AllTests" name="TestMatrix::TestMatrixSetGet"/>
 		<testcase classname="AllTests" name="TestMatrix::TestMatrixEquality"/>
@@ -16,10 +16,9 @@ TestButtonEventCallback: 0 == obs.calls.size() expected:	0	but was:	4
 			</failure>
 		</testcase>
 		<testcase classname="AllTests" name="TestJoystickHelper::TestVirtualJoystickButtons"/>
-		<testcase classname="AllTests" name="TestPoseManager::TestFirstPose">
-			<failure message="../src/TestPoseManager.cpp:27 TestFirstPose: shooter.GetFrontFlywheelState() == Shooter::FlywheelState::ssControl">
-TestFirstPose: shooter.GetFrontFlywheelState() == Shooter::FlywheelState::ssControl
-			</failure>
-		</testcase>
+		<testcase classname="AllTests" name="TestPoseManager::TestFirstPose"/>
+		<testcase classname="AllTests" name="TestPoseManager::TestSecondPose"/>
+		<testcase classname="AllTests" name="TestPoseManager::TestWrapPose"/>
+		<testcase classname="AllTests" name="TestPoseManager::TestRePose"/>
 	</testsuite>
 </testsuites>
