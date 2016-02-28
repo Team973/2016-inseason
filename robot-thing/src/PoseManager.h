@@ -1,6 +1,25 @@
 /*
  * PoseManager.h
  *
+ * PoseManager reads a configuration file... there's an example configuration file
+ * in {repository-root}/config/presets.json.  Upload a file like this to the
+ * home directory on the robot.
+ *
+ * Optional:  if you make changes to the presets.json file, you can run check.py
+ * and it will check it for typos and type-errors.  I don't know what PoseManager
+ * will do in the event of one of these errors.  In my experience, it fails
+ * silently (looking into it).  So if it fails weirdly, try running check.py and
+ * it'll tell you if there's a problem in the config file.
+ *
+ * At the moment, these are the controls:
+ * 	driverJoystick.buttonX -> Chill (stop moving the motors)
+ * 	driverJoystick.buttonY -> Go to the next pose in the list
+ * 					if you hit the end of the list, wrap back around to the beginning
+ * 					don't actually move the motors to the pose, just select it.  The motors
+ * 							will move when you "Assume pose"
+ * 	driverJoystick.rightTrigger -> Assume pose
+ * 					Actually start moving the motors to get to the pose position.
+ *
  *  Created on: Feb 26, 2016
  *      Author: andrew
  */
