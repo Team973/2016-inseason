@@ -1,4 +1,4 @@
-==How to do the thing==
+##How to do the thing
 The file you update is called presets.json
 
 If you run `python check.py` in the same directory as presets.json and as
@@ -7,7 +7,7 @@ presets.json to the robot.  Put it in /home/lvuser/presets.json.  Restart
 robot code.  When it loads (3 or 4 seconds later), it will read the config
 file.
 
-==How to upload==
+##How to upload
 If you have a mac, scp will be the best option.  Type `man scp` for a tutorial
 on how to use it but it should look something like the following:
 
@@ -19,10 +19,10 @@ My favorite is FileZilla (I think it's on sloth and pangolin).  Connect to the
 robot, find presets.json on the left, and drag it into /home/lvuser on the
 right.  It might ask if you want to override, click yes.
 
-==How to restart robot code==
+##How to restart robot code
 There's two possible cases:
 
-===The robot code started automatically when the robot turned on===
+###The robot code started automatically when the robot turned on
 Yay.  Click through the tabs on the left side of the driver station.  On
 either the second or third tab there's a "restart robot code" button.  Click
 it 4 or 5 times.  Click it a 6th for good measure.  Sometimes the code doesn't
@@ -30,7 +30,7 @@ actually restart, so look at the gyro and make sure it stops reading for a
 second (if it stopps reading for a second then starts reading again, you know
 the code restarted).
 
-===The robot didn't start automatically===
+###The robot didn't start automatically
 step 1: Putty into the robot as user lvuser.  
 
 step 2: Run the following command:
@@ -42,7 +42,7 @@ step 2 (it will probably fail the first time but sometimes it takes 3 tries)
 
 If it keeps spewing text out forever, that means it's running.  
 
-==How to putty into the robot==
+##How to putty into the robot
 Start putty.  It should be pinned to the task bar in sloth and pangolin.  If
 you don't have it, download it.
 
