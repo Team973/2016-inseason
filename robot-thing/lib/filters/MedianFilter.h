@@ -8,15 +8,17 @@
 #ifndef LIB_FILTERS_MEDIANFILTER_H_
 #define LIB_FILTERS_MEDIANFILTER_H_
 
+#include "FilterBase.h"
+
 namespace frc973 {
 
-class MedianFilter {
+class MedianFilter : public FilterBase {
 public:
 	MedianFilter(int buffSize = 5);
 	virtual ~MedianFilter();
 
-	double Update(double in);
-	double GetLast();
+	double Update(double in) override;
+	double GetLast() override;
 private:
 	int m_buffSize;
 	double *m_samples;

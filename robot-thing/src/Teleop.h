@@ -15,13 +15,13 @@ static bool teleopDrive = true;
 static bool needsStop = false;
 
 void Robot::TeleopContinuous(void) {
-	double armSpeed = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
-	if (armSpeed != 0.0) {
-		m_arm->SetTargetSpeed(armSpeed);
+	double armPow = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
+	if (armPow != 0.0) {
+		m_arm->SetPower(armPow);
 		needsStop = true;
 	}
 	else if (needsStop) {
-		m_arm->SetTargetSpeed(0.0);
+		m_arm->SetPower(0.0);
 		needsStop = false;
 	}
 	/*
@@ -84,24 +84,9 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				m_drive->SetGearing(Drive::DriveGearing::LowGear);
 			}
 			break;
-		case DualAction::BtnX:
-			if (pressedP) {
-				m_poseManager->Chill();
-			}
-			break;
-		case DualAction::BtnY:
-			if (pressedP) {
-				m_poseManager->NextPose();
-			}
-			break;
 		case DualAction::BtnA:
 			if (pressedP) {
 				m_drive->SetGearing(Drive::DriveGearing::HighGear);
-			}
-			break;
-		case DualAction::RightTrigger:
-			if (pressedP) {
-				m_poseManager->AssumePose();
 			}
 			break;
 		}
@@ -195,6 +180,16 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				m_shooter->SetFlywheelStop();
 			}
 			break;
+		case DualAction::Start:
+			if (pressedP) {
+				m_poseManager->AssumePose();
+			}
+			break;
+		case DualAction::Back:
+			if (pressedP) {
+				m_poseManager->Chill();
+				m_poseManager->NextPose();
+			}
 		}
 	}
 

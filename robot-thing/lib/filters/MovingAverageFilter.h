@@ -15,7 +15,7 @@
 
 namespace frc973 {
 
-class MovingAverageFilter {
+class MovingAverageFilter : public FilterBase {
 public:
 	/**
 	 * Create a data filter by the moving average method.

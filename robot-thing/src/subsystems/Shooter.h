@@ -14,6 +14,7 @@
 namespace frc973 {
 
 class TaskMgr;
+class CascadingFilter;
 class MovingAverageFilter;
 class DelaySwitch;
 class PID;
@@ -104,14 +105,8 @@ private:
 
 	bool m_flywheelReady;
 
-	MovingAverageFilter *frontMeanFilter;
-	MedianFilter *frontMedFilter;
-	double frontOldSpeed;
-
-	MovingAverageFilter *rearMeanFilter;
-	MedianFilter *rearMedFilter;
-	double rearOldSpeed;
-
+	CascadingFilter *m_frontFilter;
+	CascadingFilter *m_backFilter;
 
 	ElevatorHeight m_elevatorState;
 	Solenoid *m_longSolenoid;

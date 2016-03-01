@@ -12,11 +12,13 @@
 #include "controllers/ShooterGains_front.h"
 #include "controllers/ShooterGains_back.h"
 #include "lib/TaskMgr.h"
+#include "lib/filters/BullshitFilter.h"
 #include "lib/filters/MovingAverageFilter.h"
+#include "lib/filters/MedianFilter.h"
+#include "lib/filters/CascadingFilter.h"
 #include "lib/filters/DelaySwitch.h"
 #include "lib/filters/PID.h"
 #include "lib/logging/LogSpreadsheet.h"
-#include "lib/filters/MedianFilter.h"
 #include "controllers/StateSpaceFlywheelController.h"
 
 namespace frc973 {
@@ -36,12 +38,8 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_frontFlywheelSetPower(0.0),
 		m_backFlywheelSetPower(0.0),
 		m_flywheelReady(false),
-		frontMeanFilter(new MovingAverageFilter(0.85)),
-		frontMedFilter(new MedianFilter()),
-		frontOldSpeed(0.0),
-		rearMeanFilter(new MovingAverageFilter(0.85)),
-		rearMedFilter(new MedianFilter()),
-		rearOldSpeed(0.0),
+		m_frontFilter(new CascadingFilter()),
+		m_backFilter(new CascadingFilter()),
 		m_elevatorState(ElevatorHeight::wayLow),
 		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
 		m_shortSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL)),
@@ -52,6 +50,16 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_scheduler(scheduler)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
+
+	m_frontFilter->PushFilter(new BullshitFilter(BullshitFilter::MinBehavior::noMin, 0.0,
+			BullshitFilter::MaxBehavior::dropMax, 9000.0));
+	m_frontFilter->PushFilter(new MovingAverageFilter(0.85));
+	m_frontFilter->PushFilter(new MedianFilter());
+
+	m_backFilter->PushFilter(new BullshitFilter(BullshitFilter::MinBehavior::noMin, 0.0,
+			BullshitFilter::MaxBehavior::dropMax, 9000.0));
+	m_backFilter->PushFilter(new MovingAverageFilter(0.85));
+	m_backFilter->PushFilter(new MedianFilter());
 
 	if (logger != nullptr) {
 		logger->RegisterCell(m_shooterPow);
@@ -161,17 +169,7 @@ double Shooter::GetFrontFlywheelRate(void) {
 
 double Shooter::GetFrontFlywheelFilteredRate(void) {
 	double s = GetFrontFlywheelRate();
-	if (s > 9000.0) {
-		s = frontOldSpeed;
-	}
-	else if (s == 0.0) {
-		s = frontOldSpeed;
-	}
-	else {
-		frontOldSpeed = s;
-	}
-
-	return frontMeanFilter->Update(frontMedFilter->Update(s));
+	return m_frontFilter->Update(s);
 }
 
 double Shooter::GetRearFlywheelRate(void) {
@@ -180,14 +178,7 @@ double Shooter::GetRearFlywheelRate(void) {
 
 double Shooter::GetRearFlywheelFilteredRate(void) {
 	double s = GetRearFlywheelRate();
-	if (s > 9000.0) {
-		s = rearOldSpeed;
-	}
-	else {
-		rearOldSpeed = s;
-	}
-
-	return rearMeanFilter->Update(rearMedFilter->Update(s));
+	return m_backFilter->Update(s);
 }
 
 void Shooter::SetElevatorHeight(ElevatorHeight newHeight) {
