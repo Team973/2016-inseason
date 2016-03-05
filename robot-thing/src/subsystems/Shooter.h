@@ -41,6 +41,8 @@ public:
 	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
 	virtual ~Shooter();
 
+	void SetFlywheelEnabled(bool enabledP);
+
 	void SetFrontFlywheelSSShoot(double goal);
 	void SetBackFlywheelSSShoot(double goal);
 
@@ -95,6 +97,7 @@ private:
 
 	FlywheelState m_frontFlywheelState;
 	FlywheelState m_backFlywheelState;
+	bool m_flywheelEnabled;
 
 	double m_frontFlywheelTargetSpeed;
 	double m_backFlywheelTargetSpeed;

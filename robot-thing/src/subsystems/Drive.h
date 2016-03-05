@@ -89,6 +89,7 @@ public:
     void PIDDrive(double dist);
 
     void PIDTurn(double angle);
+    void PIDTurnRelative(double angle);
 
     void RampPIDDrive(double dist);
     void RampPIDTurn(double angle);

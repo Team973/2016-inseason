@@ -88,13 +88,19 @@ void Drive::ArcadeDrive(double throttle, double turn) {
 void Drive::PIDDrive(double distance) {
 	this->SetDriveController(m_pidDriveController);
 	m_pidDriveController->EnableDist();
-	m_pidDriveController->SetTarget(distance, 0.0);
+	m_pidDriveController->SetTargetRelative(distance, 0.0);
 }
 
 void Drive::PIDTurn(double degrees) {
 	this->SetDriveController(m_pidDriveController);
 	m_pidDriveController->DisableDist();
-	m_pidDriveController->SetTarget(0.0, degrees);
+	m_pidDriveController->SetTargetRelative(0.0, degrees);
+}
+
+void Drive::PIDTurnRelative(double degrees) {
+	this->SetDriveController(m_pidDriveController);
+	m_pidDriveController->DisableDist();
+	m_pidDriveController->SetTargetAbsolute(0.0, degrees + GetAngle());
 }
 
 void Drive::RampPIDDrive(double distance) {

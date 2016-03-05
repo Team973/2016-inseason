@@ -25,7 +25,8 @@ public:
 	enum class IntakeMode {
 		off,
 		forward,
-		reverse
+		reverse,
+		manual
 	};
 
 	enum class IntakePosition {
@@ -39,6 +40,8 @@ public:
 	void SetIntakeMode(IntakeMode mode);
 
 	void SetIntakePosition(IntakePosition newPos);
+
+	void SetIntakePower(double pow);
 
 	void TaskPeriodic(RobotMode mode);
 private:

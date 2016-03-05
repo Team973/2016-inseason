@@ -7,7 +7,8 @@
 
 #include <controllers/VisionDriveController.h>
 #include "lib/filters/PID.h"
-#include "lib/SocketClient.h"
+#include "lib/SocketServer.hpp"
+#include "lib/WrapDash.h"
 
 namespace frc973 {
 
@@ -23,8 +24,8 @@ VisionDriveController::VisionDriveController()
 		 , m_anglePid(new PID(TURN_PID_KP, TURN_PID_KI, TURN_PID_KD))
 		 , m_onTarget(false)
 		 , m_targetFound(false) {
-	SocketClient::AddListener("found", this);
-	SocketClient::AddListener("xtheta", this);
+	SocketServer::AddListener("found", this);
+	SocketServer::AddListener("xtheta", this);
 }
 
 VisionDriveController::~VisionDriveController() {
@@ -45,6 +46,7 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 }
 
 void VisionDriveController::OnValueChange(std::string name, std::string newValue) {
+	printf("**************OnValueChange observed\n");
 	if (!name.compare("found")) {
 		m_targetFound = newValue == "true";
 	}
@@ -52,6 +54,9 @@ void VisionDriveController::OnValueChange(std::string name, std::string newValue
 		double offset = ::atof(newValue.c_str());
 		double m_targetAngle = m_prevAngle + offset;
 		m_anglePid->SetTarget(m_targetAngle);
+
+		DBStringPrintf(DBStringPos::DB_LINE9,
+				"cvAng %lf", offset);
 	}
 }
 

@@ -45,6 +45,11 @@ void Intake::SetIntakePosition(IntakePosition newPos) {
 	m_intakePosition = newPos;
 }
 
+void Intake::SetIntakePower(double pow) {
+	m_intakeMode = IntakeMode::manual;
+	m_intakeMotor->Set(pow);
+}
+
 void Intake::TaskPeriodic(RobotMode mode) {
 	switch (m_intakeMode) {
 	case IntakeMode::off:
@@ -55,6 +60,8 @@ void Intake::TaskPeriodic(RobotMode mode) {
 		break;
 	case IntakeMode::reverse:
 		m_intakeMotor->Set(INTAKE_REVERSE_SPEED);
+		break;
+	case IntakeMode::manual:
 		break;
 	}
 }

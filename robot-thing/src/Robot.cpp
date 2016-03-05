@@ -6,7 +6,7 @@
 #include "lib/SingleThreadTaskMgr.h"
 #include "lib/SPIGyro.h"
 #include "lib/WrapDash.h"
-#include "lib/SocketClient.h"
+#include "lib/SocketServer.hpp"
 
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
@@ -20,7 +20,7 @@ namespace frc973 {
 
 void* Robot::runServer(void*)
 {
-	SocketClient::RunSocketClient(NULL);
+	SocketServer::RunSocketServer(NULL);
     return NULL;
 }
 

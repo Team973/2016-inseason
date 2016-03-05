@@ -10,6 +10,7 @@
 #include "subsystems/Arm.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
+#include "lib/WrapDash.h"
 
 #include <iostream>
 namespace frc973 {
@@ -24,6 +25,17 @@ PoseManager::PoseManager(Arm *arm, Shooter *shooter, Intake *intake)
 
 PoseManager::~PoseManager() {
 	// TODO Auto-generated destructor stub
+}
+
+void PoseManager::ChooseNthPose(int n) {
+	m_currPose = n % m_configRoot["poses"].size();
+
+	printf("Pose now selected: %s\n",
+			m_configRoot["poses"][m_currPose]["name"].asCString());
+
+	DBStringPrintf(DBStringPos::DB_LINE9,
+			"%s", m_configRoot["poses"][m_currPose]["name"].asCString());
+	AssumePose();
 }
 
 void PoseManager::ReloadConfiguration() {
@@ -46,12 +58,8 @@ void PoseManager::NextPose() {
 	printf("Pose now selected: %s\n",
 			m_configRoot["poses"][m_currPose]["name"].asCString());
 
-	/*
-	 * You might want to print the currently selected pose on the dash...
-	 * idk which line is open, though...
-	DBStringPrintf(DBStringPos::DB_LINE4,
-			"curr Pose%s", m_configRoot["poses"][m_currPose]["name"].asCString());
-	 */
+	DBStringPrintf(DBStringPos::DB_LINE9,
+			"%s", m_configRoot["poses"][m_currPose]["name"].asCString());
 }
 
 void PoseManager::AssumePose() {
@@ -61,9 +69,11 @@ void PoseManager::AssumePose() {
 
 	if (pose["armControl"].asBool()) {
 		m_arm->SetTargetPosition(pose["armTarget"].asDouble());
+		printf("arm on\n");
 	}
 	else {
 		m_arm->SetPower(0.0);
+		printf("arm off\n");
 	}
 
 	if (pose["intakeExtended"].asBool()) {

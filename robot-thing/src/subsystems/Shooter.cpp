@@ -31,6 +31,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_backFlywheelEncoder(new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN)),
 		m_frontFlywheelState(FlywheelState::openLoop),
 		m_backFlywheelState(FlywheelState::openLoop),
+		m_flywheelEnabled(false),
 		m_frontFlywheelTargetSpeed(0.0),
 		m_backFlywheelTargetSpeed(0.0),
 		m_frontController(new StateSpaceFlywheelController(FlywheelGainsFront::MakeGains())),
@@ -73,6 +74,10 @@ Shooter::~Shooter() {
 	m_scheduler->UnregisterTask(this);
 }
 
+void Shooter::SetFlywheelEnabled(bool enabledP) {
+	m_flywheelEnabled = enabledP;
+}
+
 void Shooter::SetFrontFlywheelSSShoot(double goal) {
 	m_frontFlywheelState = FlywheelState::ssControl;
 	m_frontFlywheelTargetSpeed = goal;
@@ -107,40 +112,48 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	double frontMotorOutput;
 	double backMotorOutput;
 
-	switch(m_frontFlywheelState) {
-	case FlywheelState::ssControl:
-		frontMotorOutput = m_frontController->Update(
-				this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
-
-		m_frontFlywheelMotor->Set(frontMotorOutput);
-		break;
-	case FlywheelState::openLoop:
-		frontMotorOutput = m_frontFlywheelSetPower;
-
-		m_frontFlywheelMotor->Set(frontMotorOutput);
-		break;
+	if (m_flywheelEnabled) {
+		switch(m_frontFlywheelState) {
+		case FlywheelState::ssControl:
+			frontMotorOutput = m_frontController->Update(
+					this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
+			break;
+		case FlywheelState::openLoop:
+			frontMotorOutput = m_frontFlywheelSetPower;
+			break;
+		}
+	}
+	else {
+		frontMotorOutput = 0.0;
 	}
 
-	switch(m_backFlywheelState) {
-	case FlywheelState::ssControl:
-		backMotorOutput = m_backController->Update(
-				this->GetRearFlywheelFilteredRate() * Constants::PI / 30.0);
+	m_frontFlywheelMotor->Set(frontMotorOutput);
 
-		m_backFlywheelMotor->Set(backMotorOutput);
-		break;
-	case FlywheelState::openLoop:
-		backMotorOutput = m_backFlywheelSetPower;
-
-		m_backFlywheelMotor->Set(backMotorOutput);
-		break;
+	if (m_flywheelEnabled) {
+		switch(m_backFlywheelState) {
+		case FlywheelState::ssControl:
+			backMotorOutput = m_backController->Update(
+					this->GetRearFlywheelFilteredRate() * Constants::PI / 30.0);
+			break;
+		case FlywheelState::openLoop:
+			backMotorOutput = m_backFlywheelSetPower;
+			break;
+		}
 	}
+	else {
+		backMotorOutput = 0.0;
+	}
+
+	m_backFlywheelMotor->Set(backMotorOutput);
 
 	DBStringPrintf(DBStringPos::DB_LINE0,
-			"ff med rate: %lf", GetFrontFlywheelFilteredRate());
+			"ff med rate: %lf", GetFrontFlywheelRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,
-			"rf raw rate: %lf", GetRearFlywheelFilteredRate());
+			"rf raw rate: %lf", GetRearFlywheelRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"f Flywheel power: %lf", frontMotorOutput);
+	DBStringPrintf(DBStringPos::DB_LINE3,
+			"r pos %u", m_backFlywheelEncoder->Get());
 
 	SmartDashboard::PutNumber("front flywheel raw", GetFrontFlywheelRate());
 	SmartDashboard::PutNumber("rear flywheel raw", GetRearFlywheelRate());

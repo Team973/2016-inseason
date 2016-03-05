@@ -49,6 +49,19 @@ public:
 	virtual ~PoseManager();
 
 	/**
+	 * Choose the |n|th configuration in the file... ignore names just
+	 * go in order of definition
+	 *
+	 * @param n the index of the pose
+	 */
+	void ChooseNthPose(int n);
+
+	static const int STOW_POSE = 0;
+	static const int BATTER_SHOT_PPOSE = 1;
+	static const int FAR_DEFENSE_SHOT_POSE = 2;
+	static const int NEAR_DEFENSE_SHOT_POSE = 3;
+
+	/**
 	 * Reload the list of poses from the configuration file.
 	 * Forget whatever pose was selected and go to the first one
 	 */

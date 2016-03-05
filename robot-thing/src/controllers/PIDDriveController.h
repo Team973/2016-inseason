@@ -38,7 +38,12 @@ public:
 	/*
 	 * Set the target position/heading relative to current position/heading
 	 */
-	void SetTarget(double throttle, double turn);
+	void SetTargetRelative(double throttle, double turn);
+
+	/*
+	 * Set the target position/heading relative to absolute world
+	 */
+	void SetTargetAbsolute(double dist, double heading);
 
 	/*
 	 * Enable distance pid, do angle and dist together.

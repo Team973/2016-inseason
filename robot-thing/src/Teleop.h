@@ -12,17 +12,42 @@ void Robot::TeleopStop(void) {
 }
 
 static bool teleopDrive = true;
-static bool needsStop = false;
+static bool armNeedsStop = false;
+static bool conveyorNeedsStop = false;
+static bool intakeNeedsStop = false;
 
 void Robot::TeleopContinuous(void) {
-	double armPow = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
-	if (armPow != 0.0) {
-		m_arm->SetPower(armPow);
-		needsStop = true;
+	double armPower = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
+	if (armPower != 0.0) {
+		m_arm->SetPower(armPower * 0.5);
+		armNeedsStop = true;
 	}
-	else if (needsStop) {
+	else if (armNeedsStop) {
 		m_arm->SetPower(0.0);
-		needsStop = false;
+		armNeedsStop = false;
+	}
+
+	double intakePower = m_operatorJoystick->GetRawAxisWithDeadband(
+			DualAction::LeftYAxis, 0.2);
+	if (intakePower != 0.0) {
+		m_intake->SetIntakePower(intakePower);
+		intakeNeedsStop = true;
+	}
+	else if (intakeNeedsStop) {
+		m_intake->SetIntakePower(0.0);
+		intakeNeedsStop = false;
+	}
+
+
+	double conveyorPower = m_operatorJoystick->GetRawAxisWithDeadband(
+			DualAction::LeftXAxis, 0.2);
+	if (intakePower != 0.0) {
+		m_shooter->SetConveyerPower(conveyorPower);
+		conveyorNeedsStop = true;
+	}
+	else if (conveyorNeedsStop) {
+		m_shooter->SetConveyerPower(0.0);
+		conveyorNeedsStop = false;
 	}
 	/*
 	m_drive->CheesyDrive(m_driverJoystick->GetRawAxis(DualAction::LeftYAxis),
@@ -33,15 +58,19 @@ void Robot::TeleopContinuous(void) {
 	double y = m_driverJoystick->GetRawAxis(DualAction::LeftYAxis);
 	double x = m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
 
-	if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
-		y *= 0.3;
-		x *= 0.3;
+	if (Util::abs(x) > 0.2) {
+		teleopDrive = true;
 	}
-	DBStringPrintf(DBStringPos::DB_LINE5,
-			"slow: %d", m_driverJoystick->GetRawButton(DualAction::LeftBumper));
 
 	if (teleopDrive) {
-		m_drive->ArcadeDrive(y, -x);
+		if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
+			y *= 0.3;
+			x *= 0.3;
+		}
+
+		if (teleopDrive) {
+			m_drive->ArcadeDrive(y, -x);
+		}
 	}
 
  	/*
@@ -52,89 +81,76 @@ void Robot::TeleopContinuous(void) {
 
 void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
-	static double power = 0.98;
-	static double goal = 5000.0;
 
 	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
 
 	if (port == DRIVER_JOYSTICK_PORT) {
 		switch (button) {
-		case DualAction::DPadRightVirtBtn:
+		case DualAction::BtnA:
 			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::midLow);
-			}
-			break;
-		case DualAction::DPadUpVirtBtn:
-			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::wayHigh);
-			}
-			break;
-		case DualAction::DPadDownVirtBtn:
-			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::wayLow);
-			}
-			break;
-		case DualAction::DPadLeftVirtBtn:
-			if (pressedP) {
-				m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::midHigh);
+				m_drive->PIDTurnRelative(5.0);
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
+				m_drive->PIDTurnRelative(-5.0);
+			}
+			break;
+		case DualAction::BtnX:
+			if (pressedP) {
+				teleopDrive = false;
+				m_drive->SetVisionTargeting();
+			}
+			break;
+		case DualAction::BtnY:
+			if (pressedP) {
+				teleopDrive = true;
+				m_drive->ArcadeDrive(0.0, 0.0);
+			}
+			break;
+		case DualAction::LeftBumper:
+			if (pressedP) {
 				m_drive->SetGearing(Drive::DriveGearing::LowGear);
 			}
 			break;
-		case DualAction::BtnA:
+		case DualAction::LeftTrigger:
 			if (pressedP) {
 				m_drive->SetGearing(Drive::DriveGearing::HighGear);
+			}
+			break;
+		case DualAction::RightBumper:
+			if (pressedP) {
+				m_poseManager->AssumePose();
+			}
+			break;
+		case DualAction::RightTrigger:
+			if (pressedP) {
+				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+				m_shooter->SetConveyerPower(1.0);
 			}
 			break;
 		}
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
 		switch (button) {
-		case DualAction::LXAxisVirtButton:
-			if (pressedP) {
-				m_intake->SetIntakePosition(Intake::IntakePosition::extended);
-			}
-			else {
-				m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
-			}
-			break;
 		case DualAction::BtnA:
 			if (pressedP) {
-				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
-			}
-			else {
-				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_poseManager->ChooseNthPose(PoseManager::BATTER_SHOT_PPOSE);
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
-				m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
-			}
-			else {
-				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_poseManager->ChooseNthPose(PoseManager::STOW_POSE);
 			}
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				m_shooter->SetConveyerPower(-8.0);
-				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::forward);
-			}
-			else {
-				m_shooter->SetConveyerPower(0.0);
-				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+				m_poseManager->ChooseNthPose(PoseManager::FAR_DEFENSE_SHOT_POSE);
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				m_shooter->SetConveyerPower(1.0);
-				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::reverse);
-			}
-			else {
-				m_shooter->SetConveyerPower(0.0);
-				//m_intake->SetUpperIntakeMode(Intake::UpperIntakeMode::off);
+				m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 			}
 			break;
 		case DualAction::LeftBumper:
@@ -149,58 +165,46 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			break;
 		case DualAction::RightBumper:
 			if (pressedP) {
-				m_shooter->SetFlywheelPower(1.0);
+				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+				m_shooter->SetConveyerPower(-8.0);
 			}
 			else {
-				m_shooter->SetFlywheelPower(0.0);
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_shooter->SetConveyerPower(0.0);
 			}
 			break;
 		case DualAction::RightTrigger:
-			m_shooter->Print();
-			m_arm->PrintStats();
+			if (pressedP) {
+				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+				m_shooter->SetConveyerPower(1.0);
+			}
+			else {
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_shooter->SetConveyerPower(0.0);
+			}
 			break;
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
-				power += 0.02;
-				goal += 50.0;
-				m_shooter->SetFlywheelPower(power);
-				//m_shooter->SetFlywheelSSShoot(goal);
+				m_shooter->SetFlywheelEnabled(false);
 			}
 			break;
 		case DualAction::DPadDownVirtBtn:
 			if (pressedP) {
-				power -= 0.02;
-				goal -= 50.0;
-				m_shooter->SetFlywheelPower(power);
-				//m_shooter->SetFlywheelSSShoot(goal);
+				m_shooter->SetFlywheelEnabled(true);
 			}
 			break;
 		case DualAction::DPadLeftVirtBtn:
-			if (pressedP) {
-				m_shooter->SetFlywheelStop();
-			}
+			m_intake->SetIntakePosition(Intake::IntakePosition::extended);
 			break;
-		case DualAction::Start:
-			if (pressedP) {
-				m_poseManager->AssumePose();
-			}
+		case DualAction::DPadRightVirtBtn:
+			m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
 			break;
-		case DualAction::Back:
-			if (pressedP) {
-				m_poseManager->Chill();
-				m_poseManager->NextPose();
-			}
 		}
 	}
-
-
-	DBStringPrintf(DBStringPos::DB_LINE4,
-			"Flywheel pow: %lf", power);
 			/*
 	DBStringPrintf(DBStringPos::DB_LINE4,
 			"Flywheel goal: %lf", goal);
 			*/
-
 }
 
 }

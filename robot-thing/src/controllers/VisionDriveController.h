@@ -9,7 +9,7 @@
 #define SRC_CONTROLLERS_VISIONDRIVECONTROLLER_H_
 
 #include "lib/DriveBase.h"
-#include "lib/SocketClient.h"
+#include "lib/SocketServer.hpp"
 
 namespace frc973 {
 
@@ -17,7 +17,7 @@ class PID;
 
 class VisionDriveController
 		 : public DriveController
-		 , public SocketClient::SocketListener {
+		 , public SocketServer::SocketListener {
 public:
 	VisionDriveController();
 	virtual ~VisionDriveController();

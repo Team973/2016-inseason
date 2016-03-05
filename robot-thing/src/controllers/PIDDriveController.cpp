@@ -67,7 +67,7 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 /*
  * dist and angle are relative to current position
  */
-void PIDDriveController::SetTarget(double dist, double angle) {
+void PIDDriveController::SetTargetRelative(double dist, double angle) {
 	m_drivePID->Reset();
 	m_drivePID->SetTarget(m_targetDist + dist);
 	m_targetDist += dist;
@@ -75,6 +75,16 @@ void PIDDriveController::SetTarget(double dist, double angle) {
 	m_turnPID->Reset();
 	m_turnPID->SetTarget(m_targetAngle + angle);
 	m_targetAngle += angle;
+}
+
+void PIDDriveController::SetTargetAbsolute(double dist, double angle) {
+	m_drivePID->Reset();
+	m_drivePID->SetTarget(dist);
+	m_targetDist = dist;
+
+	m_turnPID->Reset();
+	m_turnPID->SetTarget(angle);
+	m_targetAngle = angle;
 }
 
 }
