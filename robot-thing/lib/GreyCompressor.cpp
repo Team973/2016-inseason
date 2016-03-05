@@ -14,11 +14,15 @@
 
 #include "GreyCompressor.h"
 
+#include "WPILib.h"
+#include "lib/filters/DelaySwitch.h"
+
 namespace frc973 {
 
 GreyCompressor::GreyCompressor(DigitalInput *pressureSwitch, Relay *compressor,
 		TaskMgr *scheduler) :
 				m_enabled(true),
+				m_pressureSwitchFilter(new DelaySwitch()),
 				m_airPressureSwitch(pressureSwitch),
 				m_compressor(compressor),
 				m_scheduler(scheduler)
@@ -43,7 +47,8 @@ void GreyCompressor::Disable() {
 }
 
 void GreyCompressor::TaskPeriodic(RobotMode mode) {
-	if (!m_airPressureSwitch->Get() && m_enabled) {
+	if (!m_pressureSwitchFilter->Update(m_airPressureSwitch->Get())
+			&& m_enabled) {
 		m_compressor->Set(Relay::kOn);
 	}
 	else {

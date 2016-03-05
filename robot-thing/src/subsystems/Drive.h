@@ -8,6 +8,7 @@ class Solenoid;
 
 namespace frc973 {
 
+class FilterBase;
 class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
@@ -47,6 +48,10 @@ public:
 
     virtual ~Drive() {}
 
+    /**
+     * Gearing in drive subsystem can be in one of two states:
+     *  - HighGear, or - LowGear
+     */
     enum DriveGearing {
     	HighGear,
 		LowGear
@@ -86,13 +91,24 @@ public:
      */
     void ArcadeDrive(double throttle, double turn);
 
-    void PIDDrive(double dist);
+    /**
+     * Set a target distance to be achieved by pid
+     *
+     * @param dist Distance in inches to go
+     * @param relativity What is that distance metric relative to?
+     */
+    void PIDDrive(double dist, RelativeTo relativity);
 
-    void PIDTurn(double angle);
-    void PIDTurnRelative(double angle);
+    /**
+     * Set a target turn to be achieved by pid
+     *
+     * @param angle Angle in degrees to go
+     * @param relativity What is that angle metric relative to?
+     */
+    void PIDTurn(double angle, RelativeTo relativity);
 
-    void RampPIDDrive(double dist);
-    void RampPIDTurn(double angle);
+    void RampPIDDrive(double dist, RelativeTo relativity);
+    void RampPIDTurn(double angle, RelativeTo relativity);
 
     /**
      * All distances given in inches
@@ -137,6 +153,12 @@ private:
 
 	VictorSP *m_leftMotor;
 	VictorSP *m_rightMotor;
+
+	/* Filter to apply to left and right motor power so we don't tip or
+	 * break chains.
+	 */
+	FilterBase *m_leftMotorPowerFilter;
+	FilterBase *m_rightMotorPowerFilter;
 
     ArcadeDriveController *m_arcadeDriveController;
     CheesyDriveController *m_cheesyDriveController;

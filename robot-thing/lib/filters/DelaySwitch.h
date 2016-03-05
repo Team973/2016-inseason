@@ -19,9 +19,20 @@
 
 namespace frc973 {
 
+/**
+ * Note this class does not inherit from FilterBase because it returns
+ * booleans rather than doubles.  And no, we are not going to use templates!
+ */
 class DelaySwitch {
 public:
-	DelaySwitch();
+	/**
+	 * Higher numbers of filteratude mean even more delay between on and off...
+	 * unless the numbers get above 1.0 in which case don't do that!
+	 *
+	 * Also don't put negative numbers in otherwise this filter will go
+	 * back in time to change past points.
+	 */
+	DelaySwitch(double filteratude = 0.9);
 	virtual ~DelaySwitch();
 
 	/**
@@ -31,14 +42,14 @@ public:
 	 *
 	 * @return result of filtering calculation.
 	 */
-	bool GetValue(bool currentValue);
+	bool Update(bool currentValue);
 
 	/**
 	 * Remember the latest value calculated by filtering
 	 *
 	 * @return result of previous filtering calcuation
 	 */
-	bool GetLatestValue(void);
+	bool GetLast(void);
 
 private:
 	bool m_prevValue;

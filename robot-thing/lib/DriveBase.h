@@ -93,6 +93,17 @@ public:
 			DriveController *controller = nullptr);
 	virtual ~DriveBase();
 
+    /**
+     * When making calls to PID-like-commands, parameters can be relative to
+     * the world (Absolute), relative to the current position (Now), or
+     * relative to the current setpoint (SetPoint)
+     */
+    enum RelativeTo {
+    	Absolute,
+		Now,
+		SetPoint
+    };
+
 	/*
 	 * Get input from the currently active DriveController.  This method comes
 	 * from CoopTask and is called automatically once a cycle by m_scheduler

@@ -9,9 +9,9 @@
 
 namespace frc973 {
 
-DelaySwitch::DelaySwitch() :
+DelaySwitch::DelaySwitch(double filteratude) :
 	m_prevValue(false),
-	m_filter(0.9)
+	m_filter(filteratude)
 {
 	;
 }
@@ -27,7 +27,7 @@ DelaySwitch::~DelaySwitch() {
  * seeing a lot of falses lately.  If our previous output and our average
  * are in significant disagreement, change output to match moving average.
  */
-bool DelaySwitch::GetValue(bool currentValue) {
+bool DelaySwitch::Update(bool currentValue) {
 	double val = m_filter.Update(currentValue? 1.0 : 0.0);
 
 	if (m_prevValue && val < 0.25) {
@@ -43,7 +43,7 @@ bool DelaySwitch::GetValue(bool currentValue) {
 	}
 }
 
-bool DelaySwitch::GetLatestValue(void) {
+bool DelaySwitch::GetLast(void) {
 	return m_prevValue;
 }
 

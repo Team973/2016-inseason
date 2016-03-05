@@ -25,7 +25,7 @@ RampedOutput::~RampedOutput() {
  * If m_prevTimeMs is 0, that means this is the first call of GetValue...
  * In this special case, just return m_prevOutput (probably 0.0)
  */
-double RampedOutput::GetValue(double input) {
+double RampedOutput::Update(double input) {
 	double timeDiffSec = ((double) (GetMsecTime() - m_prevTimeMs)) *
 			Constants::SEC_PER_MSEC;
 

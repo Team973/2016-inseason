@@ -37,7 +37,7 @@ void Robot::Flappers(void) {
 		m_autoState++;
 		break;
 	case 1:
-		m_drive->PIDDrive(53);
+		m_drive->PIDDrive(53, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
 	case 2:
@@ -59,7 +59,7 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 6:
-		m_drive->PIDDrive(97);
+		m_drive->PIDDrive(97, Drive::RelativeTo::SetPoint);
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
@@ -78,7 +78,7 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 10:
-		m_drive->PIDTurn(180);
+		m_drive->PIDTurn(180, Drive::RelativeTo::Absolute);
 		m_autoState++;
 		break;
 	case 11:
@@ -89,7 +89,7 @@ void Robot::Flappers(void) {
 void Robot::TurnTest() {
 	switch (m_autoState) {
 	case 0:
-		m_drive->PIDTurn(360);
+		m_drive->PIDTurn(360, Drive::RelativeTo::Absolute);
 		m_autoState++;
 		break;
 	case 1:

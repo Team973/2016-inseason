@@ -13,11 +13,15 @@
 #ifndef LIB_GREYCOMPRESSOR_H_
 #define LIB_GREYCOMPRESSOR_H_
 
-#include "WPILib.h"
 #include "lib/TaskMgr.h"
 #include "lib/CoopTask.h"
 
+class Relay;
+class DigitalInput;
+
 namespace frc973 {
+
+class DelaySwitch;
 
 class GreyCompressor : public CoopTask {
 public:
@@ -52,6 +56,7 @@ public:
 	void TaskPeriodic(RobotMode mode);
 private:
 	bool 			 m_enabled;
+	DelaySwitch		*m_pressureSwitchFilter;
 	DigitalInput	*m_airPressureSwitch;
 	Relay			*m_compressor;
 

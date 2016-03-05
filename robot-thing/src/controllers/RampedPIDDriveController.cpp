@@ -51,11 +51,11 @@ void RampPIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	m_prevDist = state->GetDist();
 	m_prevAngle = state->GetAngle();
 
-	m_drivePID->SetTarget(m_driveRampFilter->GetValue(m_targetDist));
-	m_turnPID->SetTarget(m_turnRampFilter->GetValue(m_targetAngle));
+	m_drivePID->SetTarget(m_driveRampFilter->Update(m_targetDist));
+	m_turnPID->SetTarget(m_turnRampFilter->Update(m_targetAngle));
 
 	DBStringPrintf(DBStringPos::DB_LINE9, "angle setpt %lf",
-			m_turnRampFilter->GetPreviousValue());
+			m_turnRampFilter->GetLast());
 
 	double throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -0.5, 0.5);
 	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);

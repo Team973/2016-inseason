@@ -36,14 +36,10 @@ public:
 	bool OnTarget() { return m_onTarget; }
 
 	/*
-	 * Set the target position/heading relative to current position/heading
-	 */
-	void SetTargetRelative(double throttle, double turn);
-
-	/*
 	 * Set the target position/heading relative to absolute world
 	 */
-	void SetTargetAbsolute(double dist, double heading);
+	void SetTarget(double dist, double heading, DriveBase::RelativeTo relativity,
+			DriveStateProvider *state);
 
 	/*
 	 * Enable distance pid, do angle and dist together.

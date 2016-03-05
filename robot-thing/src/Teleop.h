@@ -41,7 +41,7 @@ void Robot::TeleopContinuous(void) {
 
 	double conveyorPower = m_operatorJoystick->GetRawAxisWithDeadband(
 			DualAction::LeftXAxis, 0.2);
-	if (intakePower != 0.0) {
+	if (conveyorPower != 0.0) {
 		m_shooter->SetConveyerPower(conveyorPower);
 		conveyorNeedsStop = true;
 	}
@@ -88,12 +88,12 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		switch (button) {
 		case DualAction::BtnA:
 			if (pressedP) {
-				m_drive->PIDTurnRelative(5.0);
+				m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
-				m_drive->PIDTurnRelative(-5.0);
+				m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
 			}
 			break;
 		case DualAction::BtnX:

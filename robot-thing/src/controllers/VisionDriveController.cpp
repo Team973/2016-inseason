@@ -48,7 +48,7 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 void VisionDriveController::OnValueChange(std::string name, std::string newValue) {
 	printf("**************OnValueChange observed\n");
 	if (!name.compare("found")) {
-		m_targetFound = newValue == "true";
+		m_targetFound = (newValue == "true");
 	}
 	if (!name.compare("xtheta")) {
 		double offset = ::atof(newValue.c_str());

@@ -20,10 +20,11 @@
 #define LIB_RAMPEDOUTPUT_H_
 
 #include <cstdint>
+#include "lib/filters/FilterBase.h"
 
 namespace frc973 {
 
-class RampedOutput {
+class RampedOutput : public FilterBase {
 public:
 	/**
 	 * Create a RampedOutput object. This object filters a signal by coercing
@@ -44,7 +45,7 @@ public:
 	 *
 	 * @return whatever value was closer to the input
 	 */
-	double GetValue(double input);
+	double Update(double input) override;
 
 	/**
 	 * Get the previous value returned by this ramp.  Doesn't accoutn for
@@ -52,7 +53,7 @@ public:
 	 *
 	 * @return whatever value was last returned by GetValue
 	 */
-	double GetPreviousValue() {
+	double GetLast() override {
 		return m_prevOutput;
 	}
 

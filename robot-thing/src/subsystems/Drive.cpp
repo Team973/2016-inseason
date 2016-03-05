@@ -5,6 +5,8 @@
 #include "lib/util/Util.h"
 #include "lib/SPIGyro.h"
 
+#include "lib/filters/RampedOutput.h"
+
 #include "src/controllers/ArcadeDriveController.h"
 #include "src/controllers/CheesyDriveController.h"
 #include "src/controllers/PIDDriveController.h"
@@ -33,6 +35,8 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_rightPower(0.0)
 		 , m_leftMotor(left)
 		 , m_rightMotor(right)
+		 , m_leftMotorPowerFilter(dynamic_cast<FilterBase*>(new RampedOutput(10.0)))
+		 , m_rightMotorPowerFilter(dynamic_cast<FilterBase*>(new RampedOutput(10.0)))
 		 , m_arcadeDriveController(new ArcadeDriveController())
 		 , m_cheesyDriveController(new CheesyDriveController())
 		 , m_pidDriveController(new PIDDriveController())
@@ -85,31 +89,25 @@ void Drive::ArcadeDrive(double throttle, double turn) {
 	m_arcadeDriveController->SetJoysticks(throttle, turn);
 }
 
-void Drive::PIDDrive(double distance) {
+void Drive::PIDDrive(double distance, RelativeTo relativity) {
 	this->SetDriveController(m_pidDriveController);
 	m_pidDriveController->EnableDist();
-	m_pidDriveController->SetTargetRelative(distance, 0.0);
+	m_pidDriveController->SetTarget(distance, 0.0, relativity, this);
 }
 
-void Drive::PIDTurn(double degrees) {
+void Drive::PIDTurn(double degrees, RelativeTo relativity) {
 	this->SetDriveController(m_pidDriveController);
 	m_pidDriveController->DisableDist();
-	m_pidDriveController->SetTargetRelative(0.0, degrees);
+	m_pidDriveController->SetTarget(0.0, degrees, relativity, this);
 }
 
-void Drive::PIDTurnRelative(double degrees) {
-	this->SetDriveController(m_pidDriveController);
-	m_pidDriveController->DisableDist();
-	m_pidDriveController->SetTargetAbsolute(0.0, degrees + GetAngle());
-}
-
-void Drive::RampPIDDrive(double distance) {
+void Drive::RampPIDDrive(double distance, RelativeTo relativity) {
 	this->SetDriveController(m_rampPidDriveController);
 	m_rampPidDriveController->EnableDist();
 	m_rampPidDriveController->SetTarget(distance, 0.0);
 }
 
-void Drive::RampPIDTurn(double angle) {
+void Drive::RampPIDTurn(double angle, RelativeTo relativity) {
 	this->SetDriveController(m_rampPidDriveController);
 	m_rampPidDriveController->DisableDist();
 	m_rampPidDriveController->SetTarget(0.0, angle);
@@ -161,8 +159,12 @@ void Drive::SetDriveOutput(double left, double right) {
 	m_leftPower = left;
 	m_rightPower = right;
 
-	m_leftMotor->Set(Util::bound(-m_leftPower, -1.0, 1.0));
-	m_rightMotor->Set(Util::bound(-m_rightPower, -1.0, 1.0));
+	m_leftMotor->Set(
+			m_leftMotorPowerFilter->Update(
+					Util::bound(-m_leftPower, -1.0, 1.0)));
+	m_rightMotor->Set(
+			m_rightMotorPowerFilter->Update(
+					Util::bound(-m_rightPower, -1.0, 1.0)));
 }
 
 }
