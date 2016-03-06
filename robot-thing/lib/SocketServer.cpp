@@ -14,6 +14,7 @@
 #include "SocketServer.hpp"
 #include <map>
 #include <string>
+#include "pthread.h"
 
 #define PORT "5800"  // the port users will be connecting to
 
@@ -75,6 +76,9 @@ void SocketServer::Start(void)
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
+        	int iSetOption = 1;
+        	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
+        			(char*)&iSetOption, sizeof(iSetOption));
             perror("server: socket");
             continue;
         }
@@ -135,7 +139,7 @@ void SocketServer::UpdateRobot(char *key, char *val) {
     }
 }
 
-void SocketServer::RecieveInput(int sock) {
+bool SocketServer::RecieveInput(int sock) {
     printf("Recieved user input\n");
     char buffer[MAX_MSG_LEN],
     bytesTotal;
@@ -146,8 +150,7 @@ void SocketServer::RecieveInput(int sock) {
 
     if (bytesTotal == 0) {
     	printf("Client disconected... murdering child\n");
-    	exit(0);
-        return;
+        return false;
     }
 
     while (bytesRecieved < bytesTotal) {
@@ -163,7 +166,7 @@ void SocketServer::RecieveInput(int sock) {
             bytesRecieved += n;
         }
         else {
-            return;
+            return false;
         }
     }
     printf("msg recieved %s.  bytes recieved %d\n", buffer, bytesRecieved);
@@ -173,6 +176,38 @@ void SocketServer::RecieveInput(int sock) {
     char* val = strtok(NULL,"=");
     printf("key: %s value: %s\n",key,val);
     UpdateRobot(key, val);
+
+    return true;
+}
+
+typedef struct {
+	fd_set readfds;
+	int new_fd;
+} ChildInfo;
+
+void *SocketServer::StartChild(void *in) {
+	ChildInfo *info = (ChildInfo*) in;
+	bool clientStillAlive = true;
+	while (clientStillAlive) {
+		FD_ZERO(&(info->readfds));
+		FD_SET(info->new_fd, &(info->readfds));
+
+		fd_set readySockets = readfds;
+
+		//Select will change readySockets such that it's full of only sockets
+		//with input in them
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 50000;
+		if (select(new_fd + 1, &readySockets, NULL, NULL, &tv) == -1) {
+			perror("select");
+		}
+
+		if (FD_ISSET(info->new_fd, &readySockets)) {
+		}
+		clientStillAlive = RecieveInput(new_fd);
+	}
+	return NULL;
 }
 
 void SocketServer::Run() {
@@ -191,29 +226,12 @@ void SocketServer::Run() {
                 s, sizeof s);
         printf("server: got connection from %s\n", s);
 
-        if (!fork()) { // this is the child process
-            while (true) {
+        ChildInfo *childInfo = (ChildInfo*) malloc(sizeof(ChildInfo));
+        childInfo->new_fd = new_fd;
+        childInfo->readfds = readfds;
 
-                FD_ZERO(&readfds);
-                FD_SET(new_fd, &readfds);
-
-                fd_set readySockets = readfds;
-
-                //Select will change readySockets such that it's full of only sockets
-                //with input in them
-                struct timeval tv;
-                tv.tv_sec = 0;
-                tv.tv_usec = 50000;
-                if (select(new_fd + 1, &readySockets, NULL, NULL, &tv) == -1) {
-                    perror("select");
-                }
-
-                if (FD_ISSET(new_fd, &readySockets)) {
-                }
-                RecieveInput(new_fd);
-            }
-            close(new_fd);  // parent doesn't need this
-        }
+        pthread_t childThread;
+        pthread_create(&childThread, NULL, StartChild, childInfo);
     }
 }
 

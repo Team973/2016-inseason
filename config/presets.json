@@ -19,15 +19,15 @@
             "name": "batter-shot",
             "armControl": false,
             "armTarget": 0.0,
-            "intakeExtended": false,
+            "intakeExtended": true,
             "longCylinderExtended": true,
             "shortCylinderExtended": true,
             "superiorFlywheelControl": "open",
             "inferiorFlywheelControl": "open",
             "superiorFlywheelRPM": 0.0,
             "inferiorFlywheelRPM": 0.0,
-            "superiorFlywheelPower": 0.6,
-            "inferiorFlywheelPower": 0.8
+            "superiorFlywheelPower": 1.0,
+            "inferiorFlywheelPower": 1.0
         },
         {
             "name": "far-defense",

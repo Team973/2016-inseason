@@ -5,7 +5,7 @@ namespace frc973 {
 void Robot::DisabledStart(void) {
     printf("***disable start\n");
 
-    m_shooter->SetFlywheelStop();
+    //m_shooter->SetFlywheelStop();
 	m_intake->SetIntakeMode(Intake::IntakeMode::off);
 	printf("disable start end \n");
 }

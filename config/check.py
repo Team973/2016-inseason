@@ -14,7 +14,8 @@ with open('preset-schema.json') as schema_file, open('presets.json') as data_fil
     print("now tring to upload to server")
     import ftplib
 
-    session = ftplib.FTP('roborio-973-frc.local', 'lvuser', '')
+    session = ftplib.FTP('sftp://roborio-9973-frc.local')
+    session.login('lvuser', '')
     session.storbinary('presets.json', data_file)
     data_file.close()
     session.quit()

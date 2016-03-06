@@ -24,8 +24,9 @@ private:
     static void sigchld_handler(int s);
     static void *get_in_addr(struct sockaddr *sa);
     static void UpdateRobot(char *key, char *val);
-    static void RecieveInput(int sock);
+    static bool RecieveInput(int sock);
 
+    static void *StartChild(void*);
 
     static int sockfd, new_fd;
     static fd_set readfds;

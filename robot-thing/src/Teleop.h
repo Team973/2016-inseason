@@ -56,7 +56,7 @@ void Robot::TeleopContinuous(void) {
 			*/
 
 	double y = m_driverJoystick->GetRawAxis(DualAction::LeftYAxis);
-	double x = m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
+	double x = -m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
 
 	if (Util::abs(x) > 0.2) {
 		teleopDrive = true;
@@ -64,8 +64,8 @@ void Robot::TeleopContinuous(void) {
 
 	if (teleopDrive) {
 		if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
-			y *= 0.3;
-			x *= 0.3;
+			y *= 0.2;
+			x *= 0.2;
 		}
 
 		if (teleopDrive) {
@@ -79,21 +79,28 @@ void Robot::TeleopContinuous(void) {
 			*/
 }
 
+static double closeGoal = 5500.0;
+
 void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
 
 	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
 
+
 	if (port == DRIVER_JOYSTICK_PORT) {
 		switch (button) {
 		case DualAction::BtnA:
 			if (pressedP) {
-				m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
+				//m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
+				closeGoal += 50.0;
+				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
-				m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
+				//m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
+				closeGoal -= 50.0;
+				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnX:
@@ -128,7 +135,20 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
 				m_shooter->SetConveyerPower(1.0);
 			}
+			else {
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_shooter->SetConveyerPower(0.0);
+			}
 			break;
+		case DualAction::Start:
+			if (pressedP) {
+			}
+			break;
+		case DualAction::Back:
+			if (pressedP) {
+				closeGoal -= 0.02;
+				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+			}
 		}
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
@@ -201,10 +221,9 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			break;
 		}
 	}
-			/*
+
 	DBStringPrintf(DBStringPos::DB_LINE4,
-			"Flywheel goal: %lf", goal);
-			*/
+			"front p %lf", closeGoal);
 }
 
 }

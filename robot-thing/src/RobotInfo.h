@@ -12,7 +12,7 @@
 
 namespace frc973 {
 
-//#define PROTO_BOT_PINOUT
+#define PROTO_BOT_PINOUT
 
 /**
  * PWM pin-out

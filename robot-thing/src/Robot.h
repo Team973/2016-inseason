@@ -1,5 +1,6 @@
 #include "lib/CoopMTRobot.h"
 #include "lib/JoystickHelper.h"
+#include "RobotInfo.h"
 
 class VictorSP;
 class Accelerometer;

@@ -40,6 +40,9 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_backFlywheelSetPower(0.0),
 		m_flywheelReady(false),
 		m_frontFilter(new CascadingFilter()),
+		m_frontMovingAvgFilt(new MovingAverageFilter(0.85)),
+		m_oldFSpeed(0.0),
+		m_fmedfilt(new MedianFilter()),
 		m_backFilter(new CascadingFilter()),
 		m_elevatorState(ElevatorHeight::wayLow),
 		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
@@ -117,9 +120,13 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		case FlywheelState::ssControl:
 			frontMotorOutput = m_frontController->Update(
 					this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
+			DBStringPrintf(DBStringPos::DB_LINE3,
+					"f goal %lf", m_frontFlywheelTargetSpeed);
 			break;
 		case FlywheelState::openLoop:
 			frontMotorOutput = m_frontFlywheelSetPower;
+			DBStringPrintf(DBStringPos::DB_LINE3,
+					"f pow: %lf", m_frontFlywheelSetPower);
 			break;
 		}
 	}
@@ -147,13 +154,11 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	m_backFlywheelMotor->Set(backMotorOutput);
 
 	DBStringPrintf(DBStringPos::DB_LINE0,
-			"ff med rate: %lf", GetFrontFlywheelRate());
+			"ff raw spd %lf", GetFrontFlywheelRate());
 	DBStringPrintf(DBStringPos::DB_LINE1,
-			"rf raw rate: %lf", GetRearFlywheelRate());
+			"ff flt spd %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"f Flywheel power: %lf", frontMotorOutput);
-	DBStringPrintf(DBStringPos::DB_LINE3,
-			"r pos %u", m_backFlywheelEncoder->Get());
 
 	SmartDashboard::PutNumber("front flywheel raw", GetFrontFlywheelRate());
 	SmartDashboard::PutNumber("rear flywheel raw", GetRearFlywheelRate());
@@ -182,7 +187,15 @@ double Shooter::GetFrontFlywheelRate(void) {
 
 double Shooter::GetFrontFlywheelFilteredRate(void) {
 	double s = GetFrontFlywheelRate();
-	return m_frontFilter->Update(s);
+	if (s > 9000.0) {
+		s = m_oldFSpeed;
+	}
+	else {
+		s = m_fmedfilt->Update(s);
+		s = m_frontMovingAvgFilt->Update(s);
+		m_oldFSpeed = s;
+	}
+	return s;
 }
 
 double Shooter::GetRearFlywheelRate(void) {

@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "RobotInfo.h"
+
 #include "subsystems/Drive.h"
 #include "WPILib.h"
 #include "lib/util/Util.h"
@@ -12,8 +14,6 @@
 #include "src/controllers/PIDDriveController.h"
 #include "src/controllers/RampedPIDDriveController.h"
 #include "src/controllers/VisionDriveController.h"
-
-#include "RobotInfo.h"
 
 namespace frc973 {
 
@@ -82,6 +82,7 @@ void Drive::SetCheesyQuickTurn(bool quickturn) {
 
 void Drive::SetVisionTargeting() {
 	this->SetDriveController(m_visionDriveController);
+	m_visionDriveController->Start();
 }
 
 void Drive::ArcadeDrive(double throttle, double turn) {

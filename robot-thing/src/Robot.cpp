@@ -37,7 +37,8 @@ Robot::Robot(void
 	m_accel(nullptr),
 	//m_spiGyro(nullptr),
 #ifdef PROTO_BOT_PINOUT
-	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN)),
+	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN,
+			false, CounterBase::k4X)),
 #else
 	m_austinGyro(new SPIGyro()),
 #endif
@@ -141,13 +142,13 @@ void Robot::Initialize(void) {
 
 void Robot::AllStateContinuous(void) {
 #ifdef PROTO_BOT_PINOUT
-	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_collinGyro->Get());
+	DBStringPrintf(DBStringPos::DB_LINE8, "cgyro %lf", m_collinGyro->GetDistance());
 #else
-	DBStringPrintf(DBStringPos::DB_LINE8, "gyro %lf", m_austinGyro->GetDegrees());
+	DBStringPrintf(DBStringPos::DB_LINE8, "agyro %lf", m_austinGyro->GetDegrees());
 #endif
 
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
-	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
+	//DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
 
 	//DBStringPrintf(DBStringPos::DB_LINE8, "port 10 cur %lf", m_pdp->GetCurrent(10));
 

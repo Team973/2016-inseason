@@ -21,7 +21,7 @@ class DigitalInput;
 
 namespace frc973 {
 
-class DelaySwitch;
+class Debouncer;
 
 class GreyCompressor : public CoopTask {
 public:
@@ -56,7 +56,7 @@ public:
 	void TaskPeriodic(RobotMode mode);
 private:
 	bool 			 m_enabled;
-	DelaySwitch		*m_pressureSwitchFilter;
+	Debouncer		*m_pressureSwitchFilter;
 	DigitalInput	*m_airPressureSwitch;
 	Relay			*m_compressor;
 

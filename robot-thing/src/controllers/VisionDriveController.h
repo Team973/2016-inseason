@@ -7,13 +7,14 @@
 
 #ifndef SRC_CONTROLLERS_VISIONDRIVECONTROLLER_H_
 #define SRC_CONTROLLERS_VISIONDRIVECONTROLLER_H_
-
+#include "lib/filters/RampedOutput.h"
 #include "lib/DriveBase.h"
 #include "lib/SocketServer.hpp"
 
 namespace frc973 {
 
 class PID;
+class Debouncer;
 
 class VisionDriveController
 		 : public DriveController
@@ -36,6 +37,10 @@ public:
 		return Util::abs(m_targetAngle - m_prevAngle) < 1.0;
 	}
 
+	void Start() {
+		//m_targetAngle = 90.0 + m_prevAngle;
+	}
+
 	void OnValueChange(std::string name, std::string newValue) override;
 private:
 	double m_leftOutput;
@@ -47,6 +52,10 @@ private:
 	PID *m_anglePid;
 	bool m_onTarget;
 	bool m_targetFound;
+
+	bool m_readyForFrame;
+	Debouncer *m_readyFilter;
+	RampedOutput *m_linprof;
 };
 
 } /* namespace frc973 */

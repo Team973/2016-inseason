@@ -109,6 +109,9 @@ private:
 	bool m_flywheelReady;
 
 	CascadingFilter *m_frontFilter;
+	MovingAverageFilter *m_frontMovingAvgFilt;
+	double m_oldFSpeed;
+	MedianFilter *m_fmedfilt;
 	CascadingFilter *m_backFilter;
 
 	ElevatorHeight m_elevatorState;
