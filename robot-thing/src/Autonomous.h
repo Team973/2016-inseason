@@ -20,7 +20,7 @@ void Robot::AutonomousContinuous(void) {
 	printf("entering auto continuous\n");
 	//if (m_selectedAutoRoutine == ONE_BALL_AUTO) {
 	//this->Flappers();
-	this->TurnTest();
+	this->Portcullis();
 	/*}
 	else {
 		this->TwoBallAuto();
@@ -86,10 +86,12 @@ void Robot::Flappers(void) {
 	}
 }
 
+static int repeats = 0;
+
 void Robot::TurnTest() {
 	switch (m_autoState) {
 	case 0:
-		m_drive->PIDTurn(360, Drive::RelativeTo::Absolute);
+		m_drive->PIDDrive(48, Drive::RelativeTo::Now);
 		m_autoState++;
 		break;
 	case 1:
@@ -98,13 +100,58 @@ void Robot::TurnTest() {
 		}
 		break;
 	case 2:
-		m_autoTimer = GetMsecTime();
+		m_drive -> PIDTurn (180, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
 	case 3:
-		if (GetMsecTime() - m_autoTimer > 1000){
+		if (m_drive->OnTarget()){
 			m_autoState = 0;
+			repeats = repeats + 1;
 		}
+		break;
+	}
+	DBStringPrintf(DBStringPos::DB_LINE3, "repeats %d", repeats);
+}
+
+void Robot::Portcullis() {
+	switch (m_autoState){
+	case 0:
+		//m_intake->SetIntakePosition(Intake::IntakePosition::extended);
+		m_drive->PIDDrive(52.0, Drive::RelativeTo::SetPoint);
+		m_autoState++;
+		break;
+	case 1:
+		if (m_drive->OnTarget()) {
+			m_autoState++;
+		}
+		break;
+	case 2:
+		m_arm->SetTargetPosition(45.0);
+		m_autoTimer = GetSecTime();
+		m_autoState ++;
+		break;
+	case 3:
+		if (GetSecTime() - m_autoTimer > 0.2) {
+			m_autoState++;
+		}
+		break;
+	case 4:
+		m_drive->PIDDrive(72.0, Drive::RelativeTo::SetPoint);
+		m_autoState++;
+		break;
+	default:
+		break;
+	}
+}
+
+void Robot::Moat() {
+	switch (m_autoState){
+	case 0:
+		m_drive->SetGearing(Drive::DriveGearing::LowGear);
+		m_drive->PIDDrive(120.0, Drive::RelativeTo::Absolute);
+		m_autoState++;
+		break;
+	default:
 		break;
 	}
 }

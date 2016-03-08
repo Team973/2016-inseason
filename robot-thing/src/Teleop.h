@@ -146,8 +146,6 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			break;
 		case DualAction::Back:
 			if (pressedP) {
-				closeGoal -= 0.02;
-				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 		}
 	}

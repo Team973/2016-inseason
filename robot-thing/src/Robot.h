@@ -21,6 +21,7 @@ class GreyCompressor;
 class LogCell;
 class SPIGyro;
 class PoseManager;
+class Debouncer;
 
 class Robot:
 		public CoopMTRobot,
@@ -63,6 +64,7 @@ private:
 	 */
 	Intake			*m_intake;
 	Shooter			*m_shooter;
+	Debouncer		*m_shooterStallFilter;
 	Arm				*m_arm;
 
 	/*
@@ -116,6 +118,8 @@ public:
 
 	void TurnTest(void);
 	void Flappers(void);
+	void Portcullis(void);
+	void Moat(void);
 
 	/**
 	 * Defined in Teleop.h

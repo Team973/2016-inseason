@@ -155,8 +155,8 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 	DBStringPrintf(DBStringPos::DB_LINE0,
 			"ff raw spd %lf", GetFrontFlywheelRate());
-	DBStringPrintf(DBStringPos::DB_LINE1,
-			"ff flt spd %lf", GetFrontFlywheelFilteredRate());
+	//DBStringPrintf(DBStringPos::DB_LINE1,
+	//		"ff flt spd %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
 			"f Flywheel power: %lf", frontMotorOutput);
 

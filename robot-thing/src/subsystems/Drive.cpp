@@ -115,7 +115,7 @@ void Drive::RampPIDTurn(double angle, RelativeTo relativity) {
 }
 
 double Drive::GetLeftDist() {
-	return m_leftEncoder->Get() * 24.5 / 360.0 * 0.95;
+	return -m_leftEncoder->Get() * 24.5 / 360.0 * 0.95;
 }
 
 double Drive::GetRightDist() {
@@ -124,7 +124,7 @@ double Drive::GetRightDist() {
 }
 
 double Drive::GetLeftRate() {
-	return -m_leftEncoder->GetRate();
+	return m_leftEncoder->GetRate();
 }
 
 double Drive::GetRightRate() {
@@ -144,7 +144,7 @@ double Drive::GetAngle() {
 #ifdef PROTO_BOT_PINOUT
 	return -m_gyro->Get();
 #else
-	return -m_gyro->GetDegrees();
+	return m_gyro->GetDegrees();
 #endif
 }
 
@@ -152,7 +152,7 @@ double Drive::GetAngularRate() {
 #ifdef PROTO_BOT_PINOUT
 	return -m_gyro->GetRate();
 #else
-	return -m_gyro->GetDegreesPerSec();
+	return m_gyro->GetDegreesPerSec();
 #endif
 }
 

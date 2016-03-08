@@ -13,6 +13,8 @@
 #include "subsystems/Drive.h"
 #include "subsystems/Arm.h"
 
+#include "lib/filters/Debouncer.h"
+
 #include "PoseManager.h"
 
 namespace frc973 {
@@ -49,6 +51,7 @@ Robot::Robot(void
 	m_drive(nullptr),
 	m_intake(nullptr),
 	m_shooter(nullptr),
+	m_shooterStallFilter(new Debouncer(1.0)),
 	m_arm(nullptr),
 	m_airPressureSwitch(nullptr),
 	m_compressorRelay(nullptr),
@@ -148,7 +151,7 @@ void Robot::AllStateContinuous(void) {
 #endif
 
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
-	//DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
+	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
 
 	//DBStringPrintf(DBStringPos::DB_LINE8, "port 10 cur %lf", m_pdp->GetCurrent(10));
 
@@ -166,6 +169,17 @@ void Robot::AllStateContinuous(void) {
 	SmartDashboard::PutNumber("Y-Accel", m_accel->GetY());
 	SmartDashboard::PutNumber("Z-Accel", m_accel->GetZ());
 	*/
+
+	double backFlywheelCurrent = m_pdp->GetCurrent(BACK_FLYWHEEL_PDB);
+	double armCurrent = m_pdp->GetCurrent(ARM_PDB);
+
+	if (m_shooterStallFilter->Update(
+			backFlywheelCurrent > BACK_FLYWHEEL_STALL_CURRENT)) {
+		m_shooter->SetFlywheelEnabled(false);
+	}
+
+	DBStringPrintf(DBStringPos::DB_LINE1, "bf %2.2lf arm %2.2lf",
+			backFlywheelCurrent, armCurrent);
 }
 
 }
