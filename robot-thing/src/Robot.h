@@ -118,8 +118,10 @@ public:
 
 	void TurnTest(void);
 	void Flappers(void);
-	void Portcullis(void);
+	void PortcullisAuto(void);
 	void Moat(void);
+	void SallyPortAuto(void);
+	void DrawbridgeAuto(void);
 
 	/**
 	 * Defined in Teleop.h
@@ -128,9 +130,24 @@ public:
 	void TeleopStop(void) override;
 	void TeleopContinuous(void) override;
 
+	/**
+	 * Function called by the observable joystick whenever a joystick
+	 * button is pressed or released
+	 */
 	void ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool newState) override;
-
+	void HandleTeleopButton(uint32_t port, uint32_t button,
+			bool newState);
+	void HandleDisabledButton(uint32_t port, uint32_t button,
+			bool newState);
+	enum AutoRoutine{
+		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go
+	};
+	enum AutoSearchDirection{
+		None, Left, Right
+	};
+	AutoRoutine m_selectedRoutine;
+	AutoSearchDirection m_selectedDirection;
 	/**
 	 * Defined in Test.h
 	 */

@@ -57,7 +57,7 @@ public:
 	void ChooseNthPose(int n);
 
 	static const int STOW_POSE = 0;
-	static const int BATTER_SHOT_PPOSE = 1;
+	static const int BATTER_SHOT_POSE = 1;
 	static const int FAR_DEFENSE_SHOT_POSE = 2;
 	static const int NEAR_DEFENSE_SHOT_POSE = 3;
 
@@ -88,12 +88,20 @@ public:
 	 */
 	void Chill();
 private:
+
+	/**
+	 * If we didn't load the file, panick and fall back to running this
+	 * function
+	 */
+	void AssumePoseFallback(int poseNum);
+
 	Arm *m_arm;
 	Shooter *m_shooter;
 	Intake *m_intake;
 
 	Json::Value m_configRoot;
 	int m_currPose = 0;
+	bool m_fileLoaded;
 };
 
 } /* namespace frc973 */

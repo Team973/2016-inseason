@@ -14,19 +14,21 @@
 
 namespace frc973 {
 
-Arm::Arm(TaskMgr *scheduler)
+Arm::Arm(TaskMgr *scheduler, PowerDistributionPanel* pdp)
 		 : m_scheduler(scheduler)
+		 , m_pdp(pdp)
 		 , m_lastTimeSec(GetSecTime())
 		 , m_armMotor(new VictorSP(ARM_MOTOR_PWM))
 		 , m_armEncoder(new Encoder(ARM_ENCODER_A_DIN, ARM_ENCODER_B_DIN, true))
 		 , m_mode(ArmMode::position_control)
 		 , m_targetSpeed(0.0)
-		 , m_targetPos(0.0)
+		 , m_targetPos(ARM_OFFSET)
 		 , m_armPow(0.0)
 		 , m_pid(new PID(ARM_PID_KP, ARM_PID_KI, ARM_PID_KD))
 		 , m_zeroOffsetDeg(ARM_OFFSET) {
 	m_armEncoder->SetDistancePerPulse(ARM_DIST_PER_CLICK);
 	m_scheduler->RegisterTask("Arm", this, TASK_PERIODIC);
+	m_pid->SetTarget(m_targetPos);
 }
 
 Arm::~Arm() {
@@ -56,6 +58,10 @@ double Arm::GetArmAngle() {
 
 double Arm::GetArmVelocity() {
 	return m_armEncoder->GetRate();
+}
+
+double Arm::GetArmCurrent() {
+	return m_pdp->GetCurrent(ARM_PDB);
 }
 
 /**
@@ -88,17 +94,30 @@ void Arm::TaskPeriodic(RobotMode mode) {
 	case ArmMode::openLoop_control:
 		m_armMotor->Set(m_armPow);
 		break;
+
+	case ArmMode::zeroing:
+		if (GetArmCurrent() < STALL_CURRENT) {
+			m_armMotor->Set(ZEROING_POWER);
+		}
+		else {
+			m_zeroOffsetDeg = 0.0;
+			m_armMotor->Set(0.0);
+			m_armEncoder->Reset();
+			m_mode = openLoop_control;
+			m_pid->SetTarget(0.0);
+			m_targetPos = 0.0;
+			m_armPow = 0.0;
+		}
+		break;
 	}
 
-	DBStringPrintf(DBStringPos::DB_LINE6, "arm pos %lf", GetArmAngle());
 	DBStringPrintf(DBStringPos::DB_LINE7, "arm setpt %lf", m_targetPos);
 
 	lastTime = currTimeSec;
 }
 
 void Arm::Zero() {
-	m_zeroOffsetDeg = 0.0;
-	m_armEncoder->Reset();
+	m_mode = ArmMode::zeroing;
 }
 
 }

@@ -159,6 +159,26 @@ namespace Util {
 	}
 
 	/**
+	 * Return |n| if abs(n) > threshold... otherwise return threshold
+	 * with the sign of |n|.
+	 *
+	 * If |n| is 0.0, return |threshold|.
+	 */
+	inline double antideadband(double n, double threshold) {
+		if (abs(n) < threshold) {
+			if (n < 0.0) {
+				return -threshold;
+			}
+			else {
+				return threshold;
+			}
+		}
+		else {
+			return n;
+		}
+	}
+
+	/**
 	 * Square the given number, but keep the sign the same
 	 */
 	inline double signSquare(double n) {

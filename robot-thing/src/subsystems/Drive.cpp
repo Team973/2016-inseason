@@ -144,7 +144,7 @@ double Drive::GetAngle() {
 #ifdef PROTO_BOT_PINOUT
 	return -m_gyro->Get();
 #else
-	return m_gyro->GetDegrees();
+	return -m_gyro->GetDegrees();
 #endif
 }
 
@@ -152,7 +152,7 @@ double Drive::GetAngularRate() {
 #ifdef PROTO_BOT_PINOUT
 	return -m_gyro->GetRate();
 #else
-	return m_gyro->GetDegreesPerSec();
+	return -m_gyro->GetDegreesPerSec();
 #endif
 }
 

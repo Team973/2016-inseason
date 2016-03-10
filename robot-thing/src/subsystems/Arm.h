@@ -14,6 +14,7 @@
 class VictorSP;
 class Encoder;
 class DigitalInput;
+class PowerDistributionPanel;
 
 namespace frc973 {
 
@@ -22,7 +23,7 @@ class PID;
 class Arm:
 	public CoopTask{
 public:
-	Arm(TaskMgr *scheduler);
+	Arm(TaskMgr *scheduler, PowerDistributionPanel* pdp);
 	virtual ~Arm();
 
 	/**
@@ -70,25 +71,33 @@ public:
 	 */
 	double GetArmVelocity();
 
+	/**
+	 * Ask the power distribution panel for the current going through the arm
+	 */
+	double GetArmCurrent();
+
 	void TaskPeriodic(RobotMode mode) override;
+
+	/**
+	 * Go into zeroing mode...
+	 * run constant low power until certain current is drawn
+	 */
+	void Zero();
 
 	void PrintStats() {
 		printf("Arm position: %lf\n", GetArmAngle());
 	}
 private:
-	/**
-	 * Whenever the zero-stop gets clicked, this should get called to zero
-	 * the encoder and adjust any offset state
-	 */
-	void Zero();
 
 	enum ArmMode {
 		position_control,
 		velocity_control,
-		openLoop_control
+		openLoop_control,
+		zeroing
 	};
 
 	TaskMgr *m_scheduler;
+	PowerDistributionPanel *m_pdp;
 
 	uint32_t m_lastTimeSec;
 
@@ -113,8 +122,13 @@ public:
 	/**
 	 * The angle that the arm starts at in degrees (because it doesn't
 	 * start at zero degrees).
+	 *
+	 * To zero, we send |ZEROING_POWER| until current > |STALL_CURRENT|
+	 * then assume that's good enough
 	 */
-	static constexpr double ARM_OFFSET = 0.0;
+	static constexpr double ARM_OFFSET = 73.0;
+	static constexpr double ZEROING_POWER = -0.2;
+	static constexpr double STALL_CURRENT = 3.0;
 
 	/**
 	 * Software stop the arm if it tries to go further back than this

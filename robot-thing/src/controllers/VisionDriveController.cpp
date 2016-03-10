@@ -13,15 +13,19 @@
 
 namespace frc973 {
 
-static constexpr double TURN_PID_KP = 0.08;
+//static constexpr double TURN_PID_KP = 0.08;
+static constexpr double TURN_PID_KP = 0.06;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0.000;
+
+static constexpr double MIN_TURN_POWER = 0.06;
 
 VisionDriveController::VisionDriveController()
 		 : m_leftOutput(0.0)
 		 , m_rightOutput(0.0)
 		 , m_targetAngle(0.0)
 		 , m_prevAngle(0.0)
+		 , m_prevAngleVel(0.0)
 		 , m_anglePid(new PID(TURN_PID_KP, TURN_PID_KI, TURN_PID_KD))
 		 , m_onTarget(false)
 		 , m_targetFound(false)
@@ -40,21 +44,22 @@ VisionDriveController::~VisionDriveController() {
 
 void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 		DriveControlSignalReceiver *out) {
-	m_prevAngle = state->GetAngle() * (90.0 / 31.0);
+	m_prevAngle = state->GetAngle();
+	m_prevAngleVel = state->GetAngularRate();
+
 	double turn = 0.0;
-	m_readyForFrame = state->GetAngularRate() < 1.0;
+	m_readyForFrame = Util::abs(m_prevAngleVel) < 1.0;
 
 	if (m_targetFound) {
-		double incr_setpt = m_targetAngle;//m_linprof->Update(m_targetAngle);
-
-		m_anglePid->SetTarget(incr_setpt);
-		turn = Util::bound(m_anglePid->CalcOutput(m_prevAngle), -1.0, 1.0);
+		turn = m_anglePid->CalcOutput(m_prevAngle);
+		turn = Util::antideadband(turn, MIN_TURN_POWER);
+		turn = Util::bound(turn, -0.5, 0.5);
 
 		printf("turnyness %lf\n", turn);
-		out->SetDriveOutput(-turn, turn);
+		out->SetDriveOutput(turn, -turn);
 
-		DBStringPrintf(DBStringPos::DB_LINE3,
-				"incr %2.2lf tn %2.2lf", incr_setpt, turn);
+		DBStringPrintf(DBStringPos::DB_LINE4,
+				"er %2.2lf tn %2.2lf", m_targetAngle - m_prevAngle, turn);
 
 	}
 

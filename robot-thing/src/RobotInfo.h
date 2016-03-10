@@ -13,6 +13,7 @@
 namespace frc973 {
 
 //#define PROTO_BOT_PINOUT
+#define PRACTICE_BOT_PINOUT
 
 /**
  * PWM pin-out
@@ -81,10 +82,15 @@ constexpr int INTAKE_EXTENSION_SOL = 4;
  * Power Distrobution Channels
  * (only the ones we care about)
  */
+#ifdef PRACTICE_BOT_PINOUT
+constexpr int BACK_FLYWHEEL_PDB = 2;
+constexpr int ARM_PDB = 6;
+#else
 constexpr int BACK_FLYWHEEL_PDB = 12;
 constexpr int ARM_PDB = 5;
+#endif
 
-constexpr double BACK_FLYWHEEL_STALL_CURRENT = 50.0;
+constexpr double BACK_FLYWHEEL_STALL_CURRENT = 30.0;
 /**
  * USB port-out (driver-station)
  */

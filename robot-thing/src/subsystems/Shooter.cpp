@@ -120,13 +120,9 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		case FlywheelState::ssControl:
 			frontMotorOutput = m_frontController->Update(
 					this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
-			DBStringPrintf(DBStringPos::DB_LINE3,
-					"f goal %lf", m_frontFlywheelTargetSpeed);
 			break;
 		case FlywheelState::openLoop:
 			frontMotorOutput = m_frontFlywheelSetPower;
-			DBStringPrintf(DBStringPos::DB_LINE3,
-					"f pow: %lf", m_frontFlywheelSetPower);
 			break;
 		}
 	}
@@ -153,19 +149,10 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 
 	m_backFlywheelMotor->Set(backMotorOutput);
 
-	DBStringPrintf(DBStringPos::DB_LINE0,
-			"ff raw spd %lf", GetFrontFlywheelRate());
-	//DBStringPrintf(DBStringPos::DB_LINE1,
-	//		"ff flt spd %lf", GetFrontFlywheelFilteredRate());
 	DBStringPrintf(DBStringPos::DB_LINE2,
-			"f Flywheel power: %lf", frontMotorOutput);
-
-	SmartDashboard::PutNumber("front flywheel raw", GetFrontFlywheelRate());
-	SmartDashboard::PutNumber("rear flywheel raw", GetRearFlywheelRate());
-	SmartDashboard::PutNumber("front flywheel med", GetFrontFlywheelFilteredRate());
-	SmartDashboard::PutNumber("rear flywheel med", GetRearFlywheelFilteredRate());
-	//SmartDashboard::PutNumber("flyfilt", GetFlywheelMedianRate());
-	//SmartDashboard::PutNumber("sooterMotorOut", motorOutput);
+			"f-rpm %4.0lf pow %1.2", GetFrontFlywheelRate(), frontMotorOutput);
+	DBStringPrintf(DBStringPos::DB_LINE3,
+			"r-rpm %4.0lf pow %1.2", GetRearFlywheelRate(), backMotorOutput);
 
 	m_shooterPow->LogDouble(frontMotorOutput);
 	m_frontFlywheelSpeed->LogDouble(GetFrontFlywheelRate());

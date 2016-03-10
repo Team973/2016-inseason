@@ -16,16 +16,23 @@ void Robot::AutonomousStop(void) {
 }
 
 void Robot::AutonomousContinuous(void) {
-
-	printf("entering auto continuous\n");
-	//if (m_selectedAutoRoutine == ONE_BALL_AUTO) {
-	//this->Flappers();
-	this->Portcullis();
-	/*}
-	else {
-		this->TwoBallAuto();
-	}*/
-	printf("exiting auto continuous\n");
+	switch (m_selectedRoutine){
+	case AutoRoutine::Portcullis:
+		PortcullisAuto();
+		break;
+	case AutoRoutine::ChevaldeFrise:
+		Flappers();
+		break;
+	case AutoRoutine::Drawbridge:
+		DrawbridgeAuto();
+		break;
+	case AutoRoutine::Go:
+		Moat();
+		break;
+	case AutoRoutine::SallyPort:
+		SallyPortAuto();
+		break;
+	}
 }
 
 //m_autoState
@@ -78,10 +85,35 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 10:
-		m_drive->PIDTurn(180, Drive::RelativeTo::Absolute);
-		m_autoState++;
+		if (m_selectedDirection == AutoSearchDirection::None){
+			m_autoState += 2;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Left){
+			m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Right){
+			m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 		break;
 	case 11:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 12:
+		m_drive->SetVisionTargeting();
+		m_shooter->SetFlywheelEnabled(true);
+		break;
+	case 13:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 14:
+		m_shooter->SetConveyerPower(1.0);
 		break;
 	}
 }
@@ -110,14 +142,15 @@ void Robot::TurnTest() {
 		}
 		break;
 	}
-	DBStringPrintf(DBStringPos::DB_LINE3, "repeats %d", repeats);
+	DBStringPrintf(DBStringPos::DB_LINE4, "repeats %d", repeats);
 }
 
-void Robot::Portcullis() {
+void Robot::PortcullisAuto() {
 	switch (m_autoState){
 	case 0:
 		//m_intake->SetIntakePosition(Intake::IntakePosition::extended);
 		m_drive->PIDDrive(52.0, Drive::RelativeTo::SetPoint);
+		m_arm->Zero();
 		m_autoState++;
 		break;
 	case 1:
@@ -139,6 +172,37 @@ void Robot::Portcullis() {
 		m_drive->PIDDrive(72.0, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
+	case 5:
+		if (m_selectedDirection == AutoSearchDirection::None){
+			m_autoState += 2;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Left){
+			m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Right){
+			m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		break;
+	case 6:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 7:
+		m_drive->SetVisionTargeting();
+		m_shooter->SetFlywheelEnabled(true);
+		break;
+	case 8:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 9:
+		m_shooter->SetConveyerPower(1.0);
+		break;
 	default:
 		break;
 	}
@@ -148,11 +212,174 @@ void Robot::Moat() {
 	switch (m_autoState){
 	case 0:
 		m_drive->SetGearing(Drive::DriveGearing::LowGear);
-		m_drive->PIDDrive(120.0, Drive::RelativeTo::Absolute);
+		m_drive->PIDDrive(150.0, Drive::RelativeTo::Now);
+		//remember 120 failed for almost everything
 		m_autoState++;
+		break;
+	case 1:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 2:
+		if (m_selectedDirection == AutoSearchDirection::None){
+			m_autoState += 2;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Left){
+			m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Right){
+			m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		break;
+	case 3:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 4:
+		m_drive->SetVisionTargeting();
+		m_shooter->SetFlywheelEnabled(true);
+		break;
+	case 5:
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
+		break;
+	case 6:
+		m_shooter->SetConveyerPower(1.0);
 		break;
 	default:
 		break;
+	}
+}
+
+
+void Robot::DrawbridgeAuto() {
+	switch (m_autoState) {
+		case 0:
+			m_drive->PIDDrive(72.0, Drive::RelativeTo::Now);
+			m_arm->SetTargetPosition(45.0);
+			m_autoState ++;
+			break;
+		case 1:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 2:
+			m_arm->SetTargetPosition(0.0);
+			m_drive->PIDDrive(-24.0, Drive::RelativeTo::SetPoint);
+			m_autoState ++;
+			break;
+		case 3:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 4:
+			m_drive->PIDDrive(132.0, Drive::RelativeTo::SetPoint);
+			m_autoState ++;
+			break;
+		case 5:
+			if (m_selectedDirection == AutoSearchDirection::None){
+				m_autoState += 2;
+			}
+			else if (m_selectedDirection == AutoSearchDirection::Left){
+				m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
+				m_autoState ++;
+			}
+			else if (m_selectedDirection == AutoSearchDirection::Right){
+				m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
+				m_autoState ++;
+			}
+			m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+			break;
+		case 6:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 7:
+			m_drive->SetVisionTargeting();
+			m_shooter->SetFlywheelEnabled(true);
+			break;
+		case 8:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 9:
+			m_shooter->SetConveyerPower(1.0);
+			break;
+	}
+}
+
+void Robot::SallyPortAuto() {
+	switch (m_autoState) {
+		case 0:
+			m_drive->PIDDrive(72.0, Drive::RelativeTo::Now);
+			m_arm->SetTargetPosition(45.0);
+			m_autoState ++;
+			break;
+		case 1:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 2:
+			m_arm->SetTargetPosition(0.0);
+			m_autoState ++;
+			break;
+		case 3:
+			m_drive->PIDDrive(-24.0, Drive::RelativeTo::SetPoint);
+			m_autoState ++;
+			break;
+		case 4:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 5:
+			m_drive->PIDDrive(132.0, Drive::RelativeTo::SetPoint);
+			m_autoState ++;
+			break;
+		case 6:
+			if (m_selectedDirection == AutoSearchDirection::None){
+				m_autoState += 2;
+			}
+			else if (m_selectedDirection == AutoSearchDirection::Left){
+				m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
+				m_autoState ++;
+			}
+			else if (m_selectedDirection == AutoSearchDirection::Right){
+				m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
+				m_autoState ++;
+			}
+			m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+			break;
+		case 7:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 8:
+			m_drive->SetVisionTargeting();
+			m_shooter->SetFlywheelEnabled(true);
+			break;
+		case 9:
+			if (m_drive->OnTarget()){
+				m_autoState ++;
+			}
+			break;
+		case 10:
+			m_shooter->SetConveyerPower(1.0);
+			break;
+		default:
+			break;
 	}
 }
 

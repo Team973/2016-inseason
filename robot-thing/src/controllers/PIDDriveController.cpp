@@ -42,7 +42,7 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	double throttle;
 	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
 	if (m_distEnabled){
-		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -0.8, 0.8);
+		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -1.0, 1.0);
 	}
 	else {
 		throttle = 0.0;
@@ -59,7 +59,7 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 
 	DBStringPrintf(DBStringPos::DB_LINE6, "error %lf", m_prevAngle - m_targetAngle);
 
-	out->SetDriveOutput(throttle - turn, throttle + turn);
+	out->SetDriveOutput(throttle + turn, throttle - turn);
 
 	if ((m_distEnabled == false || (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5)) &&
 			Util::abs(m_targetAngle - m_prevAngle) < 2 && Util::abs(state->GetAngularRate())) {

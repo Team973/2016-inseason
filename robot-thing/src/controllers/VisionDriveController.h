@@ -30,11 +30,16 @@ public:
 			DriveControlSignalReceiver *out);
 
 	/*
-	 * This controller is open-loop so OnTarget doesn't make sense here...
-	 * just return false I guess...
+	 * We are on target if:
+	 *  - we see the target and
+	 *  - we're stopped (not currently turning) and
+	 *  - we're within a degree of the target
 	 */
 	bool OnTarget() {
-		return Util::abs(m_targetAngle - m_prevAngle) < 1.0;
+		return
+				m_targetFound &&
+				Util::abs(m_prevAngleVel) < 1.0 &&
+				Util::abs(m_targetAngle - m_prevAngle) < 1.0;
 	}
 
 	void Start() {
@@ -48,6 +53,7 @@ private:
 
 	double m_targetAngle;
 	double m_prevAngle;
+	double m_prevAngleVel;
 
 	PID *m_anglePid;
 	bool m_onTarget;

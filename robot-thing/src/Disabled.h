@@ -35,5 +35,55 @@ void Robot::DisabledContinuous(void) {
 	}
 	*/
 }
+void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
+		bool pressedP){
+	if (port == DRIVER_JOYSTICK_PORT) {
+		switch (button) {
+		case DualAction::BtnA:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::Portcullis;
+				DBStringPrintf(DBStringPos::DB_LINE6, "Portcullis Auto");
+			}
+			break;
+		case DualAction::BtnB:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::ChevaldeFrise;
+				DBStringPrintf(DBStringPos::DB_LINE6, "ChevaldeFrise Auto");
+			}
+			break;
+		case DualAction::BtnX:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::Drawbridge;
+				DBStringPrintf(DBStringPos::DB_LINE6, "Drawbridge Auto");
+			}
+			break;
+		case DualAction::BtnY:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::Go;
+				DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
+			}
+			break;
+		case DualAction::DPadUpVirtBtn:
+			if (pressedP) {
+				m_selectedDirection = AutoSearchDirection::None;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Turn None");
+			}
+			break;
+		case DualAction::DPadLeftVirtBtn:
+			if (pressedP) {
+				m_selectedDirection = AutoSearchDirection::Left;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Turn Left");
+			}
+			break;
+		case DualAction::DPadRightVirtBtn:
+			if (pressedP) {
+				m_selectedDirection = AutoSearchDirection::Right;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Turn Right");
+			}
+			break;
+		}
+	}
+
+}
 
 }

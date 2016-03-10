@@ -16,14 +16,26 @@ static bool armNeedsStop = false;
 static bool conveyorNeedsStop = false;
 static bool intakeNeedsStop = false;
 
+static bool armOpenLoop = false;
+
 void Robot::TeleopContinuous(void) {
 	double armPower = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
 	if (armPower != 0.0) {
-		m_arm->SetPower(armPower * 0.5);
+		if (armOpenLoop) {
+			m_arm->SetPower(armPower * 0.5);
+		}
+		else {
+			m_arm->SetTargetSpeed(armPower);
+		}
 		armNeedsStop = true;
 	}
 	else if (armNeedsStop) {
-		m_arm->SetPower(0.0);
+		if (armOpenLoop) {
+			m_arm->SetPower(0.0);
+		}
+		else {
+			m_arm->SetTargetSpeed(0.0);
+		}
 		armNeedsStop = false;
 	}
 
@@ -81,12 +93,8 @@ void Robot::TeleopContinuous(void) {
 
 static double closeGoal = 5500.0;
 
-void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
-			bool pressedP) {
-
-	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
-
-
+void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
+		bool pressedP) {
 	if (port == DRIVER_JOYSTICK_PORT) {
 		switch (button) {
 		case DualAction::BtnA:
@@ -153,7 +161,7 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		switch (button) {
 		case DualAction::BtnA:
 			if (pressedP) {
-				m_poseManager->ChooseNthPose(PoseManager::BATTER_SHOT_PPOSE);
+				m_poseManager->ChooseNthPose(PoseManager::BATTER_SHOT_POSE);
 			}
 			break;
 		case DualAction::BtnB:
@@ -204,11 +212,13 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
 				m_shooter->SetFlywheelEnabled(false);
+				DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
 			}
 			break;
 		case DualAction::DPadDownVirtBtn:
 			if (pressedP) {
 				m_shooter->SetFlywheelEnabled(true);
+				DBStringPrintf(DBStringPos::DB_LINE0, "shooter enabled");
 			}
 			break;
 		case DualAction::DPadLeftVirtBtn:
@@ -217,11 +227,20 @@ void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 		case DualAction::DPadRightVirtBtn:
 			m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
 			break;
+		case DualAction::Back:
+			if (pressedP) {
+				m_arm->Zero();
+			}
+			break;
+		case DualAction::Start:
+			if (pressedP) {
+				armOpenLoop = true;
+			}
+			break;
 		}
 	}
 
 	DBStringPrintf(DBStringPos::DB_LINE4,
 			"front p %lf", closeGoal);
-}
-
+	}
 }

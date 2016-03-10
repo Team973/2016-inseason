@@ -65,7 +65,9 @@ Robot::Robot(void
 	m_accelCellX(nullptr),
 	m_accelCellY(nullptr),
 	m_accelCellZ(nullptr),
-	m_poseManager(nullptr)
+	m_poseManager(nullptr),
+	m_selectedRoutine(AutoRoutine::Go),
+	m_selectedDirection(AutoSearchDirection::None)
 {
 	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 200.0);
 
@@ -92,7 +94,7 @@ Robot::Robot(void
 
 	m_intake = new Intake(this);
 
-	m_arm = new Arm(this);
+	m_arm = new Arm(this, m_pdp);
 
 	m_airPressureSwitch = new DigitalInput(AIR_PRESSURE_DIN);
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
@@ -141,6 +143,10 @@ void Robot::Initialize(void) {
 
 	//m_hiFreq->Start();
 	//m_hiFreq->SetHighPriority();
+
+	DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
+	DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
+	DBStringPrintf(DBStringPos::DB_LINE9, "Turn None");
 }
 
 void Robot::AllStateContinuous(void) {
@@ -149,6 +155,8 @@ void Robot::AllStateContinuous(void) {
 #else
 	DBStringPrintf(DBStringPos::DB_LINE8, "agyro %lf", m_austinGyro->GetDegrees());
 #endif
+
+	DBStringPrintf(DBStringPos::DB_LINE1, "arm pos %lf", m_arm->GetArmAngle());
 
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
 	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
@@ -176,12 +184,23 @@ void Robot::AllStateContinuous(void) {
 	if (m_shooterStallFilter->Update(
 			backFlywheelCurrent > BACK_FLYWHEEL_STALL_CURRENT)) {
 		m_shooter->SetFlywheelEnabled(false);
+		DBStringPrintf(DBStringPos::DB_LINE0, "!STALL DETECTED!");
 	}
 
-	DBStringPrintf(DBStringPos::DB_LINE1, "bf %2.2lf arm %2.2lf",
+	DBStringPrintf(DBStringPos::DB_LINE0, "bf %2.2lf arm %2.2lf",
 			backFlywheelCurrent, armCurrent);
 }
+void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
+			bool pressedP) {
 
+	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
+	if (this->IsOperatorControl()){
+		HandleTeleopButton(port, button, pressedP);
+	}
+	else if (this->IsDisabled()){
+		HandleDisabledButton(port, button, pressedP);
+	}
+}
 }
 
 #include "Disabled.h"

@@ -12,13 +12,13 @@ with open('preset-schema.json') as schema_file, open('presets.json') as data_fil
     print("schema determined valid!")
 
     print("now tring to upload to server")
-    import ftplib
 
-    session = ftplib.FTP('sftp://roborio-9973-frc.local')
-    session.login('lvuser', '')
-    session.storbinary('presets.json', data_file)
-    data_file.close()
-    session.quit()
+    import pysftp
+    import sys
+
+    with pysftp.Connection('roborio-973-frc.local', username='lvuser', password='') as sftp:
+        sftp.put('presets.json')
+
     print("finished uploading to server")
 
 print("finished")
