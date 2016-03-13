@@ -34,7 +34,13 @@ void DriveBase::TaskPostPeriodic(RobotMode mode) {
 }
 
 void DriveBase::SetDriveController(DriveController *controller) {
+	if (m_controller != nullptr) {
+		m_controller->Stop();
+	}
 	m_controller = controller;
+	if (m_controller != nullptr) {
+		m_controller->Start();
+	}
 }
 
 bool DriveBase::OnTarget() {

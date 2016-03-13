@@ -42,6 +42,7 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_pidDriveController(new PIDDriveController())
 		 , m_rampPidDriveController(new RampPIDDriveController())
 		 , m_visionDriveController(new VisionDriveController())
+		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 {
 	m_leftEncoder->SetDistancePerPulse(1.0);
 	this->SetDriveController(m_arcadeDriveController);
@@ -160,12 +161,27 @@ void Drive::SetDriveOutput(double left, double right) {
 	m_leftPower = left;
 	m_rightPower = right;
 
-	m_leftMotor->Set(
-			m_leftMotorPowerFilter->Update(
-					Util::bound(-m_leftPower, -1.0, 1.0)));
-	m_rightMotor->Set(
-			m_rightMotorPowerFilter->Update(
-					Util::bound(-m_rightPower, -1.0, 1.0)));
+	if (isnan(m_leftPower) || isnan(m_rightPower)) {
+		m_leftMotor->Set(0.0);
+		m_rightMotor->Set(0.0);
+	}
+	else {
+		m_leftMotor->Set(
+				m_leftMotorPowerFilter->Update(
+						Util::bound(-m_leftPower, -1.0, 1.0)));
+		m_rightMotor->Set(
+				m_rightMotorPowerFilter->Update(
+						Util::bound(-m_rightPower, -1.0, 1.0)));
+	}
+}
+
+void Drive::SetBraking(bool enabledP) {
+	if (enabledP) {
+		m_brakes->Set(DoubleSolenoid::kForward);
+	}
+	else {
+		m_brakes->Set(DoubleSolenoid::kReverse);
+	}
 }
 
 }

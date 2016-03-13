@@ -115,7 +115,7 @@ void* SingleThreadTaskMgr::RunTasks(void *p) {
 		}
 		else {
 			printf("TaskRunner (%fhz) taking too long.  "\
-					"Time alloted for period: %lu us; time used %lu us",
+					"Time alloted for period: %llu us; time used %llu us",
 					inst->GetLoopFrequency(), timeSliceAllotedUs,
 					timeSliceUsedUs);
 		}

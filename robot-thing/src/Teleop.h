@@ -4,6 +4,10 @@
 namespace frc973 {
 
 void Robot::TeleopStart(void) {
+	m_teleopTimeSec = GetSecTime();
+	m_drive->SetBraking(false);
+	m_drive->ArcadeDrive(0.0, 0.0);
+	m_shooter->SetConveyerPower(0.0);
     printf("***teleop start\n");
 }
 
@@ -16,7 +20,7 @@ static bool armNeedsStop = false;
 static bool conveyorNeedsStop = false;
 static bool intakeNeedsStop = false;
 
-static bool armOpenLoop = false;
+static bool armOpenLoop = true;
 
 void Robot::TeleopContinuous(void) {
 	double armPower = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
@@ -70,8 +74,9 @@ void Robot::TeleopContinuous(void) {
 	double y = m_driverJoystick->GetRawAxis(DualAction::LeftYAxis);
 	double x = -m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
 
-	if (Util::abs(x) > 0.2) {
+	if (Util::abs(x) > 0.6 || Util::abs(y) > 0.6) {
 		teleopDrive = true;
+		m_drive->SetBraking(false);
 	}
 
 	if (teleopDrive) {
@@ -80,9 +85,7 @@ void Robot::TeleopContinuous(void) {
 			x *= 0.2;
 		}
 
-		if (teleopDrive) {
-			m_drive->ArcadeDrive(y, -x);
-		}
+		m_drive->ArcadeDrive(y, -x);
 	}
 
  	/*
@@ -99,28 +102,36 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 		switch (button) {
 		case DualAction::BtnA:
 			if (pressedP) {
-				//m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
-				closeGoal += 50.0;
-				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				if (GetSecTime() - m_teleopTimeSec > 100.0){
+					//m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
+					m_drive->ArcadeDrive(0.0, 0.0);
+					m_drive->SetBraking(true);
+					teleopDrive = false;
+				}
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
 				//m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
-				closeGoal -= 50.0;
-				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				m_drive->SetBraking(false);
+				m_drive->ArcadeDrive(0.0, 0.0);
+				teleopDrive = true;
 			}
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				teleopDrive = false;
-				m_drive->SetVisionTargeting();
+				//teleopDrive = false;
+				//m_drive->SetVisionTargeting();
+				closeGoal -= 50.0;
+				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				teleopDrive = true;
-				m_drive->ArcadeDrive(0.0, 0.0);
+				//teleopDrive = true;
+				//m_drive->ArcadeDrive(0.0, 0.0);
+				closeGoal += 50.0;
+				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::LeftBumper:

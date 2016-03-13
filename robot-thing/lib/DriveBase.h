@@ -70,6 +70,10 @@ public:
 	 * Check whether the controller thinks we are on target.
 	 */
 	virtual bool OnTarget() = 0;
+
+	virtual void Start() {}
+
+	virtual void Stop() {}
 };
 
 /**

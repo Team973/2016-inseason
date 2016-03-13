@@ -84,11 +84,11 @@ void Arm::TaskPeriodic(RobotMode mode) {
 		m_targetPos = Util::bound(m_targetPos + positionStep, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
 
 		m_pid->SetTarget(m_targetPos);
-		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		//m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
 		break;
 
 	case ArmMode::position_control:
-		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		//m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
 		break;
 
 	case ArmMode::openLoop_control:

@@ -13,13 +13,13 @@
 namespace frc973 {
 
 //#define PROTO_BOT_PINOUT
-#define PRACTICE_BOT_PINOUT
+//#define PRACTICE_BOT_PINOUT
 
 /**
  * PWM pin-out
  */
-constexpr int DRIVE_RIGHT_PWM = 0;
-constexpr int DRIVE_LEFT_PWM = 1;
+constexpr int DRIVE_RIGHT_PWM = 1;
+constexpr int DRIVE_LEFT_PWM = 0;
 
 constexpr int FRONT_SHOOTER_PWM = 2;
 constexpr int BACK_SHOOTER_PWM = 3;
@@ -75,7 +75,9 @@ constexpr int COMPRESSOR_RELAY = 0;
  */
 constexpr int SHOOTER_ANGLE_UPPER_SOL = 0;
 constexpr int SHOOTER_ANGLE_LOWER_SOL = 1;
-constexpr int DRIVE_SHIFT_SOL = 2;
+constexpr int DRIVE_BREAK_SOL_A = 2;
+constexpr int DRIVE_BREAK_SOL_B = 5;
+constexpr int DRIVE_SHIFT_SOL = 3;
 constexpr int INTAKE_EXTENSION_SOL = 4;
 
 /**
@@ -90,7 +92,7 @@ constexpr int BACK_FLYWHEEL_PDB = 12;
 constexpr int ARM_PDB = 5;
 #endif
 
-constexpr double BACK_FLYWHEEL_STALL_CURRENT = 30.0;
+constexpr double BACK_FLYWHEEL_STALL_CURRENT = 50.0;
 /**
  * USB port-out (driver-station)
  */

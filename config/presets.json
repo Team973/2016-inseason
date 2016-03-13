@@ -3,7 +3,7 @@
     "poses": [
         {
             "name": "stow",
-            "armControl": true,
+            "armControl": false,
             "armTarget": 75.0,
             "intakeExtended": false,
             "longCylinderExtended": false,
@@ -17,7 +17,7 @@
         },
         {
             "name": "batter-shot",
-            "armControl": true,
+            "armControl": false,
             "armTarget": 75.0,
             "intakeExtended": true,
             "longCylinderExtended": true,
@@ -31,7 +31,7 @@
         },
         {
             "name": "far-defense",
-            "armControl": true,
+            "armControl": false,
             "armTarget": 75.0,
             "intakeExtended": false,
             "longCylinderExtended": true,
@@ -45,15 +45,15 @@
         },
         {
             "name": "near-defense",
-            "armControl": true,
+            "armControl": false,
             "armTarget": 75.0,
             "intakeExtended": false,
             "longCylinderExtended": true,
             "shortCylinderExtended": false,
             "superiorFlywheelControl": "closed",
             "inferiorFlywheelControl": "open",
-            "superiorFlywheelRPM": 4850.0,
-            "inferiorFlywheelRPM": 0.0,
+            "superiorFlywheelRPM": 4500.0,
+            "inferiorFlywheelRPM": 4500.0,
             "superiorFlywheelPower": 0.4,
             "inferiorFlywheelPower": 0.8
         },

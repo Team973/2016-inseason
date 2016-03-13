@@ -63,10 +63,16 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 				DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
 			}
 			break;
+		case DualAction::Back:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::NoAuto;
+				DBStringPrintf(DBStringPos::DB_LINE6, "No Auto (Just sit)");
+			}
+			break;
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
 				m_selectedDirection = AutoSearchDirection::None;
-				DBStringPrintf(DBStringPos::DB_LINE9, "Turn None");
+				DBStringPrintf(DBStringPos::DB_LINE9, "Go Straight");
 			}
 			break;
 		case DualAction::DPadLeftVirtBtn:
@@ -81,6 +87,11 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 				DBStringPrintf(DBStringPos::DB_LINE9, "Turn Right");
 			}
 			break;
+		case DualAction::DPadDownVirtBtn:
+			if (pressedP) {
+				m_selectedDirection = AutoSearchDirection::NoVision;
+				DBStringPrintf(DBStringPos::DB_LINE9, "No Vision");
+			}
 		}
 	}
 

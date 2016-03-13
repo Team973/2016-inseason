@@ -51,7 +51,7 @@ Robot::Robot(void
 	m_drive(nullptr),
 	m_intake(nullptr),
 	m_shooter(nullptr),
-	m_shooterStallFilter(new Debouncer(1.0)),
+	m_shooterStallFilter(new Debouncer(1.5)),
 	m_arm(nullptr),
 	m_airPressureSwitch(nullptr),
 	m_compressorRelay(nullptr),

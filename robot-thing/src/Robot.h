@@ -94,6 +94,7 @@ private:
 
 	PoseManager *m_poseManager;
 
+	double m_teleopTimeSec;
 public:
 	/**
 	 * Defined in Robot.cpp
@@ -123,6 +124,8 @@ public:
 	void SallyPortAuto(void);
 	void DrawbridgeAuto(void);
 
+	void VisionPortion(void);
+
 	/**
 	 * Defined in Teleop.h
 	 */
@@ -141,10 +144,10 @@ public:
 	void HandleDisabledButton(uint32_t port, uint32_t button,
 			bool newState);
 	enum AutoRoutine{
-		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go
+		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go, NoAuto
 	};
 	enum AutoSearchDirection{
-		None, Left, Right
+		None, Left, Right, NoVision
 	};
 	AutoRoutine m_selectedRoutine;
 	AutoSearchDirection m_selectedDirection;

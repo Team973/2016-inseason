@@ -5,6 +5,7 @@
 #include "RobotInfo.h"
 
 class Solenoid;
+class DoubleSolenoid;
 
 namespace frc973 {
 
@@ -135,6 +136,8 @@ public:
 	 * @param right power (from -1.0 to 1.0) for right motor
 	 */
 	void SetDriveOutput(double left, double right) override;
+
+	void SetBraking(bool enabledP);
 private:
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
@@ -165,6 +168,8 @@ private:
     PIDDriveController *m_pidDriveController;
     RampPIDDriveController *m_rampPidDriveController;
     VisionDriveController *m_visionDriveController;
+
+    DoubleSolenoid *m_brakes;
 };
 
 }

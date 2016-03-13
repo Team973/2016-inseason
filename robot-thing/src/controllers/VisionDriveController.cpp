@@ -13,6 +13,9 @@
 
 namespace frc973 {
 
+//atan(6.5/169.0)
+static constexpr double VISION_OFFSET = 2.2;
+
 //static constexpr double TURN_PID_KP = 0.08;
 static constexpr double TURN_PID_KP = 0.06;
 static constexpr double TURN_PID_KI = 0.0;
@@ -63,9 +66,14 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 
 	}
 
+	/*
 	DBStringPrintf(DBStringPos::DB_LINE5,
 			"err %2.2lf p %1.1lf", m_targetAngle - m_prevAngle,
 			turn);
+			*/
+	DBStringPrintf(DBStringPos::DB_LINE4,
+				"vision %lf", turn);
+	printf("v p %1.2lf a %2.1lf %d\n", turn, m_targetAngle, m_targetFound);
 }
 
 static int frames = 9;
@@ -74,14 +82,18 @@ void VisionDriveController::OnValueChange(std::string name, std::string newValue
 			newValue.c_str());
 
 	if (!name.compare("found")) {
-		m_targetFound = (newValue == "true");
+		std::size_t foundTrueP = newValue.find("true");
+		m_targetFound = foundTrueP != std::string::npos;
 	}
 
 	if (m_readyFilter->Update(m_readyForFrame)) {
 		printf("%s.compate('xtheta') = %d\n", name.c_str(), name.compare("xtheta"));
 		if (!name.compare("xtheta")) {
 			printf("xtheta handler happened\n");
-			double offset = ::atof(newValue.c_str());
+			double offset = ::atof(newValue.c_str()) + VISION_OFFSET;
+			if (isnan(offset)) {
+				m_targetFound = false;
+			}
 			printf("Got our new xtheta value!   It is %lf\n", offset);
 			m_targetAngle = m_prevAngle + offset;
 			m_anglePid->SetTarget(m_targetAngle);

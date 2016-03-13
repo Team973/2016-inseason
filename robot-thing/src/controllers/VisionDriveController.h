@@ -42,8 +42,12 @@ public:
 				Util::abs(m_targetAngle - m_prevAngle) < 1.0;
 	}
 
-	void Start() {
+	void Start() override {
 		//m_targetAngle = 90.0 + m_prevAngle;
+	}
+
+	void Stop() override {
+		m_readyForFrame = false;
 	}
 
 	void OnValueChange(std::string name, std::string newValue) override;

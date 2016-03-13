@@ -150,9 +150,9 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 	m_backFlywheelMotor->Set(backMotorOutput);
 
 	DBStringPrintf(DBStringPos::DB_LINE2,
-			"f-rpm %4.0lf pow %1.2", GetFrontFlywheelRate(), frontMotorOutput);
+			"f-rpm %4.0lf pow %1.2lf", GetFrontFlywheelRate(), frontMotorOutput);
 	DBStringPrintf(DBStringPos::DB_LINE3,
-			"r-rpm %4.0lf pow %1.2", GetRearFlywheelRate(), backMotorOutput);
+			"r-rpm %4.0lf pow %1.2lf", GetRearFlywheelRate(), backMotorOutput);
 
 	m_shooterPow->LogDouble(frontMotorOutput);
 	m_frontFlywheelSpeed->LogDouble(GetFrontFlywheelRate());
