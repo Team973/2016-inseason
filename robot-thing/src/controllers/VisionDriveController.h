@@ -38,15 +38,17 @@ public:
 	bool OnTarget() {
 		return
 				m_targetFound &&
-				Util::abs(m_prevAngleVel) < 1.0 &&
+				Util::abs(m_prevAngleVel) < 0.5 &&
 				Util::abs(m_targetAngle - m_prevAngle) < 1.0;
 	}
 
 	void Start() override {
+		m_targetFound = false;
 		//m_targetAngle = 90.0 + m_prevAngle;
 	}
 
 	void Stop() override {
+		m_targetFound = false;
 		m_readyForFrame = false;
 	}
 

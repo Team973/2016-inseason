@@ -74,10 +74,12 @@ void Robot::TeleopContinuous(void) {
 	double y = m_driverJoystick->GetRawAxis(DualAction::LeftYAxis);
 	double x = -m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
 
+	/*
 	if (Util::abs(x) > 0.6 || Util::abs(y) > 0.6) {
 		teleopDrive = true;
 		m_drive->SetBraking(false);
 	}
+	*/
 
 	if (teleopDrive) {
 		if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
@@ -120,18 +122,18 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->SetVisionTargeting();
-				closeGoal -= 50.0;
-				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				teleopDrive = false;
+				m_drive->SetVisionTargeting();
+				//closeGoal -= 50.0;
+				//m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				//teleopDrive = true;
-				//m_drive->ArcadeDrive(0.0, 0.0);
-				closeGoal += 50.0;
-				m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				teleopDrive = true;
+				m_drive->ArcadeDrive(0.0, 0.0);
+				//closeGoal += 50.0;
+				//m_shooter->SetFrontFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::LeftBumper:

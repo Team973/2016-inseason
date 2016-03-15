@@ -14,14 +14,14 @@
 namespace frc973 {
 
 //atan(6.5/169.0)
-static constexpr double VISION_OFFSET = 2.2;
+static constexpr double VISION_OFFSET = 6.0;
 
 //static constexpr double TURN_PID_KP = 0.08;
-static constexpr double TURN_PID_KP = 0.06;
+static constexpr double TURN_PID_KP = 0.08;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0.000;
 
-static constexpr double MIN_TURN_POWER = 0.06;
+static constexpr double MIN_TURN_POWER = 0.08;
 
 VisionDriveController::VisionDriveController()
 		 : m_leftOutput(0.0)
@@ -33,7 +33,7 @@ VisionDriveController::VisionDriveController()
 		 , m_onTarget(false)
 		 , m_targetFound(false)
 		 , m_readyForFrame(true)
-		 , m_readyFilter(new Debouncer(0.5))
+		 , m_readyFilter(new Debouncer(1.0))
 		 , m_linprof(new RampedOutput(10))
 {
 	SocketServer::AddListener("found", this);
@@ -51,12 +51,12 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	m_prevAngleVel = state->GetAngularRate();
 
 	double turn = 0.0;
-	m_readyForFrame = Util::abs(m_prevAngleVel) < 1.0;
+	m_readyForFrame = Util::abs(m_prevAngleVel) < 0.5;
 
 	if (m_targetFound) {
 		turn = m_anglePid->CalcOutput(m_prevAngle);
 		turn = Util::antideadband(turn, MIN_TURN_POWER);
-		turn = Util::bound(turn, -0.5, 0.5);
+		turn = Util::bound(turn, -0.35, 0.35);
 
 		printf("turnyness %lf\n", turn);
 		out->SetDriveOutput(turn, -turn);
@@ -72,7 +72,7 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 			turn);
 			*/
 	DBStringPrintf(DBStringPos::DB_LINE4,
-				"vision %lf", turn);
+			"v p %1.2lf a %2.1lf %d\n", turn, m_targetAngle - m_prevAngle, m_targetFound);
 	printf("v p %1.2lf a %2.1lf %d\n", turn, m_targetAngle, m_targetFound);
 }
 

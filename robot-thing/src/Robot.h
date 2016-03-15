@@ -147,7 +147,7 @@ public:
 		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go, NoAuto
 	};
 	enum AutoSearchDirection{
-		None, Left, Right, NoVision
+		None, Left, Right, Pos2, Pos3, Pos4, Pos5, NoVision
 	};
 	AutoRoutine m_selectedRoutine;
 	AutoSearchDirection m_selectedDirection;

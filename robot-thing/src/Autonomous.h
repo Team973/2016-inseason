@@ -292,13 +292,13 @@ void Robot::Moat() {
 		}
 		break;
 	case 4:
-		//m_drive->SetVisionTargeting();
+		m_drive->SetVisionTargeting();
 		m_autoState++;
 		m_autoTimer = GetMsecTime();
 		break;
 	case 5:
 		if (GetMsecTime() - m_autoTimer > 2500 &&
-				(m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 4000)){
+				(m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 6000)){
 			m_autoState ++;
 		}
 		break;
@@ -453,15 +453,19 @@ void Robot::SallyPortAuto() {
 
 void Robot::VisionPortion (){
 	switch(m_autoState){
-	case 0:
-		if (m_selectedDirection == AutoSearchDirection::None){
+	case VISION_START:
+		if (m_selectedDirection == AutoSearchDirection::Pos2){
 			m_autoState += 2;
 		}
-		else if (m_selectedDirection == AutoSearchDirection::Left){
+		else if (m_selectedDirection == AutoSearchDirection::Pos3){
 			m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
 			m_autoState ++;
 		}
-		else if (m_selectedDirection == AutoSearchDirection::Right){
+		else if (m_selectedDirection == AutoSearchDirection::Pos4){
+			m_drive->PIDTurn(13.0, Drive::RelativeTo::Now);
+			m_autoState ++;
+		}
+		else if (m_selectedDirection == AutoSearchDirection::Pos5){
 			m_drive->PIDTurn(13.0, Drive::RelativeTo::Now);
 			m_autoState ++;
 		}
@@ -473,23 +477,23 @@ void Robot::VisionPortion (){
 		m_arm->SetPower(-0.2);
 		m_shooter->SetFlywheelEnabled(true);
 		break;
-	case 1:
+	case VISION_START + 1:
 		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000){
 			m_autoState ++;
 		}
 		break;
-	case 2:
+	case VISION_START + 2:
 		//m_drive->SetVisionTargeting();
 		m_autoState++;
 		m_autoTimer = GetMsecTime();
 		break;
-	case 3:
+	case VISION_START + 3:
 		if (GetMsecTime() - m_autoTimer > 2500 &&
 				(m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 4000)){
 			m_autoState ++;
 		}
 		break;
-	case 4:
+	case VISION_START + 4:
 		m_arm->SetPower(0.0);
 		m_shooter->SetConveyerPower(1.0);
 		m_autoState++;
