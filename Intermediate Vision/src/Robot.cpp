@@ -35,9 +35,9 @@ class IntermediateVisionRobot : public SampleRobot
 	const double X_FOV = 34.25 * 0.69;
 
 	//Constants
-	Range RING_HUE_RANGE = {50, 105};	//Default hue range for ring light
-	Range RING_SAT_RANGE = {180, 255};	//Default saturation range for ring light
-	Range RING_VAL_RANGE = {20, 155};	//Default value range for ring light
+	Range RING_HUE_RANGE = {80, 160};	//Default hue range for ring light
+	Range RING_SAT_RANGE = {100, 255};	//Default saturation range for ring light
+	Range RING_VAL_RANGE = {180, 255};	//Default value range for ring light
 	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
 	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
 	double SHORT_RATIO = 1.4; //Tote short side = 16.9 / Tote height = 12.1 = 1.4
@@ -86,7 +86,7 @@ public:
 		thresholdImage = imaqCreateImage(IMAQ_IMAGE_U8, 0);
 		convexHullImage = imaqCreateImage(IMAQ_IMAGE_U8, 0);
 		bigObjImage = imaqCreateImage(IMAQ_IMAGE_U8, 0);
-		imaqError = IMAQdxOpenCamera("cam0", IMAQdxCameraControlModeController, &session);
+		imaqError = IMAQdxOpenCamera("cam1", IMAQdxCameraControlModeController, &session);
 		SetCameraSettings(session, 5.0, 30.0, 10.0);
 		SetCameraSettings(session, 5.0, 30.0, 10.0);
 		SetCameraSettings(session, 5.0, 30.0, 10.0);

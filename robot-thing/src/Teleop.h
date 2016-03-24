@@ -8,6 +8,7 @@ void Robot::TeleopStart(void) {
 	m_drive->SetBraking(false);
 	m_drive->ArcadeDrive(0.0, 0.0);
 	m_shooter->SetConveyerPower(0.0);
+	m_arm->SetTargetPosition(m_arm->GetArmAngle());
     printf("***teleop start\n");
 }
 
@@ -20,7 +21,7 @@ static bool armNeedsStop = false;
 static bool conveyorNeedsStop = false;
 static bool intakeNeedsStop = false;
 
-static bool armOpenLoop = true;
+static bool armOpenLoop = false;
 
 void Robot::TeleopContinuous(void) {
 	double armPower = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
@@ -122,18 +123,18 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				teleopDrive = false;
-				m_drive->SetVisionTargeting();
-				//closeGoal -= 50.0;
-				//m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				//teleopDrive = false;
+				//m_drive->SetVisionTargeting();
+				closeGoal -= 50.0;
+				m_shooter->SetBackFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				teleopDrive = true;
-				m_drive->ArcadeDrive(0.0, 0.0);
-				//closeGoal += 50.0;
-				//m_shooter->SetFrontFlywheelSSShoot(closeGoal);
+				//teleopDrive = true;
+				//m_drive->ArcadeDrive(0.0, 0.0);
+				closeGoal += 50.0;
+				m_shooter->SetBackFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::LeftBumper:
@@ -194,12 +195,12 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::LeftBumper:
 			if (pressedP) {
-				m_arm->SetTargetPosition(Arm::ARM_POS_UP);
+				m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 			}
 			break;
 		case DualAction::LeftTrigger:
 			if (pressedP) {
-				m_arm->SetTargetPosition(Arm::ARM_POS_DOWN);
+				m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL);
 			}
 			break;
 		case DualAction::RightBumper:
@@ -242,7 +243,10 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::Back:
 			if (pressedP) {
-				m_arm->Zero();
+				m_arm->StartZero();
+			}
+			else {
+				m_arm->EndZero();
 			}
 			break;
 		case DualAction::Start:

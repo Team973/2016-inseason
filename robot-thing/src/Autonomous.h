@@ -1,11 +1,56 @@
 namespace frc973 {
 
-//2 -
-//3 -
-//4 -
-//5 -
+static constexpr double POS_2_TURN = 28.0;
+static constexpr double POS_3_TURN = 5.0;
+static constexpr double POS_4_TURN = -3.0;
+static constexpr double POS_5_TURN = -22.22;
+
+static constexpr double POS_2_DIST = 4.0 * 12.0;
+static constexpr double POS_3_DIST = 0.0;
+static constexpr double POS_4_DIST = 0.0;
+static constexpr double POS_5_DIST = 2.0 * 12.0;
 
 static constexpr int VISION_START = 1000;
+
+double AutonomousExtraDist (Robot::AutoStartPosition selectedDirection){
+	double EXTRA_DIST = 0.0;
+	if (selectedDirection == Robot::AutoStartPosition::Pos2){
+		EXTRA_DIST = POS_2_DIST;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos3){
+		EXTRA_DIST = POS_3_DIST;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos4){
+		EXTRA_DIST = POS_4_DIST;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos5){
+		EXTRA_DIST = POS_5_DIST;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::NoVision){
+		EXTRA_DIST = 0.0;
+	}
+	return EXTRA_DIST;
+}
+
+double AutonomousTurn (Robot::AutoStartPosition selectedDirection){
+	double AUTO_TURN = 0.0;
+	if (selectedDirection == Robot::AutoStartPosition::Pos2){
+		AUTO_TURN = POS_2_TURN;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos3){
+		AUTO_TURN = POS_3_TURN;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos4){
+		AUTO_TURN = POS_4_TURN;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::Pos5){
+		AUTO_TURN = POS_5_TURN;
+	}
+	else if (selectedDirection == Robot::AutoStartPosition::NoVision){
+		AUTO_TURN = 0.0;
+	}
+	return AUTO_TURN;
+}
 
 void Robot::AutonomousStart(void) {
     printf("***auto start\n");
@@ -40,6 +85,9 @@ void Robot::AutonomousContinuous(void) {
 	case AutoRoutine::SallyPort:
 		SallyPortAuto();
 		break;
+	case AutoRoutine:: SpyBot:
+		SpyBotAuto();
+		break;
 	case AutoRoutine::NoAuto:
 		//Don't do any auto
 		break;
@@ -51,7 +99,7 @@ void Robot::AutonomousContinuous(void) {
 void Robot::Flappers(void) {
 	switch(m_autoState){
 	case 0:
-		//m_arm->SetTargetPosition(30);
+		m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL);
 		m_autoState++;
 		break;
 	case 1:
@@ -64,23 +112,17 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 3:
-		//m_arm->SetTargetPosition(6);
-		m_arm->SetPower(-0.4);
-		m_autoState++;
-		break;
-	case 4:
 		m_autoTimer = GetMsecTime();
 		m_autoState++;
 		break;
-	case 5:
+	case 4:
 		if ((GetMsecTime() - m_autoTimer) > 2000){
 			m_autoState++;
 		}
 		break;
-	case 6:
-		m_drive->PIDDrive(97, Drive::RelativeTo::SetPoint);
+	case 5:
+		m_drive->PIDDrive(97 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
 		m_autoTimer = GetMsecTime();
-		m_arm->SetPower(0.3);
 		m_autoState++;
 		break;
 	case 7:
@@ -89,7 +131,9 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 8:
-		m_arm->SetPower(0.0);
+		if (m_selectedDirection == NoVision){
+			m_autoState += 1000;
+		}
 		m_autoState++;
 		break;
 	case 9:
@@ -98,23 +142,7 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 10:
-		if (m_selectedDirection == AutoSearchDirection::None){
-			m_autoState += 2;
-			m_arm->SetPower(-0.2);
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Left){
-			m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
-			m_arm->SetPower(-0.2);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Right){
-			m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
-			m_arm->SetPower(-0.2);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::NoVision){
-			m_autoState += 100;
-		}
+		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_autoTimer = GetMsecTime();
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 		break;
@@ -124,9 +152,8 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 12:
-		m_arm->SetPower(0.0);
 		m_autoTimer = GetMsecTime();
-		//m_drive->SetVisionTargeting();
+		m_drive->SetVisionTargeting();
 		m_shooter->SetFlywheelEnabled(true);
 		m_autoState++;
 		break;
@@ -144,52 +171,21 @@ void Robot::Flappers(void) {
 	}
 }
 
-static int repeats = 0;
-
-void Robot::TurnTest() {
-	switch (m_autoState) {
-	case 0:
-		m_drive->PIDTurn(10, Drive::RelativeTo::Now);
-		m_autoState++;
-		break;
-	case 1:
-		if (m_drive->OnTarget()){
-			m_autoState++;
-		}
-		break;
-	case 2:
-		m_drive -> PIDTurn (180, Drive::RelativeTo::SetPoint);
-		m_autoState++;
-		break;
-	case 3:
-		if (m_drive->OnTarget()){
-			m_autoState = 0;
-			repeats = repeats + 1;
-		}
-		break;
-	default:
-		break;
-	}
-	DBStringPrintf(DBStringPos::DB_LINE4, "repeats %d", repeats);
-}
-
 void Robot::PortcullisAuto() {
 	switch (m_autoState){
 	case 0:
-		//m_intake->SetIntakePosition(Intake::IntakePosition::extended);
 		m_autoTimer = GetSecTime();
 		//m_arm->Zero();0
-		m_arm->SetPower(-0.4);
+		m_arm->SetTargetPosition(Arm::ARM_POS_PORTCULLIS);
 		m_autoState++;
 		break;
 	case 1:
 		if (GetSecTime() - m_autoTimer > 2.0){
-			m_arm->SetPower(0.0);
 			m_autoState ++;
 		}
 		break;
 	case 2:
-		m_drive->PIDDrive(52.0, Drive::RelativeTo::SetPoint);
+		m_drive->PIDDrive(124.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
 		m_autoState ++;
 		break;
 	case 3:
@@ -198,36 +194,22 @@ void Robot::PortcullisAuto() {
 		}
 		break;
 	case 4:
-		m_arm->SetPower(0.3);
-		m_autoTimer = GetSecTime();
+		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_autoState ++;
 		break;
 	case 5:
-		if (GetSecTime() - m_autoTimer > 1.0) {
-			m_arm->SetPower(0.0);
-			m_autoState++;
-		}
+		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		m_shooter->SetFlywheelEnabled(true);
+		m_autoState ++;
 		break;
 	case 6:
-		m_drive->PIDDrive(72.0, Drive::RelativeTo::SetPoint);
-		m_autoState++;
+		if (m_drive->OnTarget()){
+			m_autoState ++;
+		}
 		break;
 	case 7:
-		if (m_selectedDirection == AutoSearchDirection::None){
-			m_autoState += 2;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Left){
-			m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Right){
-			m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::NoVision){
-			m_autoState += 100;
-		}
-		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		m_drive->SetVisionTargeting();
+		m_autoState++;
 		break;
 	case 8:
 		if (m_drive->OnTarget()){
@@ -235,16 +217,6 @@ void Robot::PortcullisAuto() {
 		}
 		break;
 	case 9:
-		//0m_drive->SetVisionTargeting();
-		m_shooter->SetFlywheelEnabled(true);
-		m_autoState++;
-		break;
-	case 10:
-		if (m_drive->OnTarget()){
-			m_autoState ++;
-		}
-		break;
-	case 11:
 		m_shooter->SetConveyerPower(1.0);
 		m_autoState++;
 		break;
@@ -257,7 +229,7 @@ void Robot::Moat() {
 	switch (m_autoState){
 	case 0:
 		m_drive->SetGearing(Drive::DriveGearing::LowGear);
-		m_drive->PIDDrive(180.0, Drive::RelativeTo::Now);
+		m_drive->PIDDrive(180 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::Now);
 		//remember 120 failed for almost everything
 		m_autoState++;
 		break;
@@ -267,48 +239,42 @@ void Robot::Moat() {
 		}
 		break;
 	case 2:
-		if (m_selectedDirection == AutoSearchDirection::None){
-			m_autoState += 2;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Left){
-			m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Right){
-			m_drive->PIDTurn(13.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::NoVision){
-			m_autoState += 100;
-		}
-		m_autoTimer = GetMsecTime();
-		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_arm->SetPower(-0.2);
-		m_shooter->SetFlywheelEnabled(true);
+		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
+		m_autoState ++;
 		break;
 	case 3:
-		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000){
+		if (m_drive->OnTarget()){
 			m_autoState ++;
 		}
 		break;
 	case 4:
+		m_autoTimer = GetMsecTime();
+		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
+		m_shooter->SetFlywheelEnabled(true);
+		m_autoState ++;
+		break;
+	case 5:
+		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000){
+			m_autoState ++;
+		}
+		break;
+	case 6:
 		m_drive->SetVisionTargeting();
 		m_autoState++;
 		m_autoTimer = GetMsecTime();
 		break;
-	case 5:
+	case 7:
 		if (GetMsecTime() - m_autoTimer > 2500 &&
 				(m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 6000)){
 			m_autoState ++;
 		}
 		break;
-	case 6:
-		m_arm->SetPower(0.0);
+	case 8:
 		m_shooter->SetConveyerPower(1.0);
 		m_autoState++;
 		break;
 	default:
-		m_arm->SetPower(0.0);
 		break;
 	}
 }
@@ -341,18 +307,18 @@ void Robot::DrawbridgeAuto() {
 			m_autoState ++;
 			break;
 		case 5:
-			if (m_selectedDirection == AutoSearchDirection::None){
+			if (m_selectedDirection == AutoStartPosition::None){
 				m_autoState += 2;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::Left){
+			else if (m_selectedDirection == AutoStartPosition::Left){
 				m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
 				m_autoState ++;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::Right){
+			else if (m_selectedDirection == AutoStartPosition::Right){
 				m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
 				m_autoState ++;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::NoVision){
+			else if (m_selectedDirection == AutoStartPosition::NoVision){
 				m_autoState += 100;
 			}
 			m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
@@ -411,18 +377,18 @@ void Robot::SallyPortAuto() {
 			m_autoState ++;
 			break;
 		case 6:
-			if (m_selectedDirection == AutoSearchDirection::None){
+			if (m_selectedDirection == AutoStartPosition::None){
 				m_autoState += 2;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::Left){
+			else if (m_selectedDirection == AutoStartPosition::Left){
 				m_drive->PIDTurn(-25.0, Drive::RelativeTo::Now);
 				m_autoState ++;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::Right){
+			else if (m_selectedDirection == AutoStartPosition::Right){
 				m_drive->PIDTurn(25.0, Drive::RelativeTo::Now);
 				m_autoState ++;
 			}
-			else if (m_selectedDirection == AutoSearchDirection::NoVision){
+			else if (m_selectedDirection == AutoStartPosition::NoVision){
 				m_autoState += 100;
 			}
 			m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
@@ -451,55 +417,22 @@ void Robot::SallyPortAuto() {
 	}
 }
 
-void Robot::VisionPortion (){
-	switch(m_autoState){
-	case VISION_START:
-		if (m_selectedDirection == AutoSearchDirection::Pos2){
-			m_autoState += 2;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Pos3){
-			m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Pos4){
-			m_drive->PIDTurn(13.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::Pos5){
-			m_drive->PIDTurn(13.0, Drive::RelativeTo::Now);
-			m_autoState ++;
-		}
-		else if (m_selectedDirection == AutoSearchDirection::NoVision){
-			m_autoState += 100;
-		}
-		m_autoTimer = GetMsecTime();
+void Robot::SpyBotAuto(){
+	switch (m_autoState){
+	case 0:
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_arm->SetPower(-0.2);
+		m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 		m_shooter->SetFlywheelEnabled(true);
+		m_autoTimer = GetSecTime();
+		m_autoState ++;
 		break;
-	case VISION_START + 1:
-		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000){
+	case 1:
+		if (GetSecTime() - m_autoTimer > 6) {
 			m_autoState ++;
 		}
 		break;
-	case VISION_START + 2:
-		//m_drive->SetVisionTargeting();
-		m_autoState++;
-		m_autoTimer = GetMsecTime();
-		break;
-	case VISION_START + 3:
-		if (GetMsecTime() - m_autoTimer > 2500 &&
-				(m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 4000)){
-			m_autoState ++;
-		}
-		break;
-	case VISION_START + 4:
-		m_arm->SetPower(0.0);
+	case 2:
 		m_shooter->SetConveyerPower(1.0);
-		m_autoState++;
-		break;
-	default:
-		m_arm->SetPower(0.0);
 		break;
 	}
 }

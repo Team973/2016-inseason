@@ -54,8 +54,9 @@ public:
 	 * Some preset positions (in degrees) for other subsystems (or teleop)
 	 * to reference if they want to send the arm somewhere.
 	 */
-	static constexpr double ARM_POS_UP = 90.0;
-	static constexpr double ARM_POS_DOWN = 0.0;
+	static constexpr double ARM_POS_SHOOT = 40.0;
+	static constexpr double ARM_POS_CHIVAL = 18.0;
+	static constexpr double ARM_POS_PORTCULLIS = 0.0;
 
 	/**
 	 * Get the current angle (in degrees) of the arm
@@ -82,7 +83,8 @@ public:
 	 * Go into zeroing mode...
 	 * run constant low power until certain current is drawn
 	 */
-	void Zero();
+	void StartZero();
+	void EndZero();
 
 	void PrintStats() {
 		printf("Arm position: %lf\n", GetArmAngle());
@@ -111,6 +113,7 @@ private:
 	PID *m_pid;
 
 	double m_zeroOffsetDeg;
+	bool m_encoderZerod;
 public:
 	/**
 	 * maximum speed that the arm should go when the user presses full
@@ -126,7 +129,7 @@ public:
 	 * To zero, we send |ZEROING_POWER| until current > |STALL_CURRENT|
 	 * then assume that's good enough
 	 */
-	static constexpr double ARM_OFFSET = 73.0;
+	static constexpr double ARM_OFFSET = 70.0;
 	static constexpr double ZEROING_POWER = -0.2;
 	static constexpr double STALL_CURRENT = 3.0;
 
@@ -138,7 +141,7 @@ public:
 	/**
 	 * Software stop the arm if it tries to go further forward than this
 	 */
-	static constexpr double ARM_SOFT_MAX_POS = 110.0;
+	static constexpr double ARM_SOFT_MAX_POS = 90.0;
 
 	static constexpr double ARM_PID_KP = 0.04;
 	static constexpr double ARM_PID_KI = 0.0000;

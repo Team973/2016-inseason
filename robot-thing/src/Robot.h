@@ -123,8 +123,7 @@ public:
 	void Moat(void);
 	void SallyPortAuto(void);
 	void DrawbridgeAuto(void);
-
-	void VisionPortion(void);
+	void SpyBotAuto (void);
 
 	/**
 	 * Defined in Teleop.h
@@ -144,13 +143,13 @@ public:
 	void HandleDisabledButton(uint32_t port, uint32_t button,
 			bool newState);
 	enum AutoRoutine{
-		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go, NoAuto
+		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go, NoAuto, SpyBot
 	};
-	enum AutoSearchDirection{
+	enum AutoStartPosition {
 		None, Left, Right, Pos2, Pos3, Pos4, Pos5, NoVision
 	};
 	AutoRoutine m_selectedRoutine;
-	AutoSearchDirection m_selectedDirection;
+	AutoStartPosition m_selectedDirection;
 	/**
 	 * Defined in Test.h
 	 */

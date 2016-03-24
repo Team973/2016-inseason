@@ -63,6 +63,12 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 				DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
 			}
 			break;
+		case DualAction::RightBumper:
+			if (pressedP) {
+				m_selectedRoutine = AutoRoutine::SpyBot;
+				DBStringPrintf(DBStringPos::DB_LINE6, "SpyBot Auto");
+			}
+			break;
 		case DualAction::Back:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::NoAuto;
@@ -71,27 +77,34 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
-				m_selectedDirection = AutoSearchDirection::None;
-				DBStringPrintf(DBStringPos::DB_LINE9, "Go Straight");
-			}
-			break;
-		case DualAction::DPadLeftVirtBtn:
-			if (pressedP) {
-				m_selectedDirection = AutoSearchDirection::Left;
-				DBStringPrintf(DBStringPos::DB_LINE9, "Turn Left");
+				m_selectedDirection = AutoStartPosition::Pos2;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Position 2");
 			}
 			break;
 		case DualAction::DPadRightVirtBtn:
 			if (pressedP) {
-				m_selectedDirection = AutoSearchDirection::Right;
-				DBStringPrintf(DBStringPos::DB_LINE9, "Turn Right");
+				m_selectedDirection = AutoStartPosition::Pos3;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Position 3");
 			}
 			break;
 		case DualAction::DPadDownVirtBtn:
 			if (pressedP) {
-				m_selectedDirection = AutoSearchDirection::NoVision;
+				m_selectedDirection = AutoStartPosition::Pos4;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Position 4");
+			}
+			break;
+		case DualAction::DPadLeftVirtBtn:
+			if (pressedP) {
+				m_selectedDirection = AutoStartPosition::Pos5;
+				DBStringPrintf(DBStringPos::DB_LINE9, "Position 5");
+			}
+			break;
+		case DualAction::LeftBumper:
+			if (pressedP) {
+				m_selectedDirection = AutoStartPosition::NoVision;
 				DBStringPrintf(DBStringPos::DB_LINE9, "No Vision");
 			}
+			break;
 		}
 	}
 

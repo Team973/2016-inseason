@@ -58,7 +58,7 @@ Robot::Robot(void
 	m_accelCellZ(nullptr),
 	m_poseManager(nullptr),
 	m_selectedRoutine(AutoRoutine::Go),
-	m_selectedDirection(AutoSearchDirection::None)
+	m_selectedDirection(AutoStartPosition::None)
 {
 	printf("Starting robot init\n");
 	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);

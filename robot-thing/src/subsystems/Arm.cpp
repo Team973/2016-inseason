@@ -25,7 +25,8 @@ Arm::Arm(TaskMgr *scheduler, PowerDistributionPanel* pdp)
 		 , m_targetPos(ARM_OFFSET)
 		 , m_armPow(0.0)
 		 , m_pid(new PID(ARM_PID_KP, ARM_PID_KI, ARM_PID_KD))
-		 , m_zeroOffsetDeg(ARM_OFFSET) {
+		 , m_zeroOffsetDeg(ARM_OFFSET)
+		 , m_encoderZerod(false) {
 	m_armEncoder->SetDistancePerPulse(ARM_DIST_PER_CLICK);
 	m_scheduler->RegisterTask("Arm", this, TASK_PERIODIC);
 	m_pid->SetTarget(m_targetPos);
@@ -78,17 +79,24 @@ void Arm::TaskPeriodic(RobotMode mode) {
 	double timeStepSec = currTimeSec - lastTime;
 	double positionStep;
 
+	if (mode == RobotMode::MODE_AUTO || mode == RobotMode::MODE_TELEOP) {
+		if (m_encoderZerod == false) {
+			m_encoderZerod = true;
+			m_armEncoder->Reset();
+		}
+	}
+
 	switch (m_mode) {
 	case ArmMode::velocity_control:
 		positionStep = m_targetSpeed * timeStepSec;
 		m_targetPos = Util::bound(m_targetPos + positionStep, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
 
 		m_pid->SetTarget(m_targetPos);
-		//m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
 		break;
 
 	case ArmMode::position_control:
-		//m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
+		m_armMotor->Set(m_pid->CalcOutput(GetArmAngle()));
 		break;
 
 	case ArmMode::openLoop_control:
@@ -96,18 +104,7 @@ void Arm::TaskPeriodic(RobotMode mode) {
 		break;
 
 	case ArmMode::zeroing:
-		if (GetArmCurrent() < STALL_CURRENT) {
-			m_armMotor->Set(ZEROING_POWER);
-		}
-		else {
-			m_zeroOffsetDeg = 0.0;
-			m_armMotor->Set(0.0);
-			m_armEncoder->Reset();
-			m_mode = openLoop_control;
-			m_pid->SetTarget(0.0);
-			m_targetPos = 0.0;
-			m_armPow = 0.0;
-		}
+		m_armMotor->Set(ZEROING_POWER);
 		break;
 	}
 
@@ -116,8 +113,17 @@ void Arm::TaskPeriodic(RobotMode mode) {
 	lastTime = currTimeSec;
 }
 
-void Arm::Zero() {
+void Arm::StartZero() {
 	m_mode = ArmMode::zeroing;
 }
 
+void Arm::EndZero() {
+	m_zeroOffsetDeg = 0.0;
+	m_armMotor->Set(0.0);
+	m_armEncoder->Reset();
+	m_mode = openLoop_control;
+	m_pid->SetTarget(0.0);
+	m_targetPos = 0.0;
+	m_armPow = 0.0;
+}
 }

@@ -92,7 +92,7 @@ void PoseManager::AssumePose() {
 		std::cout << "my name is " << pose["name"];
 
 		if (pose["armControl"].asBool()) {
-			//m_arm->SetTargetPosition(pose["armTarget"].asDouble());
+			m_arm->SetTargetPosition(pose["armTarget"].asDouble());
 			printf("arm on\n");
 		}
 		else {
