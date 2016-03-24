@@ -6,7 +6,6 @@
 #include "lib/SingleThreadTaskMgr.h"
 #include "lib/SPIGyro.h"
 #include "lib/WrapDash.h"
-#include "lib/SocketServer.hpp"
 
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
@@ -19,13 +18,6 @@
 
 namespace frc973 {
 
-
-void* Robot::runServer(void*)
-{
-	SocketServer::RunSocketServer(NULL);
-    return NULL;
-}
-
 constexpr int ONE_BALL_AUTO = 0;
 constexpr int TWO_BALL_AUTO = 1;
 
@@ -37,7 +29,6 @@ Robot::Robot(void
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
 	m_accel(nullptr),
-	//m_spiGyro(nullptr),
 #ifdef PROTO_BOT_PINOUT
 	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN,
 			false, CounterBase::k4X)),
@@ -69,7 +60,8 @@ Robot::Robot(void
 	m_selectedRoutine(AutoRoutine::Go),
 	m_selectedDirection(AutoSearchDirection::None)
 {
-	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 200.0);
+	printf("Starting robot init\n");
+	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
 
 	m_driverJoystick = new ObservableJoystick(DRIVER_JOYSTICK_PORT, this, this);
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
@@ -84,6 +76,7 @@ Robot::Robot(void
 	m_leftDriveEncoder = new Encoder(LEFT_DRIVE_ENCODER_A_DIN,
 			LEFT_DRIVE_ENCODER_B_DIN, false, CounterBase::k4X);
 
+	printf("Starting drive init\n");
 #ifdef PROTO_BOT_PINOUT
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_collinGyro);
@@ -91,6 +84,7 @@ Robot::Robot(void
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_austinGyro);
 #endif
+	printf("Finished drive init\n");
 
 	m_intake = new Intake(this);
 
@@ -119,9 +113,6 @@ Robot::Robot(void
 	//m_logger->RegisterCell(m_messages);
 
 	m_shooter = new Shooter(this, m_logger);
-
-    pthread_t serverThread;
-    pthread_create(&serverThread, NULL, runServer, NULL);
 
     m_poseManager = new PoseManager(m_arm, m_shooter, m_intake);
 }

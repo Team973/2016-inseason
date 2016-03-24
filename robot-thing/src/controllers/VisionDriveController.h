@@ -7,9 +7,10 @@
 
 #ifndef SRC_CONTROLLERS_VISIONDRIVECONTROLLER_H_
 #define SRC_CONTROLLERS_VISIONDRIVECONTROLLER_H_
-#include "lib/filters/RampedOutput.h"
 #include "lib/DriveBase.h"
-#include "lib/SocketServer.hpp"
+
+#include "VisionTask.h"
+#include "stdio.h"
 
 namespace frc973 {
 
@@ -18,8 +19,15 @@ class Debouncer;
 
 class VisionDriveController
 		 : public DriveController
-		 , public SocketServer::SocketListener {
+		 , public VisionDataReceiver
+		   {
 public:
+	enum VisionState {
+		WAITING,
+		TURNING,
+		FAILING
+	};
+
 	VisionDriveController();
 	virtual ~VisionDriveController();
 	/*
@@ -31,28 +39,38 @@ public:
 
 	/*
 	 * We are on target if:
-	 *  - we see the target and
+	 *  - we couldn't find a target (something went wrong) so give up
 	 *  - we're stopped (not currently turning) and
 	 *  - we're within a degree of the target
 	 */
 	bool OnTarget() {
-		return
-				m_targetFound &&
-				Util::abs(m_prevAngleVel) < 0.5 &&
-				Util::abs(m_targetAngle - m_prevAngle) < 1.0;
+		return m_state == FAILING ||
+				(m_state == TURNING &&
+				 Util::abs(m_prevAngleVel) < 0.5 &&
+				 Util::abs(m_targetAngle - m_prevAngle) < 1.0);
 	}
 
 	void Start() override {
-		m_targetFound = false;
-		//m_targetAngle = 90.0 + m_prevAngle;
+		m_state = WAITING;
+		m_visionTask->GrabOffset(this);
+		printf("turning on vision mode\n");
 	}
 
 	void Stop() override {
-		m_targetFound = false;
-		m_readyForFrame = false;
+		m_visionTask->KillTask();
+		printf("turning off vision mode\n");
 	}
 
-	void OnValueChange(std::string name, std::string newValue) override;
+	void VisionReceiveDistance(double distance) override{
+		;
+	}
+
+	void VisionReceiveXAngle(double angle) override;
+
+	void VisionReceiveFailure() override {
+		printf("Received signal for vision failure\n");
+		m_state = FAILING;
+	}
 private:
 	double m_leftOutput;
 	double m_rightOutput;
@@ -62,12 +80,9 @@ private:
 	double m_prevAngleVel;
 
 	PID *m_anglePid;
-	bool m_onTarget;
-	bool m_targetFound;
 
-	bool m_readyForFrame;
-	Debouncer *m_readyFilter;
-	RampedOutput *m_linprof;
+	VisionState m_state;
+	VisionTask *m_visionTask;
 };
 
 } /* namespace frc973 */

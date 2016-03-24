@@ -44,6 +44,7 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_visionDriveController(new VisionDriveController())
 		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 {
+	printf("Initializing Drive Subsystem\n");
 	m_leftEncoder->SetDistancePerPulse(1.0);
 	this->SetDriveController(m_arcadeDriveController);
 }
@@ -83,7 +84,6 @@ void Drive::SetCheesyQuickTurn(bool quickturn) {
 
 void Drive::SetVisionTargeting() {
 	this->SetDriveController(m_visionDriveController);
-	m_visionDriveController->Start();
 }
 
 void Drive::ArcadeDrive(double throttle, double turn) {

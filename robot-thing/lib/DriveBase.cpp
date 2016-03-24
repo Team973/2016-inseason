@@ -33,12 +33,16 @@ void DriveBase::TaskPostPeriodic(RobotMode mode) {
 	}
 }
 
-void DriveBase::SetDriveController(DriveController *controller) {
-	if (m_controller != nullptr) {
+void DriveBase::SetDriveController(DriveController *newController) {
+	DriveController *oldController = m_controller;
+
+	if (m_controller != nullptr && newController != oldController) {
 		m_controller->Stop();
 	}
-	m_controller = controller;
-	if (m_controller != nullptr) {
+
+	m_controller = newController;
+
+	if (m_controller != nullptr && newController != oldController) {
 		m_controller->Start();
 	}
 }

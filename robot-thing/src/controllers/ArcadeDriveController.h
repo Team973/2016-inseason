@@ -9,6 +9,7 @@
 #define SRC_CONTROLLERS_ARCADEDRIVECONTROLLER_H_
 
 #include "lib/DriveBase.h"
+#include <stdio.h>
 
 namespace frc973 {
 
@@ -34,6 +35,14 @@ public:
 	 * Set the joystick values (which in this case will be output)
 	 */
 	void SetJoysticks(double throttle, double turn);
+
+	void Start() override {
+		printf("Turning on Arcade Mode\n");
+	}
+
+	void Stop() override {
+		printf("Turning off arcade Mode\n");
+	}
 private:
 	double m_leftOutput;
 	double m_rightOutput;
