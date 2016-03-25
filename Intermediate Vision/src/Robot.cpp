@@ -155,6 +155,7 @@ public:
         // in turn send it to the dashboard.
 		while(IsOperatorControl() && IsEnabled()) {
 			IMAQdxGrab(session, frame, true, NULL);
+			//imaqError = imaqReadFile(frame, "//home//lvuser//SampleImages//image.jpg", NULL, NULL);
 			printf("grabbed frame\n");
 
 			imaqClearError();
@@ -234,7 +235,7 @@ public:
 
 			//imaqConvexHull(convexHullImage, thresholdImage, 0);//3rd arg is connectivity8
 
-			CameraServer::GetInstance()->SetImage(thresholdImage);
+			CameraServer::GetInstance()->SetImage(frame);
 
 			Wait(0.05);				// wait for a motor update time
 		}

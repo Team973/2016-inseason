@@ -3,12 +3,12 @@ namespace frc973 {
 static constexpr double POS_2_TURN = 28.0;
 static constexpr double POS_3_TURN = 5.0;
 static constexpr double POS_4_TURN = -4.0;
-static constexpr double POS_5_TURN = -22.22;
+static constexpr double POS_5_TURN = -25.22;
 
 static constexpr double POS_2_DIST = 4.0 * 12.0;
 static constexpr double POS_3_DIST = 0.0;
 static constexpr double POS_4_DIST = 0.0;
-static constexpr double POS_5_DIST = 2.0 * 12.0;
+static constexpr double POS_5_DIST = 0.0 * 12.0;
 
 static constexpr int VISION_START = 1000;
 
@@ -185,13 +185,17 @@ void Robot::PortcullisAuto() {
 		}
 		break;
 	case 2:
-		m_drive->PIDDrive(136.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
+		m_drive->PIDDrive(148.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
 		m_arm->SetTargetPosition(8.0);
 		m_autoState ++;
 		break;
 	case 3:
 		if (m_drive->OnTarget()) {
 			m_autoState++;
+
+			if (m_selectedDirection == AutoStartPosition::NoVision) {
+				m_autoState += 1000;
+			}
 		}
 		break;
 	case 4:

@@ -84,8 +84,8 @@ void Robot::TeleopContinuous(void) {
 
 	if (teleopDrive) {
 		if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
-			y *= 0.2;
-			x *= 0.2;
+			y *= 0.4;
+			x *= 0.4;
 		}
 
 		m_drive->ArcadeDrive(y, -x);
