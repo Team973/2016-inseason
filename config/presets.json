@@ -17,8 +17,8 @@
         },
         {
             "name": "batter-shot",
-            "armControl": false,
-            "armTarget": 75.0,
+            "armControl": true,
+            "armTarget": 40.0,
             "intakeExtended": true,
             "longCylinderExtended": true,
             "shortCylinderExtended": true,

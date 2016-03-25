@@ -179,6 +179,20 @@ namespace Util {
 	}
 
 	/**
+	 * Increase the given number, |x|, by |threshold| but respeting the sign
+	 * of |x|.  If |x| is positive, increase it, it |x| is negative, decrease
+	 * it.
+	 */
+	inline double signIncrease(double x, double increase) {
+		if (x >= 0.0) {
+			return x + increase;
+		}
+		else {
+			return x - increase;
+		}
+	}
+
+	/**
 	 * Square the given number, but keep the sign the same
 	 */
 	inline double signSquare(double n) {

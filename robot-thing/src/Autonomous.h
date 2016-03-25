@@ -1,11 +1,11 @@
 namespace frc973 {
 
-static constexpr double POS_2_TURN = 28.0;
+static constexpr double POS_2_TURN = 30.0;
 static constexpr double POS_3_TURN = 5.0;
-static constexpr double POS_4_TURN = -4.0;
-static constexpr double POS_5_TURN = -25.22;
+static constexpr double POS_4_TURN = -16.0;
+static constexpr double POS_5_TURN = -23.22;
 
-static constexpr double POS_2_DIST = 4.0 * 12.0;
+static constexpr double POS_2_DIST = 3.0 * 12.0;
 static constexpr double POS_3_DIST = 0.0;
 static constexpr double POS_4_DIST = 0.0;
 static constexpr double POS_5_DIST = 0.0 * 12.0;
@@ -191,6 +191,7 @@ void Robot::PortcullisAuto() {
 		break;
 	case 3:
 		if (m_drive->OnTarget()) {
+			m_arm->SetTargetPosition(20.0);
 			m_autoState++;
 
 			if (m_selectedDirection == AutoStartPosition::NoVision) {
@@ -204,13 +205,17 @@ void Robot::PortcullisAuto() {
 		break;
 	case 5:
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_arm->SetPower(0.0);
 		m_shooter->SetFlywheelEnabled(true);
+		m_autoTimer = GetSecTime();
 		m_autoState ++;
 		break;
 	case 6:
-		if (m_drive->OnTarget()){
+		if (m_drive->OnTarget() && GetSecTime() - m_autoTimer > 5){
 			m_autoState ++;
+
+			if (m_selectedDirection == AutoStartPosition::NoVision) {
+				m_autoState += 1000;
+			}
 		}
 		break;
 	case 7:

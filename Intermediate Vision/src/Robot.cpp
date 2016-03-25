@@ -36,7 +36,7 @@ class IntermediateVisionRobot : public SampleRobot
 
 	//Constants
 	Range RING_HUE_RANGE = {80, 160};	//Default hue range for ring light
-	Range RING_SAT_RANGE = {100, 255};	//Default saturation range for ring light
+	Range RING_SAT_RANGE = {190, 255};	//Default saturation range for ring light
 	Range RING_VAL_RANGE = {180, 255};	//Default value range for ring light
 	double AREA_MINIMUM = 0.5; //Default Area minimum for particle as a percentage of total image area
 	double LONG_RATIO = 2.22; //Tote long side = 26.9 / Tote height = 12.1 = 2.22
