@@ -123,18 +123,21 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				//teleopDrive = false;
-				//m_drive->SetVisionTargeting();
-				closeGoal -= 50.0;
-				m_shooter->SetBackFlywheelSSShoot(closeGoal);
+				teleopDrive = false;
+				m_drive->SetVisionTargeting();
+				//m_drive->PIDTurn(1.0, DriveBase::RelativeTo::Now);
+				//closeGoal -= 50.0;
+				//m_shooter->SetBackFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
+				teleopDrive = false;
 				//teleopDrive = true;
-				//m_drive->ArcadeDrive(0.0, 0.0);
-				closeGoal += 50.0;
-				m_shooter->SetBackFlywheelSSShoot(closeGoal);
+				m_drive->ArcadeDrive(0.0, 0.0);
+				//m_drive->PIDTurn(5.0, DriveBase::RelativeTo::Now);
+				//closeGoal += 50.0;
+				//m_shooter->SetBackFlywheelSSShoot(closeGoal);
 			}
 			break;
 		case DualAction::LeftBumper:

@@ -44,6 +44,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_oldFSpeed(0.0),
 		m_fmedfilt(new MedianFilter()),
 		m_backFilter(new CascadingFilter()),
+		m_readyFilter(new DelaySwitch(0.9)),
 		m_elevatorState(ElevatorHeight::wayLow),
 		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
 		m_shortSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL)),
@@ -51,7 +52,9 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_frontFlywheelFilteredSpeed(new LogCell("front shooter filtered speed (RPM)")),
 		m_shooterPow(new LogCell("shooter power")),
 		m_shooterTime(new LogCell("Shooter Time (ms)")),
-		m_scheduler(scheduler)
+		m_scheduler(scheduler),
+		m_runningLight(new Solenoid(6)),
+		m_readyLight(new Solenoid(7))
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
@@ -79,6 +82,7 @@ Shooter::~Shooter() {
 
 void Shooter::SetFlywheelEnabled(bool enabledP) {
 	m_flywheelEnabled = enabledP;
+	m_runningLight->Set(enabledP);
 }
 
 void Shooter::SetFrontFlywheelSSShoot(double goal) {
@@ -120,17 +124,25 @@ void Shooter::TaskPeriodic(RobotMode mode) {
 		case FlywheelState::ssControl:
 			frontMotorOutput = m_frontController->Update(
 					this->GetFrontFlywheelFilteredRate() * Constants::PI / 30.0);
+			m_flywheelReady =
+					m_readyFilter->Update(
+							Util::abs(this->GetFrontFlywheelFilteredRate() - m_frontFlywheelTargetSpeed) < 50);
 			break;
 		case FlywheelState::openLoop:
 			frontMotorOutput = m_frontFlywheelSetPower;
+			m_flywheelReady = false;
+			m_readyFilter->Update(false);
 			break;
 		}
 	}
 	else {
+		m_flywheelReady = false;
+		m_readyFilter->Update(false);
 		frontMotorOutput = 0.0;
 	}
 
 	m_frontFlywheelMotor->Set(frontMotorOutput);
+	m_readyLight->Set(m_flywheelReady);
 
 	if (m_flywheelEnabled) {
 		switch(m_backFlywheelState) {

@@ -16,7 +16,7 @@ static constexpr double DRIVE_PID_KP = 0.05;
 static constexpr double DRIVE_PID_KI = 0.0;
 static constexpr double DRIVE_PID_KD = 0;
 
-static constexpr double TURN_PID_KP = 0.14;
+static constexpr double TURN_PID_KP = 0.10;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0;
 
@@ -40,7 +40,7 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	m_prevAngle = state->GetAngle();
 
 	double throttle;
-	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
+double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
 	if (m_distEnabled){
 		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -1.0, 1.0);
 	}

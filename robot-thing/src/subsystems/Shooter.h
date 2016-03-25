@@ -113,6 +113,7 @@ private:
 	double m_oldFSpeed;
 	MedianFilter *m_fmedfilt;
 	CascadingFilter *m_backFilter;
+	DelaySwitch *m_readyFilter;
 
 	ElevatorHeight m_elevatorState;
 	Solenoid *m_longSolenoid;
@@ -124,6 +125,9 @@ private:
 	LogCell *m_shooterTime;
 
 	TaskMgr *m_scheduler;
+
+	Solenoid *m_runningLight;
+	Solenoid *m_readyLight;
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 public:

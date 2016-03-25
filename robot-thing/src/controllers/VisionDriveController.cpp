@@ -14,11 +14,19 @@
 namespace frc973 {
 
 //static constexpr double TURN_PID_KP = 0.08;
-static constexpr double TURN_PID_KP = 0.08;
+/*
+static constexpr double TURN_PID_KP = 0.11;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0.000;
 
-static constexpr double MIN_TURN_POWER = 0.08;
+static constexpr double MIN_TURN_POWER = 0.1;*/
+
+static constexpr double TURN_PID_KP = 0.19;
+static constexpr double TURN_PID_KI = 0.002;
+static constexpr double TURN_PID_KD = 0.0015;
+
+//static constexpr double MIN_TURN_POWER = 0.08;
+static constexpr double MIN_TURN_POWER = 0.16;
 
 VisionDriveController::VisionDriveController()
 		 : VisionDataReceiver()

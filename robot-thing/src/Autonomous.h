@@ -2,7 +2,7 @@ namespace frc973 {
 
 static constexpr double POS_2_TURN = 28.0;
 static constexpr double POS_3_TURN = 5.0;
-static constexpr double POS_4_TURN = -3.0;
+static constexpr double POS_4_TURN = -4.0;
 static constexpr double POS_5_TURN = -22.22;
 
 static constexpr double POS_2_DIST = 4.0 * 12.0;
@@ -158,7 +158,7 @@ void Robot::Flappers(void) {
 		m_autoState++;
 		break;
 	case 13:
-		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 3000){
+		if (m_drive->OnTarget()){
 			m_autoState ++;
 		}
 		break;
@@ -185,7 +185,8 @@ void Robot::PortcullisAuto() {
 		}
 		break;
 	case 2:
-		m_drive->PIDDrive(124.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
+		m_drive->PIDDrive(136.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
+		m_arm->SetTargetPosition(8.0);
 		m_autoState ++;
 		break;
 	case 3:
@@ -199,6 +200,7 @@ void Robot::PortcullisAuto() {
 		break;
 	case 5:
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
+		m_arm->SetPower(0.0);
 		m_shooter->SetFlywheelEnabled(true);
 		m_autoState ++;
 		break;
@@ -240,10 +242,11 @@ void Robot::Moat() {
 		break;
 	case 2:
 		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
+		m_autoTimer = GetMsecTime();
 		m_autoState ++;
 		break;
 	case 3:
-		if (m_drive->OnTarget()){
+		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 4000){
 			m_autoState ++;
 		}
 		break;
