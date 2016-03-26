@@ -183,7 +183,7 @@ namespace Util {
 	 * of |x|.  If |x| is positive, increase it, it |x| is negative, decrease
 	 * it.
 	 */
-	inline double signIncrease(double x, double increase) {
+	inline double signedIncrease(double x, double increase) {
 		if (x >= 0.0) {
 			return x + increase;
 		}

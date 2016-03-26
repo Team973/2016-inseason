@@ -58,7 +58,7 @@ Robot::Robot(void
 	m_accelCellZ(nullptr),
 	m_poseManager(nullptr),
 	m_selectedRoutine(AutoRoutine::Go),
-	m_selectedDirection(AutoStartPosition::None)
+	m_selectedDirection(AutoStartPosition::NoVision)
 {
 	printf("Starting robot init\n");
 	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
@@ -137,7 +137,7 @@ void Robot::Initialize(void) {
 
 	DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
 	DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
-	DBStringPrintf(DBStringPos::DB_LINE9, "Turn None");
+	DBStringPrintf(DBStringPos::DB_LINE9, "No vision (still drive tho)");
 }
 
 void Robot::AllStateContinuous(void) {

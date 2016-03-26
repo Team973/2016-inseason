@@ -20,6 +20,15 @@ static constexpr double TURN_PID_KP = 0.10;
 static constexpr double TURN_PID_KI = 0.0;
 static constexpr double TURN_PID_KD = 0;
 
+
+/*
+static constexpr double TURN_PID_KP = 0.17;
+static constexpr double TURN_PID_KI = 0.002;
+static constexpr double TURN_PID_KD = 0.0015;
+
+static constexpr double TURN_FEEDFORWARD = 0.06;
+*/
+
 PIDDriveController::PIDDriveController():
 	m_prevDist(0.0),
 	m_prevAngle(0.0),
@@ -40,7 +49,15 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 	m_prevAngle = state->GetAngle();
 
 	double throttle;
-double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
+	double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
+
+	/*
+	double turn = m_turnPID->CalcOutput(m_prevAngle);
+	turn = Util::signedIncrease(turn, TURN_FEEDFORWARD);
+	turn = Util::bound(turn, -0.35, 0.35);
+	*/
+
+
 	if (m_distEnabled){
 		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -1.0, 1.0);
 	}
@@ -61,8 +78,8 @@ double turn = Util::bound(m_turnPID->CalcOutput(m_prevAngle), -0.5, 0.5);
 
 	out->SetDriveOutput(throttle + turn, throttle - turn);
 
-	if ((m_distEnabled == false || (Util::abs(m_targetDist - m_prevDist) < 2 && Util::abs(state->GetRate()) < 0.5)) &&
-			Util::abs(m_targetAngle - m_prevAngle) < 2 && Util::abs(state->GetAngularRate())) {
+	if ((m_distEnabled == false || (Util::abs(m_targetDist - m_prevDist) < 2.0 && Util::abs(state->GetRate()) < 0.5)) &&
+			Util::abs(m_targetAngle - m_prevAngle) < 2.0 && Util::abs(state->GetAngularRate()) < 1.0) {
 		m_onTarget = true;
 	}
 	else {

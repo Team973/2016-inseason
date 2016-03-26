@@ -55,7 +55,8 @@ public:
 	 * to reference if they want to send the arm somewhere.
 	 */
 	static constexpr double ARM_POS_SHOOT = 40.0;
-	static constexpr double ARM_POS_CHIVAL = 18.0;
+	static constexpr double ARM_POS_CHIVAL_UP = 18.0;
+	static constexpr double ARM_POS_CHIVAL_DOWN = 8.0;
 	static constexpr double ARM_POS_PORTCULLIS = 0.0;
 
 	/**

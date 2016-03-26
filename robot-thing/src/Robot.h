@@ -142,11 +142,12 @@ public:
 			bool newState);
 	void HandleDisabledButton(uint32_t port, uint32_t button,
 			bool newState);
+
 	enum AutoRoutine{
 		Portcullis, ChevaldeFrise, Drawbridge, SallyPort, Go, NoAuto, SpyBot
 	};
 	enum AutoStartPosition {
-		None, Left, Right, Pos2, Pos3, Pos4, Pos5, NoVision
+		Pos2, Pos3, Pos4, Pos5, NoVision
 	};
 	AutoRoutine m_selectedRoutine;
 	AutoStartPosition m_selectedDirection;

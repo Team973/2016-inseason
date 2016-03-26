@@ -13,20 +13,11 @@
 
 namespace frc973 {
 
-//static constexpr double TURN_PID_KP = 0.08;
-/*
 static constexpr double TURN_PID_KP = 0.11;
-static constexpr double TURN_PID_KI = 0.0;
-static constexpr double TURN_PID_KD = 0.000;
-
-static constexpr double MIN_TURN_POWER = 0.1;*/
-
-static constexpr double TURN_PID_KP = 0.19;
-static constexpr double TURN_PID_KI = 0.002;
+static constexpr double TURN_PID_KI = 0.005;
 static constexpr double TURN_PID_KD = 0.0015;
 
-//static constexpr double MIN_TURN_POWER = 0.08;
-static constexpr double MIN_TURN_POWER = 0.16;
+static constexpr double TURN_FEEDFORWARD = 0.075;
 
 VisionDriveController::VisionDriveController()
 		 : VisionDataReceiver()
@@ -67,7 +58,7 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	else if (m_state == TURNING) {
 		printf("Turning\n");
 		turn = m_anglePid->CalcOutput(m_prevAngle);
-		turn = Util::antideadband(turn, MIN_TURN_POWER);
+		turn = Util::signedIncrease(turn, TURN_FEEDFORWARD);
 		turn = Util::bound(turn, -0.35, 0.35);
 
 		//printf("turnyness %lf\n", turn);

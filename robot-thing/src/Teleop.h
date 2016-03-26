@@ -24,7 +24,7 @@ static bool intakeNeedsStop = false;
 static bool armOpenLoop = false;
 
 void Robot::TeleopContinuous(void) {
-	double armPower = -m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
+	double armPower = m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
 	if (armPower != 0.0) {
 		if (armOpenLoop) {
 			m_arm->SetPower(armPower * 0.5);
@@ -132,10 +132,9 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
-				teleopDrive = false;
-				//teleopDrive = true;
+				teleopDrive = true;
 				m_drive->ArcadeDrive(0.0, 0.0);
-				//m_drive->PIDTurn(5.0, DriveBase::RelativeTo::Now);
+				//m_drive->PIDTurn(5.0, DriveBase::RelativeTo::SetPoint);
 				//closeGoal += 50.0;
 				//m_shooter->SetBackFlywheelSSShoot(closeGoal);
 			}
@@ -176,14 +175,15 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
 		switch (button) {
-		case DualAction::BtnA:
+		case DualAction::BtnY:
 			if (pressedP) {
 				m_poseManager->ChooseNthPose(PoseManager::BATTER_SHOT_POSE);
 			}
 			break;
-		case DualAction::BtnB:
+		case DualAction::BtnA:
 			if (pressedP) {
 				m_poseManager->ChooseNthPose(PoseManager::STOW_POSE);
+				m_shooter->SetFlywheelEnabled(false);
 			}
 			break;
 		case DualAction::BtnX:
@@ -191,32 +191,24 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 				m_poseManager->ChooseNthPose(PoseManager::FAR_DEFENSE_SHOT_POSE);
 			}
 			break;
-		case DualAction::BtnY:
+		case DualAction::BtnB:
 			if (pressedP) {
 				m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 			}
 			break;
 		case DualAction::LeftBumper:
 			if (pressedP) {
-				m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
+				//m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
+				m_intake->SetIntakePosition(Intake::IntakePosition::extended);
 			}
 			break;
 		case DualAction::LeftTrigger:
 			if (pressedP) {
-				m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL);
+				//m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL);
+				m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
 			}
 			break;
 		case DualAction::RightBumper:
-			if (pressedP) {
-				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
-				m_shooter->SetConveyerPower(-8.0);
-			}
-			else {
-				m_intake->SetIntakeMode(Intake::IntakeMode::off);
-				m_shooter->SetConveyerPower(0.0);
-			}
-			break;
-		case DualAction::RightTrigger:
 			if (pressedP) {
 				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
 				m_shooter->SetConveyerPower(1.0);
@@ -226,16 +218,26 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 				m_shooter->SetConveyerPower(0.0);
 			}
 			break;
+		case DualAction::RightTrigger:
+			if (pressedP) {
+				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+				m_shooter->SetConveyerPower(-1.0);
+			}
+			else {
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
+				m_shooter->SetConveyerPower(0.0);
+			}
+			break;
 		case DualAction::DPadUpVirtBtn:
 			if (pressedP) {
-				m_shooter->SetFlywheelEnabled(false);
-				DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
+				m_shooter->SetFlywheelEnabled(true);
+				DBStringPrintf(DBStringPos::DB_LINE0, "shooter enabled");
 			}
 			break;
 		case DualAction::DPadDownVirtBtn:
 			if (pressedP) {
-				m_shooter->SetFlywheelEnabled(true);
-				DBStringPrintf(DBStringPos::DB_LINE0, "shooter enabled");
+				m_shooter->SetFlywheelEnabled(false);
+				DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
 			}
 			break;
 		case DualAction::DPadLeftVirtBtn:

@@ -19,7 +19,7 @@
             "name": "batter-shot",
             "armControl": true,
             "armTarget": 40.0,
-            "intakeExtended": true,
+            "intakeExtended": false,
             "longCylinderExtended": true,
             "shortCylinderExtended": true,
             "superiorFlywheelControl": "closed",

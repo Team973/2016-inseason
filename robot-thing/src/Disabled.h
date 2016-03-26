@@ -102,7 +102,7 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 		case DualAction::LeftBumper:
 			if (pressedP) {
 				m_selectedDirection = AutoStartPosition::NoVision;
-				DBStringPrintf(DBStringPos::DB_LINE9, "No Vision");
+				DBStringPrintf(DBStringPos::DB_LINE9, "No Vision (still drive tho)");
 			}
 			break;
 		}
