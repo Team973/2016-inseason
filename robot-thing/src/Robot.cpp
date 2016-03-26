@@ -56,6 +56,8 @@ Robot::Robot(void
 	m_accelCellX(nullptr),
 	m_accelCellY(nullptr),
 	m_accelCellZ(nullptr),
+	m_messages(nullptr),
+	m_buttonPresses(nullptr),
 	m_poseManager(nullptr),
 	m_selectedRoutine(AutoRoutine::Go),
 	m_selectedDirection(AutoStartPosition::NoVision)
@@ -103,6 +105,7 @@ Robot::Robot(void
 	m_accelCellY = new LogCell("Y-acceleration");
 	m_accelCellZ = new LogCell("Z-acceleration");
 	m_messages = new LogCell("Robot messages", 100, true);
+	m_buttonPresses = new LogCell("Button Presses (disabled only)", 100, true);
 
 	//m_logger->RegisterCell(m_battery);
 	m_logger->RegisterCell(m_time);
@@ -111,6 +114,7 @@ Robot::Robot(void
 	//m_logger->RegisterCell(m_accelCellY);
 	//m_logger->RegisterCell(m_accelCellZ);
 	//m_logger->RegisterCell(m_messages);
+	m_logger->RegisterCell(m_buttonPresses);
 
 	m_shooter = new Shooter(this, m_logger);
 

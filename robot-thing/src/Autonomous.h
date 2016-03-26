@@ -255,7 +255,7 @@ void Robot::Moat() {
 		m_autoTimer = GetMsecTime();
 		break;
 	case 7:
-		if (GetMsecTime() - m_autoTimer > 2500 && m_drive->OnTarget()) {
+		if (GetMsecTime() - m_autoTimer > 2700 && m_drive->OnTarget()) {
 			m_autoState ++;
 		}
 		break;

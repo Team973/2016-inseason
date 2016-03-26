@@ -91,6 +91,7 @@ private:
 	LogCell *m_accelCellY;
 	LogCell *m_accelCellZ;
 	LogCell *m_messages;
+	LogCell *m_buttonPresses;
 
 	PoseManager *m_poseManager;
 

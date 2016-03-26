@@ -47,7 +47,7 @@ public:
 		return m_state == FAILING ||
 				(m_state == TURNING &&
 				 Util::abs(m_prevAngleVel) < 0.5 &&
-				 Util::abs(m_targetAngle - m_prevAngle) < 0.5);
+				 Util::abs(m_targetAngle - m_prevAngle) < 0.4);
 	}
 
 	void Start() override {
