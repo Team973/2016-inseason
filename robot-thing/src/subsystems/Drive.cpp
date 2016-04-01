@@ -9,6 +9,8 @@
 
 #include "lib/filters/RampedOutput.h"
 
+#include "lib/logging/LogSpreadsheet.h"
+
 #include "src/controllers/ArcadeDriveController.h"
 #include "src/controllers/CheesyDriveController.h"
 #include "src/controllers/PIDDriveController.h"
@@ -20,10 +22,11 @@ namespace frc973 {
 Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 			Encoder *leftEncoder, Encoder *rightEncoder,
 #ifdef PROTO_BOT_PINOUT
-			Encoder *gyro
+			Encoder *gyro,
 #else
-			SPIGyro *gyro
+			SPIGyro *gyro,
 #endif
+			LogSpreadsheet *logger
 			)
 		 : DriveBase(scheduler, this, this, nullptr)
 		 , m_leftEncoder(leftEncoder)
@@ -43,10 +46,29 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_rampPidDriveController(new RampPIDDriveController())
 		 , m_visionDriveController(new VisionDriveController())
 		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
+		 , m_spreadsheet(logger)
+		 , m_angleLog(new LogCell("Angle"))
+		 , m_angularRateLog(new LogCell("Angular Rate"))
+		 , m_leftDistLog(new LogCell("Left Encoder Distance"))
+		 , m_leftDistRateLog(new LogCell("Left Encoder Rate"))
+		 , m_leftPowerLog(new LogCell("Left motor power"))
+		 , m_rightPowerLog(new LogCell("Right motor power"))
 {
 	printf("Initializing Drive Subsystem\n");
 	m_leftEncoder->SetDistancePerPulse(1.0);
 	this->SetDriveController(m_arcadeDriveController);
+
+	bool loggingEnabled = true;
+	if (loggingEnabled) {
+		m_spreadsheet->RegisterCell(m_angleLog);
+		m_spreadsheet->RegisterCell(m_angularRateLog);
+		m_spreadsheet->RegisterCell(m_leftDistLog);
+		m_spreadsheet->RegisterCell(m_leftDistRateLog);
+		m_spreadsheet->RegisterCell(m_leftPowerLog);
+		m_spreadsheet->RegisterCell(m_rightPowerLog);
+	}
+
+	scheduler->RegisterTask("DriveBase", this, TASK_PERIODIC);
 }
 
 void Drive::SetGearing(DriveGearing newGearing) {
@@ -182,6 +204,15 @@ void Drive::SetBraking(bool enabledP) {
 	else {
 		m_brakes->Set(DoubleSolenoid::kReverse);
 	}
+}
+
+void Drive::TaskPeriodic(RobotMode mode) {
+	m_angleLog->LogDouble(this->GetAngle());
+	m_angularRateLog->LogDouble(this->GetAngularRate());
+	m_leftDistLog->LogDouble(this->GetLeftDist());
+	m_leftDistRateLog->LogDouble(this->GetLeftRate());
+	m_leftPowerLog->LogDouble(m_leftPower);
+	m_rightPowerLog->LogDouble(m_rightPower);
 }
 
 }

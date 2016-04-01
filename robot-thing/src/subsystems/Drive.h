@@ -17,6 +17,8 @@ class RampPIDDriveController;
 class VisionDriveController;
 class SPIGyro;
 //class ADXRS450_Gyro;
+class LogSpreadsheet;
+class LogCell;
 
 /*
  * Drive provides an interface to control the drive-base (to do both
@@ -41,10 +43,11 @@ public:
     Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
     		Encoder *leftEncoder, Encoder *rightEncoder,
 #ifdef PROTO_BOT_PINOUT
-			Encoder *gyro
+			Encoder *gyro,
 #else
-			SPIGyro *gyro
+			SPIGyro *gyro,
 #endif
+			LogSpreadsheet *logger
 			);
 
     virtual ~Drive() {}
@@ -139,6 +142,8 @@ public:
 
 	void SetBraking(bool enabledP);
 private:
+	void TaskPeriodic(RobotMode mode) override;
+
 	Encoder *m_leftEncoder;
 	Encoder *m_rightEncoder;
 
@@ -170,6 +175,14 @@ private:
     VisionDriveController *m_visionDriveController;
 
     DoubleSolenoid *m_brakes;
+
+    LogSpreadsheet *m_spreadsheet;
+    LogCell *m_angleLog;
+    LogCell *m_angularRateLog;
+    LogCell *m_leftDistLog;
+    LogCell *m_leftDistRateLog;
+    LogCell *m_leftPowerLog;
+    LogCell *m_rightPowerLog;
 };
 
 }

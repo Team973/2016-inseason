@@ -78,13 +78,15 @@ Robot::Robot(void
 	m_leftDriveEncoder = new Encoder(LEFT_DRIVE_ENCODER_A_DIN,
 			LEFT_DRIVE_ENCODER_B_DIN, false, CounterBase::k4X);
 
+
+	m_logger = new LogSpreadsheet(this);
 	printf("Starting drive init\n");
 #ifdef PROTO_BOT_PINOUT
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
-			m_leftDriveEncoder, nullptr, m_collinGyro);
+			m_leftDriveEncoder, nullptr, m_collinGyro, m_logger);
 #else
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
-			m_leftDriveEncoder, nullptr, m_austinGyro);
+			m_leftDriveEncoder, nullptr, m_austinGyro, m_logger);
 #endif
 	printf("Finished drive init\n");
 
@@ -96,7 +98,6 @@ Robot::Robot(void
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
 	m_compressor = new GreyCompressor(m_airPressureSwitch, m_compressorRelay, this);
 
-	m_logger = new LogSpreadsheet(this);
 	m_battery = new LogCell("Battery voltage");
 
 	m_time = new LogCell("Time (ms)");
@@ -107,7 +108,7 @@ Robot::Robot(void
 	m_messages = new LogCell("Robot messages", 100, true);
 	m_buttonPresses = new LogCell("Button Presses (disabled only)", 100, true);
 
-	//m_logger->RegisterCell(m_battery);
+	m_logger->RegisterCell(m_battery);
 	m_logger->RegisterCell(m_time);
 	//m_logger->RegisterCell(m_state);
 	//m_logger->RegisterCell(m_accelCellX);
