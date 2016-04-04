@@ -15,6 +15,7 @@ class CheesyDriveController;
 class PIDDriveController;
 class RampPIDDriveController;
 class VisionDriveController;
+class VelocityTurnPID;
 class SPIGyro;
 //class ADXRS450_Gyro;
 class LogSpreadsheet;
@@ -111,6 +112,8 @@ public:
      */
     void PIDTurn(double angle, RelativeTo relativity);
 
+    void VelocityPIDTurn(double angle, RelativeTo relativity);
+
     void RampPIDDrive(double dist, RelativeTo relativity);
     void RampPIDTurn(double angle, RelativeTo relativity);
 
@@ -173,6 +176,7 @@ private:
     PIDDriveController *m_pidDriveController;
     RampPIDDriveController *m_rampPidDriveController;
     VisionDriveController *m_visionDriveController;
+    VelocityTurnPID *m_velocityTurnController;
 
     DoubleSolenoid *m_brakes;
 

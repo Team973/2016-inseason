@@ -16,6 +16,7 @@
 #include "src/controllers/PIDDriveController.h"
 #include "src/controllers/RampedPIDDriveController.h"
 #include "src/controllers/VisionDriveController.h"
+#include "src/controllers/VelocityTurnPID.h"
 
 namespace frc973 {
 
@@ -45,6 +46,7 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_pidDriveController(new PIDDriveController())
 		 , m_rampPidDriveController(new RampPIDDriveController())
 		 , m_visionDriveController(new VisionDriveController())
+		 , m_velocityTurnController(new VelocityTurnPID())
 		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 		 , m_spreadsheet(logger)
 		 , m_angleLog(new LogCell("Angle"))
@@ -123,6 +125,11 @@ void Drive::PIDTurn(double degrees, RelativeTo relativity) {
 	this->SetDriveController(m_pidDriveController);
 	m_pidDriveController->DisableDist();
 	m_pidDriveController->SetTarget(0.0, degrees, relativity, this);
+}
+
+void Drive::VelocityPIDTurn(double angle, RelativeTo relativity) {
+	this->SetDriveController(m_velocityTurnController);
+	m_velocityTurnController->SetTarget(angle, relativity, this);
 }
 
 void Drive::RampPIDDrive(double distance, RelativeTo relativity) {

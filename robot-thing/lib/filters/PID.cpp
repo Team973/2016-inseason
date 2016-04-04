@@ -111,9 +111,9 @@ double PID::CalcOutput(double actual, uint32_t time) {
 	if (m_flags & PID_SPEED_CTRL) {
 		output += m_lastOutput;
 	}
-	m_lastOutput = output;
 
 	output = Util::bound(output, m_min, m_max);
+	m_lastOutput = output;
 
 	return output;
 }

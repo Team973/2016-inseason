@@ -13,23 +13,32 @@
 
 namespace frc973 {
 
-static constexpr double TURN_PID_KP = 0.11;
-static constexpr double TURN_PID_KI = 0.005;
-static constexpr double TURN_PID_KD = 0.0015;
+static constexpr double TURN_POS_KP = 0.08;
+static constexpr double TURN_POS_KI = 0.0;
+static constexpr double TURN_POS_KD = 0;
 
-static constexpr double TURN_FEEDFORWARD = 0.075;
+static constexpr double TURN_VEL_KP = 0.12;
+static constexpr double TURN_VEL_KI = 0.0;
+static constexpr double TURN_VEL_KD = 0.0;
+
+static constexpr double POWER_CAP = 0.35;
 
 VisionDriveController::VisionDriveController()
 		 : VisionDataReceiver()
-		 ,  m_leftOutput(0.0)
+		 , m_leftOutput(0.0)
 		 , m_rightOutput(0.0)
-		 , m_targetAngle(0.0)
-		 , m_prevAngle(0.0)
+		 , m_onTarget(false)
 		 , m_prevAngleVel(0.0)
-		 , m_anglePid(new PID(TURN_PID_KP, TURN_PID_KI, TURN_PID_KD))
+		 , m_prevAnglePos(0.0)
+		 , m_targetAngleVel(0.0)
+		 , m_targetAnglePos(0.0)
+		 , m_velPid(new PID(TURN_VEL_KP, TURN_VEL_KI, TURN_VEL_KD, PID_SPEED_CTRL))
+		 , m_posPid(new PID(TURN_POS_KP, TURN_POS_KI, TURN_POS_KD))
 		 , m_state(WAITING)
 		 , m_visionTask(new VisionTask()) {
 	printf("Vision Drive Controller Has Initialized horray!!!\n");
+	m_posPid->SetBounds(-MAX_VELOCITY, MAX_VELOCITY);
+	m_velPid->SetBounds(-POWER_CAP, POWER_CAP);
 }
 
 VisionDriveController::~VisionDriveController() {
@@ -39,13 +48,15 @@ VisionDriveController::~VisionDriveController() {
 void VisionDriveController::VisionReceiveXAngle(double angle) {
 	printf("Received vision angle %lf\n", angle);
 	m_state = TURNING;
-	m_targetAngle = m_prevAngle + angle;
-	m_anglePid->SetTarget(m_targetAngle);
+	m_targetAnglePos = m_prevAnglePos + angle;
+	m_posPid->Reset();
+	m_velPid->Reset();
+	m_posPid->SetTarget(m_targetAnglePos);
 }
 
 void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 		DriveControlSignalReceiver *out) {
-	m_prevAngle = state->GetAngle();
+	m_prevAnglePos = state->GetAngle();
 	m_prevAngleVel = state->GetAngularRate();
 
 	double turn = 0.0;
@@ -57,21 +68,25 @@ void VisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	}
 	else if (m_state == TURNING) {
 		printf("Turning\n");
-		turn = m_anglePid->CalcOutput(m_prevAngle);
-		turn = Util::signedIncrease(turn, TURN_FEEDFORWARD);
+
+		double velSetpt = m_posPid->CalcOutput(m_prevAnglePos);
+		velSetpt = Util::bound(velSetpt, -MAX_VELOCITY, MAX_VELOCITY);
+
+		m_velPid->SetTarget(velSetpt);
+		turn = m_velPid->CalcOutput(m_prevAngleVel);
+		turn = Util::signedIncrease(turn, velSetpt * 0.0);
 		turn = Util::bound(turn, -0.35, 0.35);
 
-		//printf("turnyness %lf\n", turn);
-		out->SetDriveOutput(turn, -turn);
-
 		DBStringPrintf(DBStringPos::DB_LINE4,
-				"v p %1.2lf a %2.1lf\n", turn, m_targetAngle - m_prevAngle);
+				"v p %1.2lf a %2.1lf\n", turn, m_targetAnglePos - m_prevAnglePos);
 	}
 	else if (m_state == FAILING) {
 		printf("Failing\n");
 		DBStringPrintf(DBStringPos::DB_LINE4,
 				"v failed to grab input\n");
 	}
+
+	out->SetDriveOutput(turn, -turn);
 }
 
 } /* namespace frc973 */

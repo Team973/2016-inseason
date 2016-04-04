@@ -26,7 +26,7 @@ public:
 	 * the pid object to decide on an ideal set of outputs
 	 */
 	void CalcDriveOutput(DriveStateProvider *state,
-			DriveControlSignalReceiver *out);
+			DriveControlSignalReceiver *out) override;
 
 	/*
 	 * On CalcDriveOutput, the robot sets the internal m_onTarget flag if it

@@ -46,8 +46,8 @@ public:
 	bool OnTarget() {
 		return m_state == FAILING ||
 				(m_state == TURNING &&
-				 Util::abs(m_prevAngleVel) < 0.5 &&
-				 Util::abs(m_targetAngle - m_prevAngle) < 0.4);
+				 Util::abs(m_prevAngleVel) < 0.25 &&
+				 Util::abs(m_targetAnglePos - m_prevAnglePos) < 0.25);
 	}
 
 	void Start() override {
@@ -72,14 +72,20 @@ public:
 		m_state = FAILING;
 	}
 private:
+	static constexpr double MAX_VELOCITY = 20.0;
+
 	double m_leftOutput;
 	double m_rightOutput;
 
-	double m_targetAngle;
-	double m_prevAngle;
-	double m_prevAngleVel;
+	bool m_onTarget;
 
-	PID *m_anglePid;
+	double m_prevAngleVel;
+	double m_prevAnglePos;
+	double m_targetAngleVel;
+	double m_targetAnglePos;
+
+	PID *m_velPid;
+	PID *m_posPid;
 
 	VisionState m_state;
 	VisionTask *m_visionTask;
