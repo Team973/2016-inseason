@@ -11,7 +11,7 @@
 
 namespace frc973 {
 
-static constexpr double TURN_POS_KP = 0.08;
+static constexpr double TURN_POS_KP = 0.06;
 static constexpr double TURN_POS_KI = 0.0;
 static constexpr double TURN_POS_KD = 0;
 
@@ -47,7 +47,7 @@ void VelocityTurnPID::CalcDriveOutput(DriveStateProvider *state,
 
 	m_velPid->SetTarget(velSetpt);
 	double turnPow = m_velPid->CalcOutput(m_prevAngleVel);
-	turnPow = Util::signedIncrease(turnPow, velSetpt * 0.0);
+	turnPow = Util::signedIncrease(turnPow, velSetpt * 0.1);
 	turnPow = Util::bound(turnPow, -0.35, 0.35);
 
 	out->SetDriveOutput(turnPow, -turnPow);

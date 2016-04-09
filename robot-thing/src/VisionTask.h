@@ -61,8 +61,8 @@ private:
 	static constexpr double X_FOV = 34.25 * 0.69;
 
 	Range RING_HUE_RANGE = {80, 160};
-	Range RING_SAT_RANGE = {120, 255};
-	Range RING_VAL_RANGE = {180, 255};
+	Range RING_SAT_RANGE = {140, 255};
+	Range RING_VAL_RANGE = {140, 235};
 
 	//A structure to hold measurements of a particle
 	struct ParticleReport {

@@ -63,7 +63,7 @@ Robot::Robot(void
 	m_selectedDirection(AutoStartPosition::NoVision)
 {
 	printf("Starting robot init\n");
-	m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
+	//m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
 
 	m_driverJoystick = new ObservableJoystick(DRIVER_JOYSTICK_PORT, this, this);
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);

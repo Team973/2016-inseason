@@ -20,8 +20,8 @@ VisionTask::VisionTask()
 		 , m_image(nullptr)
 		 , m_thresholdImage(nullptr) {
 	printf("starting vision task thread\n");
-	//pthread_create(&m_thread, NULL, InitVision, this);
-	InitVision(this);
+	pthread_create(&m_thread, NULL, InitVision, this);
+	//InitVision(this);
 	printf("finished starting vision task thread\n");
 }
 
@@ -61,7 +61,7 @@ void *VisionTask::InitVision(void *p) {
 		inst->m_image = imaqCreateImage(IMAQ_IMAGE_RGB, 0);
 		//the camera name (ex "cam0") can be found through the roborio web interface
 		inst->m_thresholdImage = imaqCreateImage(IMAQ_IMAGE_U8, 0);
-		int imaqError = IMAQdxOpenCamera("cam1", IMAQdxCameraControlModeController, &inst->m_session);
+		int imaqError = IMAQdxOpenCamera("cam0", IMAQdxCameraControlModeController, &inst->m_session);
 		SetCameraSettings(inst->m_session, 5.0, 30.0, 10.0);
 		SetCameraSettings(inst->m_session, 5.0, 30.0, 10.0);
 		SetCameraSettings(inst->m_session, 5.0, 30.0, 10.0);
@@ -111,6 +111,7 @@ void *VisionTask::DoVision(void* p) {
 		if (imaqError >= IMAQdxErrorSuccess) {
 			imaqError = imaqColorThreshold(inst->m_thresholdImage, inst->m_image, 255,IMAQ_HSV,
 					&(inst->RING_HUE_RANGE), &(inst->RING_SAT_RANGE), &(inst->RING_VAL_RANGE));
+			printf ("threshold image\n");
 		}
 		else {
 			printf("failure grabbing image");
@@ -122,6 +123,7 @@ void *VisionTask::DoVision(void* p) {
 
 			snprintf(buff, BUFF_LEN, "#parts %d", numParticles);
 			//SmartDashboard::PutString("DB/String 3", buff);
+			printf("Number of Particles %d\n ", numParticles);
 		}
 		else {
 			printf("th er %d\n", imaqError);
@@ -193,7 +195,7 @@ void *VisionTask::DoVision(void* p) {
 			}
 		}
 
-		//CameraServer::GetInstance()->SetImage(inst->m_thresholdImage);
+		CameraServer::GetInstance()->SetImage(inst->m_image);
 
 		// stop image acquisition
 		IMAQdxStopAcquisition(inst->m_session);
