@@ -15,6 +15,7 @@
 #define PID_H
 
 #include <math.h>
+#include <stdint.h>
 
 namespace frc973 {
 

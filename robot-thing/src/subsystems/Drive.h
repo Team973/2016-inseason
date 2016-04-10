@@ -14,7 +14,7 @@ class ArcadeDriveController;
 class CheesyDriveController;
 class PIDDriveController;
 class RampPIDDriveController;
-class VisionDriveController;
+class PixyVisionDriveController;
 class VelocityTurnPID;
 class SPIGyro;
 //class ADXRS450_Gyro;
@@ -175,7 +175,7 @@ private:
     CheesyDriveController *m_cheesyDriveController;
     PIDDriveController *m_pidDriveController;
     RampPIDDriveController *m_rampPidDriveController;
-    VisionDriveController *m_visionDriveController;
+    PixyVisionDriveController *m_visionDriveController;
     VelocityTurnPID *m_velocityTurnController;
 
     DoubleSolenoid *m_brakes;

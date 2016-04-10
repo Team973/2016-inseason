@@ -15,7 +15,7 @@
 #include "src/controllers/CheesyDriveController.h"
 #include "src/controllers/PIDDriveController.h"
 #include "src/controllers/RampedPIDDriveController.h"
-#include "src/controllers/VisionDriveController.h"
+#include "src/controllers/PixyVisionDriveController.h"
 #include "src/controllers/VelocityTurnPID.h"
 
 namespace frc973 {
@@ -45,7 +45,7 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_cheesyDriveController(new CheesyDriveController())
 		 , m_pidDriveController(new PIDDriveController())
 		 , m_rampPidDriveController(new RampPIDDriveController())
-		 , m_visionDriveController(new VisionDriveController())
+		 , m_visionDriveController(new PixyVisionDriveController())
 		 , m_velocityTurnController(new VelocityTurnPID())
 		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 		 , m_spreadsheet(logger)
