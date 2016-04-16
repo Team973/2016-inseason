@@ -46,6 +46,7 @@ public:
 	void TaskPeriodic(RobotMode mode);
 private:
 	VictorSP *m_intakeMotor;
+	VictorSP *m_intakeMotorB;
 	Solenoid *m_intakeSolenoid;
 
 	IntakeMode m_intakeMode;

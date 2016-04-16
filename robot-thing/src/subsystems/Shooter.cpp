@@ -34,10 +34,12 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_flywheelEnabled(false),
 		m_frontFlywheelTargetSpeed(0.0),
 		m_backFlywheelTargetSpeed(0.0),
-		m_frontController(new StateSpaceFlywheelController(FlywheelGainsFront::MakeGains())),
+		m_frontController(new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains())),
 		m_backController(new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains())),
 		m_frontFlywheelSetPower(0.0),
 		m_backFlywheelSetPower(0.0),
+
+
 		m_flywheelReady(false),
 		m_frontFilter(new CascadingFilter()),
 		m_frontMovingAvgFilt(new MovingAverageFilter(0.85)),
@@ -45,7 +47,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_fmedfilt(new MedianFilter()),
 		m_backFilter(new CascadingFilter()),
 		m_readyFilter(new DelaySwitch(0.9)),
-		m_elevatorState(ElevatorHeight::wayLow),
+		m_elevatorState(ElevatorHeight::midHigh),
 		m_longSolenoid(new Solenoid(SHOOTER_ANGLE_UPPER_SOL)),
 		m_shortSolenoid(new Solenoid(SHOOTER_ANGLE_LOWER_SOL)),
 		m_frontFlywheelSpeed(new LogCell("front shooter speed (RPM)")),
@@ -212,20 +214,20 @@ void Shooter::SetElevatorHeight(ElevatorHeight newHeight) {
 
 		switch (m_elevatorState) {
 		case ElevatorHeight::wayHigh:
-			m_longSolenoid->Set(true);
+			m_longSolenoid->Set(false);
 			m_shortSolenoid->Set(true);
 			break;
 		case ElevatorHeight::midHigh:
-			m_longSolenoid->Set(true);
+			m_longSolenoid->Set(false);
 			m_shortSolenoid->Set(false);
 			break;
 		case ElevatorHeight::midLow:
-			m_longSolenoid->Set(false);
-			m_shortSolenoid->Set(true);
+			m_longSolenoid->Set(true);
+			m_shortSolenoid->Set(false);
 			break;
 		case ElevatorHeight::wayLow:
-			m_longSolenoid->Set(false);
-			m_shortSolenoid->Set(false);
+			m_longSolenoid->Set(true);
+			m_shortSolenoid->Set(true);
 			break;
 		}
 	}

@@ -18,8 +18,8 @@ Arm::Arm(TaskMgr *scheduler, PowerDistributionPanel* pdp)
 		 : m_scheduler(scheduler)
 		 , m_pdp(pdp)
 		 , m_lastTimeSec(GetSecTime())
-		 , m_armMotor(new VictorSP(ARM_MOTOR_PWM))
-		 , m_armEncoder(new Encoder(ARM_ENCODER_A_DIN, ARM_ENCODER_B_DIN, true))
+		 //, m_armMotor(new VictorSP(ARM_MOTOR_PWM))
+		 //, m_armEncoder(new Encoder(ARM_ENCODER_A_DIN, ARM_ENCODER_B_DIN, true))
 		 , m_mode(ArmMode::position_control)
 		 , m_targetSpeed(0.0)
 		 , m_targetPos(ARM_OFFSET)
@@ -27,7 +27,7 @@ Arm::Arm(TaskMgr *scheduler, PowerDistributionPanel* pdp)
 		 , m_pid(new PID(ARM_PID_KP, ARM_PID_KI, ARM_PID_KD))
 		 , m_zeroOffsetDeg(ARM_OFFSET)
 		 , m_encoderZerod(false) {
-	m_armEncoder->SetDistancePerPulse(ARM_DIST_PER_CLICK);
+	//m_armEncoder->SetDistancePerPulse(ARM_DIST_PER_CLICK);
 	m_scheduler->RegisterTask("Arm", this, TASK_PERIODIC);
 	m_pid->SetTarget(m_targetPos);
 }
@@ -54,11 +54,11 @@ void Arm::SetPower(double power) {
 }
 
 double Arm::GetArmAngle() {
-	return m_armEncoder->GetDistance() + m_zeroOffsetDeg;
+	return 0.0;// m_armEncoder->GetDistance() + m_zeroOffsetDeg;
 }
 
 double Arm::GetArmVelocity() {
-	return m_armEncoder->GetRate();
+	return 0.0; //m_armEncoder->GetRate();
 }
 
 double Arm::GetArmCurrent() {
@@ -82,7 +82,7 @@ void Arm::TaskPeriodic(RobotMode mode) {
 	if (mode == RobotMode::MODE_AUTO || mode == RobotMode::MODE_TELEOP) {
 		if (m_encoderZerod == false) {
 			m_encoderZerod = true;
-			m_armEncoder->Reset();
+			//m_armEncoder->Reset();
 		}
 	}
 
@@ -92,19 +92,19 @@ void Arm::TaskPeriodic(RobotMode mode) {
 		m_targetPos = Util::bound(m_targetPos + positionStep, ARM_SOFT_MIN_POS, ARM_SOFT_MAX_POS);
 
 		m_pid->SetTarget(m_targetPos);
-		m_armMotor->Set(Util::bound(m_pid->CalcOutput(GetArmAngle()), -0.5, 0.5));
+		//m_armMotor->Set(Util::bound(m_pid->CalcOutput(GetArmAngle()), -0.5, 0.5));
 		break;
 
 	case ArmMode::position_control:
-		m_armMotor->Set(Util::bound(m_pid->CalcOutput(GetArmAngle()), -0.5, 0.5));
+		//m_armMotor->Set(Util::bound(m_pid->CalcOutput(GetArmAngle()), -0.5, 0.5));
 		break;
 
 	case ArmMode::openLoop_control:
-		m_armMotor->Set(m_armPow);
+		//m_armMotor->Set(m_armPow);
 		break;
 
 	case ArmMode::zeroing:
-		m_armMotor->Set(ZEROING_POWER);
+		//m_armMotor->Set(ZEROING_POWER);
 		break;
 	}
 
@@ -119,8 +119,8 @@ void Arm::StartZero() {
 
 void Arm::EndZero() {
 	m_zeroOffsetDeg = 0.0;
-	m_armMotor->Set(0.0);
-	m_armEncoder->Reset();
+	//m_armMotor->Set(0.0);
+	//m_armEncoder->Reset();
 	m_mode = openLoop_control;
 	m_pid->SetTarget(0.0);
 	m_targetPos = 0.0;
