@@ -24,10 +24,10 @@
             "shortCylinderExtended": true,
             "superiorFlywheelControl": "closed",
             "inferiorFlywheelControl": "open",
-            "superiorFlywheelRPM": 5400.0,
+            "superiorFlywheelRPM": 4500.0,
             "inferiorFlywheelRPM": 0.0,
             "superiorFlywheelPower": 1.0,
-            "inferiorFlywheelPower": 1.0
+            "inferiorFlywheelPower": 0.8
         },
         {
             "name": "far-defense",
@@ -52,8 +52,8 @@
             "shortCylinderExtended": false,
             "superiorFlywheelControl": "closed",
             "inferiorFlywheelControl": "open",
-            "superiorFlywheelRPM": 4600.0,
-            "inferiorFlywheelRPM": 4600.0,
+            "superiorFlywheelRPM": 4500.0,
+            "inferiorFlywheelRPM": 4500.0,
             "superiorFlywheelPower": 0.4,
             "inferiorFlywheelPower": 0.8
         },

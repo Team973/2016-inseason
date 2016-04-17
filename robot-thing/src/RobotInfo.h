@@ -38,18 +38,15 @@ constexpr int BALL_INTAKE_MOTOR_PWM = 7;
 
 constexpr int ARM_MOTOR_PWM = 8;
 
-constexpr int SHOOTER_ACTUATOR_PWM = 9;
-
+constexpr int SHOOTER_CONVEYER_MOTOR_PWM_OTHER = 9;
 /**
  * DIN pin-out
  */
 constexpr int AIR_PRESSURE_DIN = 0;
 
-/*
+
 constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 12;
 constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 13;
-*/
-
 constexpr int LEFT_DRIVE_ENCODER_A_DIN = 24;
 constexpr int LEFT_DRIVE_ENCODER_B_DIN = 25;
 
@@ -73,6 +70,7 @@ constexpr int ARM_ENCODER_B_DIN = 23;
 /**
  * Relay pin-out
  */
+
 constexpr int COMPRESSOR_RELAY = 0;
 
 /**

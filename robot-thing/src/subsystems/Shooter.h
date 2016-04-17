@@ -65,6 +65,10 @@ public:
 		m_conveyor->Set(pow);
 	}
 
+	void OtherSetConveyerPower(double pow) {
+		m_otherConveyor->Set(pow);
+	}
+
 	void TaskPeriodic(RobotMode mode);
 
 	double GetFrontFlywheelRate(void);
@@ -91,6 +95,7 @@ private:
 	VictorSP *m_frontFlywheelMotor;
 	VictorSP *m_backFlywheelMotor;
 	VictorSP *m_conveyor;
+	VictorSP *m_otherConveyor;
 
 	Counter *m_frontFlywheelEncoder;
 	Counter *m_backFlywheelEncoder;

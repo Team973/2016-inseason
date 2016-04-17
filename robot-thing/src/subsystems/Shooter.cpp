@@ -27,6 +27,7 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_frontFlywheelMotor(new VictorSP(FRONT_SHOOTER_PWM)),
 		m_backFlywheelMotor(new VictorSP(BACK_SHOOTER_PWM)),
 		m_conveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM)),
+		m_otherConveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM_OTHER)),
 		m_frontFlywheelEncoder(new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN)),
 		m_backFlywheelEncoder(new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN)),
 		m_frontFlywheelState(FlywheelState::openLoop),
