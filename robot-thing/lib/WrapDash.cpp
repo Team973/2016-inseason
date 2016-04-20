@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define DBSTRING_MAX_LENGTH		21
+#define DBSTRING_MAX_LENGTH		30
 
 namespace frc973 {
 

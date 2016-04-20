@@ -38,7 +38,7 @@ public:
 		wayLow
 	};
 
-	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger);
+	Shooter(TaskMgr *scheduler, LogSpreadsheet *logger, VictorSP *conveyorMotor);
 	virtual ~Shooter();
 
 	void SetFlywheelEnabled(bool enabledP);
@@ -62,11 +62,13 @@ public:
 	void SetFlywheelStop();
 
 	void SetConveyerPower(double pow) {
-		m_conveyor->Set(pow);
+		if (m_conveyorControl) {
+			m_conveyor->Set(pow);
+		}
 	}
 
-	void OtherSetConveyerPower(double pow) {
-		m_otherConveyor->Set(pow);
+	void SetConveyorControl(bool enabled) {
+		m_conveyorControl = enabled;
 	}
 
 	void TaskPeriodic(RobotMode mode);
@@ -95,7 +97,6 @@ private:
 	VictorSP *m_frontFlywheelMotor;
 	VictorSP *m_backFlywheelMotor;
 	VictorSP *m_conveyor;
-	VictorSP *m_otherConveyor;
 
 	Counter *m_frontFlywheelEncoder;
 	Counter *m_backFlywheelEncoder;
@@ -133,6 +134,8 @@ private:
 
 	Solenoid *m_runningLight;
 	Solenoid *m_readyLight;
+
+	bool m_conveyorControl;
 
 	static constexpr double SLOW_FLYWHEEL_SPEED_SCALEDOWN = 0.7;
 public:

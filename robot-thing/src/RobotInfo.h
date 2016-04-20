@@ -26,7 +26,7 @@ constexpr int DRIVE_RIGHT_PWM = 1;
 constexpr int DRIVE_LEFT_PWM = 0;
 #endif
 
-constexpr int FRONT_SHOOTER_PWM = 2;
+constexpr int FRONT_SHOOTER_PWM = 9;
 constexpr int BACK_SHOOTER_PWM = 3;
 
 //constexpr int UNUSED_PWM = 4;
@@ -37,13 +37,15 @@ constexpr int SHOOTER_CONVEYER_MOTOR_PWM = 6;
 constexpr int BALL_INTAKE_MOTOR_PWM = 7;
 
 constexpr int ARM_MOTOR_PWM = 8;
-
-constexpr int SHOOTER_CONVEYER_MOTOR_PWM_OTHER = 9;
 /**
  * DIN pin-out
  */
 constexpr int AIR_PRESSURE_DIN = 0;
 
+constexpr int PIXY_CAM_DIGITAL_PORT = 9;
+
+constexpr int LEFT_HOOK_HALL_DIN = 3;
+constexpr int RIGHT_HOOK_HALL_DIN = 4;
 
 constexpr int RIGHT_DRIVE_ENCODER_A_DIN = 12;
 constexpr int RIGHT_DRIVE_ENCODER_B_DIN = 13;
@@ -68,6 +70,11 @@ constexpr int ARM_ENCODER_B_DIN = 23;
 #endif
 
 /**
+ * Analog In
+ */
+constexpr int PIXY_CAM_ANALOG_PORT = 0;
+
+/**
  * Relay pin-out
  */
 
@@ -90,6 +97,8 @@ constexpr int DRIVE_SHIFT_SOL = 3;
 #endif
 
 constexpr int INTAKE_EXTENSION_SOL = 4;
+
+constexpr int POWER_TAKEOFF_SOL = 6;
 
 /**
  * Power Distrobution Channels

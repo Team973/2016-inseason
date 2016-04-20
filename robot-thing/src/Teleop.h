@@ -8,7 +8,6 @@ void Robot::TeleopStart(void) {
 	m_drive->SetBraking(false);
 	m_drive->ArcadeDrive(0.0, 0.0);
 	m_shooter->SetConveyerPower(0.0);
-	m_arm->SetTargetPosition(m_arm->GetArmAngle());
     printf("***teleop start\n");
 }
 
@@ -17,33 +16,10 @@ void Robot::TeleopStop(void) {
 }
 
 static bool teleopDrive = true;
-static bool armNeedsStop = false;
 static bool conveyorNeedsStop = false;
 static bool intakeNeedsStop = false;
 
-static bool armOpenLoop = false;
-
 void Robot::TeleopContinuous(void) {
-	double armPower = m_operatorJoystick->GetRawAxisWithDeadband(DualAction::RightYAxis, 0.2);
-	if (armPower != 0.0) {
-		if (armOpenLoop) {
-			m_arm->SetPower(armPower * 0.5);
-		}
-		else {
-			m_arm->SetTargetSpeed(armPower);
-		}
-		armNeedsStop = true;
-	}
-	else if (armNeedsStop) {
-		if (armOpenLoop) {
-			m_arm->SetPower(0.0);
-		}
-		else {
-			m_arm->SetTargetSpeed(0.0);
-		}
-		armNeedsStop = false;
-	}
-
 	double intakePower = m_operatorJoystick->GetRawAxisWithDeadband(
 			DualAction::LeftYAxis, 0.2);
 	if (intakePower != 0.0) {
@@ -165,12 +141,12 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			}
 			break;
 		case DualAction::Start:
-			if (pressedP) {
-			}
+			m_hanger->TryReleaseHooks(pressedP);
 			break;
 		case DualAction::Back:
 			if (pressedP) {
 			}
+			break;
 		}
 	}
 	else if (port == OPERATOR_JOYSTICK_PORT) {
@@ -182,13 +158,14 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::BtnA:
 			if (pressedP) {
-				m_poseManager->ChooseNthPose(PoseManager::STOW_POSE);
+				m_poseManager->ChooseNthPose(PoseManager::CHIVAL_POSE);
 				m_shooter->SetFlywheelEnabled(false);
 			}
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
-				m_poseManager->ChooseNthPose(PoseManager::FAR_DEFENSE_SHOT_POSE);
+				m_poseManager->ChooseNthPose(PoseManager::STOW_POSE);
+				m_shooter->SetFlywheelEnabled(false);
 			}
 			break;
 		case DualAction::BtnB:
@@ -198,13 +175,11 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::LeftBumper:
 			if (pressedP) {
-				//m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 				m_intake->SetIntakePosition(Intake::IntakePosition::extended);
 			}
 			break;
 		case DualAction::LeftTrigger:
 			if (pressedP) {
-				//m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL);
 				m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
 			}
 			break;
@@ -247,17 +222,10 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			m_intake->SetIntakePosition(Intake::IntakePosition::retracted);
 			break;
 		case DualAction::Back:
-			if (pressedP) {
-				m_arm->StartZero();
-			}
-			else {
-				m_arm->EndZero();
-			}
+			m_hanger->SetManualHang(pressedP);
 			break;
 		case DualAction::Start:
-			if (pressedP) {
-				armOpenLoop = true;
-			}
+			m_hanger->SetAutoHang(pressedP);
 			break;
 		}
 	}

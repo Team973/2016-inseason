@@ -41,12 +41,12 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_rightMotor(right)
 		 , m_leftMotorPowerFilter(dynamic_cast<FilterBase*>(new RampedOutput(10.0)))
 		 , m_rightMotorPowerFilter(dynamic_cast<FilterBase*>(new RampedOutput(10.0)))
-		 , m_arcadeDriveController(new ArcadeDriveController())
-		 , m_cheesyDriveController(new CheesyDriveController())
-		 , m_pidDriveController(new PIDDriveController())
-		 , m_rampPidDriveController(new RampPIDDriveController())
-		 , m_visionDriveController(new PixyVisionDriveController())
-		 , m_velocityTurnController(new VelocityTurnPID())
+		 , m_arcadeDriveController(nullptr)
+		 , m_cheesyDriveController(nullptr)
+		 , m_pidDriveController(nullptr)
+		 , m_rampPidDriveController(nullptr)
+		 , m_visionDriveController(nullptr)
+		 , m_velocityTurnController(nullptr)
 		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 		 , m_spreadsheet(logger)
 		 , m_angleLog(new LogCell("Angle"))
@@ -58,6 +58,22 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 {
 	printf("Initializing Drive Subsystem\n");
 	m_leftEncoder->SetDistancePerPulse(1.0);
+	//this->SetDriveController(m_arcadeDriveController);
+
+
+	fprintf(stderr, "starting arcade drive\n");
+	m_arcadeDriveController = new ArcadeDriveController();
+	fprintf(stderr, "starting cheesy\n");
+	m_cheesyDriveController = new CheesyDriveController();
+	fprintf(stderr, "starting pid\n");
+	m_pidDriveController = new PIDDriveController();
+	fprintf(stderr, "starting ramped pid\n");
+	m_rampPidDriveController = new RampPIDDriveController();
+	fprintf(stderr, "starting pixy\n");
+	m_visionDriveController = new PixyVisionDriveController();
+	fprintf(stderr, "starting velocity turn\n");
+	m_velocityTurnController = new VelocityTurnPID();
+
 	this->SetDriveController(m_arcadeDriveController);
 
 	bool loggingEnabled = true;

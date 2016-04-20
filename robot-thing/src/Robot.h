@@ -16,12 +16,12 @@ class SingleThreadTaskMgr;
 class Drive;
 class Intake;
 class Shooter;
-class Arm;
 class GreyCompressor;
 class LogCell;
 class SPIGyro;
 class PoseManager;
 class Debouncer;
+class Hanger;
 
 class Robot:
 		public CoopMTRobot,
@@ -58,6 +58,7 @@ private:
 	Encoder			*m_leftDriveEncoder;
 	Encoder			*m_gyroEncoder;
 	Drive			*m_drive;
+	VictorSP		*m_sharedConveyorMotor;
 
 	/**
 	 * Subsystems
@@ -65,7 +66,7 @@ private:
 	Intake			*m_intake;
 	Shooter			*m_shooter;
 	Debouncer		*m_shooterStallFilter;
-	Arm				*m_arm;
+	Hanger			*m_hanger;
 
 	/*
 	 * Compressor

@@ -31,7 +31,6 @@
 
 namespace frc973 {
 
-class Arm;
 class Shooter;
 class Intake;
 
@@ -41,11 +40,10 @@ public:
 	 * Initialize the PoseManager and select the first pose in the list
 	 * of poses.
 	 *
-	 * @param arm reference to the arm subsystem
 	 * @param shooter reference to the shooter subsystem
 	 * @param intake reference to the intake subsystem
 	 */
-	PoseManager(Arm *arm, Shooter *shooter, Intake *intake);
+	PoseManager(Shooter *shooter, Intake *intake);
 	virtual ~PoseManager();
 
 	/**
@@ -58,7 +56,7 @@ public:
 
 	static const int STOW_POSE = 0;
 	static const int BATTER_SHOT_POSE = 1;
-	static const int FAR_DEFENSE_SHOT_POSE = 2;
+	static const int CHIVAL_POSE = 2;
 	static const int NEAR_DEFENSE_SHOT_POSE = 3;
 
 	/**
@@ -95,7 +93,6 @@ private:
 	 */
 	void AssumePoseFallback(int poseNum);
 
-	Arm *m_arm;
 	Shooter *m_shooter;
 	Intake *m_intake;
 

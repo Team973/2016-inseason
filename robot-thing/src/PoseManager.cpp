@@ -7,7 +7,6 @@
 
 #include <PoseManager.h>
 #include <fstream>
-#include "subsystems/Arm.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
 #include "lib/WrapDash.h"
@@ -15,9 +14,8 @@
 #include <iostream>
 namespace frc973 {
 
-PoseManager::PoseManager(Arm *arm, Shooter *shooter, Intake *intake)
-		 : m_arm(arm)
-		 , m_shooter(shooter)
+PoseManager::PoseManager(Shooter *shooter, Intake *intake)
+		 : m_shooter(shooter)
 		 , m_intake(intake)
 		 , m_currPose(0)
 		 , m_fileLoaded(false) {
@@ -40,6 +38,8 @@ void PoseManager::ChooseNthPose(int n) {
 }
 
 void PoseManager::ReloadConfiguration() {
+	fprintf(stderr, "Starting parse config file\n");
+
 	std::ifstream fileStream;// ("~/presets.json", std::ifstream::in);
 	fileStream.open("/home/lvuser/presets.json");
 	Json::Reader reader;
@@ -53,6 +53,7 @@ void PoseManager::ReloadConfiguration() {
 		printf("No file found!\n");
 		m_fileLoaded = false;
 	}
+	fprintf(stderr, "Finished parse config file\n");
 }
 
 void PoseManager::NextPose() {
@@ -75,7 +76,7 @@ void PoseManager::NextPose() {
 		case BATTER_SHOT_POSE:
 			DBStringPrintf(DBStringPos::DB_LINE9, "fallback batter shot");
 			break;
-		case FAR_DEFENSE_SHOT_POSE:
+		case CHIVAL_POSE:
 			DBStringPrintf(DBStringPos::DB_LINE9, "fallback far defense");
 			break;
 		case NEAR_DEFENSE_SHOT_POSE:
@@ -90,15 +91,6 @@ void PoseManager::AssumePose() {
 		Json::Value pose = m_configRoot["poses"][m_currPose];
 		std::cout << "there are this many " << m_configRoot["poses"].size();
 		std::cout << "my name is " << pose["name"];
-
-		if (pose["armControl"].asBool()) {
-			m_arm->SetTargetPosition(pose["armTarget"].asDouble());
-			printf("arm on\n");
-		}
-		else {
-			m_arm->SetPower(0.0);
-			printf("arm off\n");
-		}
 
 		if (pose["intakeExtended"].asBool()) {
 			m_intake->SetIntakePosition(Intake::IntakePosition::extended);
@@ -148,7 +140,6 @@ void PoseManager::AssumePose() {
 }
 
 void PoseManager::Chill() {
-	m_arm->SetPower(0.0);
 	m_shooter->SetFlywheelPower(0.0);
 }
 
@@ -164,7 +155,7 @@ void PoseManager::AssumePoseFallback(int p) {
 		m_shooter->SetFrontFlywheelPower(1.0);
 		m_shooter->SetBackFlywheelPower(1.0);
 		break;
-	case FAR_DEFENSE_SHOT_POSE:
+	case CHIVAL_POSE:
 		m_shooter->SetElevatorHeight(Shooter::ElevatorHeight::midHigh);
 		m_shooter->SetFrontFlywheelSSShoot(5500.0);
 		m_shooter->SetBackFlywheelPower(0.8);

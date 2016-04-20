@@ -23,11 +23,16 @@
 
 namespace frc973 {
 
-Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
+static constexpr bool LONG_SOL_EXTENDED = false;
+static constexpr bool LONG_SOL_RETRACTED = true;
+
+static constexpr bool SHORT_SOL_EXTENDED = true;
+static constexpr bool SHORT_SOL_RETRACTED = false;
+
+Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger, VictorSP *conveyorMotor) :
 		m_frontFlywheelMotor(new VictorSP(FRONT_SHOOTER_PWM)),
 		m_backFlywheelMotor(new VictorSP(BACK_SHOOTER_PWM)),
-		m_conveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM)),
-		m_otherConveyor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM_OTHER)),
+		m_conveyor(conveyorMotor),
 		m_frontFlywheelEncoder(new Counter(FLYWHEEL_FRONT_BANNERSENSOR_DIN)),
 		m_backFlywheelEncoder(new Counter(FLYWHEEL_BACK_BANNERSENSOR_DIN)),
 		m_frontFlywheelState(FlywheelState::openLoop),
@@ -39,8 +44,6 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_backController(new StateSpaceFlywheelController(FlywheelGainsBack::MakeGains())),
 		m_frontFlywheelSetPower(0.0),
 		m_backFlywheelSetPower(0.0),
-
-
 		m_flywheelReady(false),
 		m_frontFilter(new CascadingFilter()),
 		m_frontMovingAvgFilt(new MovingAverageFilter(0.85)),
@@ -56,8 +59,9 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger) :
 		m_shooterPow(new LogCell("shooter power")),
 		m_shooterTime(new LogCell("Shooter Time (ms)")),
 		m_scheduler(scheduler),
-		m_runningLight(new Solenoid(6)),
-		m_readyLight(new Solenoid(7))
+		m_runningLight(nullptr),
+		m_readyLight(new Solenoid(7)),
+		m_conveyorControl(true)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
 
@@ -85,7 +89,7 @@ Shooter::~Shooter() {
 
 void Shooter::SetFlywheelEnabled(bool enabledP) {
 	m_flywheelEnabled = enabledP;
-	m_runningLight->Set(enabledP);
+	//m_runningLight->Set(enabledP);
 }
 
 void Shooter::SetFrontFlywheelSSShoot(double goal) {
@@ -215,20 +219,20 @@ void Shooter::SetElevatorHeight(ElevatorHeight newHeight) {
 
 		switch (m_elevatorState) {
 		case ElevatorHeight::wayHigh:
-			m_longSolenoid->Set(false);
-			m_shortSolenoid->Set(true);
+			m_longSolenoid->Set(LONG_SOL_EXTENDED);
+			m_shortSolenoid->Set(SHORT_SOL_EXTENDED);
 			break;
 		case ElevatorHeight::midHigh:
-			m_longSolenoid->Set(false);
-			m_shortSolenoid->Set(false);
+			m_longSolenoid->Set(LONG_SOL_EXTENDED);
+			m_shortSolenoid->Set(SHORT_SOL_RETRACTED);
 			break;
 		case ElevatorHeight::midLow:
-			m_longSolenoid->Set(true);
-			m_shortSolenoid->Set(false);
+			m_longSolenoid->Set(LONG_SOL_RETRACTED);
+			m_shortSolenoid->Set(SHORT_SOL_EXTENDED);
 			break;
 		case ElevatorHeight::wayLow:
-			m_longSolenoid->Set(true);
-			m_shortSolenoid->Set(true);
+			m_longSolenoid->Set(LONG_SOL_RETRACTED);
+			m_shortSolenoid->Set(SHORT_SOL_RETRACTED);
 			break;
 		}
 	}

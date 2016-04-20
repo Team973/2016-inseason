@@ -97,13 +97,13 @@ void Robot::AutonomousContinuous(void) {
 void Robot::Flappers(void) {
 	switch(m_autoState){
 	case 0:
-		m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL_UP);
+		//m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL_UP);
 		m_drive->PIDDrive(46, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
 	case 1:
 		if (m_drive->OnTarget()){
-			m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL_DOWN);
+			//m_arm->SetTargetPosition(Arm::ARM_POS_CHIVAL_DOWN);
 			m_autoTimer = GetMsecTime();
 			m_autoState++;
 		}
@@ -111,7 +111,7 @@ void Robot::Flappers(void) {
 	case 2:
 		if (GetMsecTime() - m_autoTimer > 2000) {
 			m_drive->PIDDrive(97 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
-			m_arm->SetPower(0.0);
+			//m_arm->SetPower(0.0);
 			m_autoTimer = GetMsecTime();
 			m_autoState++;
 		}
@@ -119,7 +119,7 @@ void Robot::Flappers(void) {
 	case 3:
 		if (m_drive->OnTarget()){
 			m_autoState++;
-			m_arm->SetTargetPosition(20.0);
+			//m_arm->SetTargetPosition(20.0);
 
 			if (m_selectedDirection == NoVision) {
 				m_autoState += 1000;
@@ -158,7 +158,7 @@ void Robot::PortcullisAuto() {
 	case 0:
 		m_autoTimer = GetMsecTime();
 		//m_arm->Zero();0
-		m_arm->SetTargetPosition(Arm::ARM_POS_PORTCULLIS);
+		//m_arm->SetTargetPosition(Arm::ARM_POS_PORTCULLIS);
 		m_autoState++;
 		break;
 	case 1:
@@ -172,7 +172,7 @@ void Robot::PortcullisAuto() {
 		break;
 	case 3:
 		if (m_drive->OnTarget()) {
-			m_arm->SetTargetPosition(20.0);
+			//m_arm->SetTargetPosition(20.0);
 			m_autoState++;
 
 			if (m_selectedDirection == AutoStartPosition::NoVision) {
@@ -240,7 +240,7 @@ void Robot::Moat() {
 	case 4:
 		m_autoTimer = GetMsecTime();
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
+		//m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 		m_shooter->SetFlywheelEnabled(true);
 		m_autoState ++;
 		break;
@@ -273,7 +273,7 @@ void Robot::DrawbridgeAuto() {
 	switch (m_autoState) {
 		case 0:
 			m_drive->PIDDrive(72.0, Drive::RelativeTo::Now);
-			m_arm->SetTargetPosition(45.0);
+			//m_arm->SetTargetPosition(45.0);
 			m_autoState ++;
 			break;
 		case 1:
@@ -282,7 +282,7 @@ void Robot::DrawbridgeAuto() {
 			}
 			break;
 		case 2:
-			m_arm->SetTargetPosition(0.0);
+			//m_arm->SetTargetPosition(0.0);
 			m_drive->PIDDrive(-24.0, Drive::RelativeTo::SetPoint);
 			m_autoState ++;
 			break;
@@ -330,7 +330,7 @@ void Robot::SallyPortAuto() {
 	switch (m_autoState) {
 		case 0:
 			m_drive->PIDDrive(72.0, Drive::RelativeTo::Now);
-			m_arm->SetTargetPosition(45.0);
+			//m_arm->SetTargetPosition(45.0);
 			m_autoState ++;
 			break;
 		case 1:
@@ -339,7 +339,7 @@ void Robot::SallyPortAuto() {
 			}
 			break;
 		case 2:
-			m_arm->SetTargetPosition(0.0);
+			//m_arm->SetTargetPosition(0.0);
 			m_autoState ++;
 			break;
 		case 3:
@@ -392,7 +392,7 @@ void Robot::SpyBotAuto(){
 	switch (m_autoState){
 	case 0:
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
+		//m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 		m_shooter->SetFlywheelEnabled(true);
 		m_autoTimer = GetSecTime();
 		m_autoState ++;

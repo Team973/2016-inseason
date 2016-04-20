@@ -10,7 +10,7 @@
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Drive.h"
-#include "subsystems/Arm.h"
+#include "subsystems/Hanger.h"
 
 #include "lib/filters/Debouncer.h"
 
@@ -40,10 +40,11 @@ Robot::Robot(void
 	m_leftDriveEncoder(nullptr),
 	m_gyroEncoder(nullptr),
 	m_drive(nullptr),
+	m_sharedConveyorMotor(new VictorSP(SHOOTER_CONVEYER_MOTOR_PWM)),
 	m_intake(nullptr),
 	m_shooter(nullptr),
 	m_shooterStallFilter(new Debouncer(1.5)),
-	m_arm(nullptr),
+	m_hanger(nullptr),
 	m_airPressureSwitch(nullptr),
 	m_compressorRelay(nullptr),
 	m_compressor(nullptr),
@@ -62,25 +63,29 @@ Robot::Robot(void
 	m_selectedRoutine(AutoRoutine::Go),
 	m_selectedDirection(AutoStartPosition::NoVision)
 {
-	printf("Starting robot init\n");
+	printf("Starting robot init\n");fflush(stdout);
 	//m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
 
 	m_driverJoystick = new ObservableJoystick(DRIVER_JOYSTICK_PORT, this, this);
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
 
-	m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
+	fprintf(stderr, "Initialized joysticks\n");
+	//m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
+	fprintf(stderr, "Initialized accelerometer\n");
 
 	//m_spiGyro = new ADXRS450_Gyro(SPI::kOnboardCS0);
 
 	m_leftDriveVictor = new VictorSP(DRIVE_LEFT_PWM);
 	m_rightDriveVictor = new VictorSP(DRIVE_RIGHT_PWM);
+	fprintf(stderr, "Initialized drive victors\n");
 
 	m_leftDriveEncoder = new Encoder(LEFT_DRIVE_ENCODER_A_DIN,
 			LEFT_DRIVE_ENCODER_B_DIN, false, CounterBase::k4X);
+	fprintf(stderr, "Initilalized encoder\n");
 
 
 	m_logger = new LogSpreadsheet(this);
-	printf("Starting drive init\n");
+	fprintf(stderr, "Starting drive init\n");
 #ifdef PROTO_BOT_PINOUT
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_collinGyro, m_logger);
@@ -88,15 +93,15 @@ Robot::Robot(void
 	m_drive = new Drive(this, m_leftDriveVictor, m_rightDriveVictor,
 			m_leftDriveEncoder, nullptr, m_austinGyro, m_logger);
 #endif
-	printf("Finished drive init\n");
+	fprintf(stderr, "Finished drive init\n");
 
 	m_intake = new Intake(this);
 
-	m_arm = new Arm(this, m_pdp);
-
+	fprintf(stderr, "Finished intake init\n");
 	m_airPressureSwitch = new DigitalInput(AIR_PRESSURE_DIN);
 	m_compressorRelay = new Relay(COMPRESSOR_RELAY, Relay::kForwardOnly);
 	m_compressor = new GreyCompressor(m_airPressureSwitch, m_compressorRelay, this);
+	fprintf(stderr, "Finished compressor init\n");
 
 	m_battery = new LogCell("Battery voltage");
 
@@ -110,16 +115,16 @@ Robot::Robot(void
 
 	m_logger->RegisterCell(m_battery);
 	m_logger->RegisterCell(m_time);
-	//m_logger->RegisterCell(m_state);
-	//m_logger->RegisterCell(m_accelCellX);
-	//m_logger->RegisterCell(m_accelCellY);
-	//m_logger->RegisterCell(m_accelCellZ);
-	//m_logger->RegisterCell(m_messages);
 	m_logger->RegisterCell(m_buttonPresses);
+	fprintf(stderr, "Finished logger init\n");
 
-	m_shooter = new Shooter(this, m_logger);
+	m_shooter = new Shooter(this, m_logger, m_sharedConveyorMotor);
+	fprintf(stderr, "Finished shooter init\n");
 
-    m_poseManager = new PoseManager(m_arm, m_shooter, m_intake);
+	m_hanger = new Hanger(this, m_drive, m_sharedConveyorMotor, m_shooter);
+
+    m_poseManager = new PoseManager(m_shooter, m_intake);
+	fprintf(stderr, "Finished poses init\n");
 }
 
 Robot::~Robot(void) {
@@ -132,10 +137,13 @@ void Robot::Initialize(void) {
 	//m_spiGyro->Calibrate();
 
 	m_compressor->Enable();
+	fprintf(stderr, "Finished compressor enable\n");
 
 	m_logger->InitializeTable();
+	fprintf(stderr, "Finished logger init\n");
 
 	SmartDashboard::init();
+	fprintf(stderr, "Finished smart-dash\n");
 
 	//m_hiFreq->Start();
 	//m_hiFreq->SetHighPriority();
@@ -143,6 +151,7 @@ void Robot::Initialize(void) {
 	DBStringPrintf(DBStringPos::DB_LINE0, "shooter disabled");
 	DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
 	DBStringPrintf(DBStringPos::DB_LINE9, "No vision (still drive tho)");
+	fprintf(stderr, "Finished initialization of robot\n");
 }
 
 void Robot::AllStateContinuous(void) {
@@ -151,8 +160,6 @@ void Robot::AllStateContinuous(void) {
 #else
 	DBStringPrintf(DBStringPos::DB_LINE8, "agyro %lf", m_austinGyro->GetDegrees());
 #endif
-
-	DBStringPrintf(DBStringPos::DB_LINE1, "arm pos %lf", m_arm->GetArmAngle());
 
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
 	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
@@ -164,9 +171,11 @@ void Robot::AllStateContinuous(void) {
 	m_time->LogDouble(GetSecTime());
 	m_state->LogPrintf("%s", GetRobotModeString());
 
+	/*
 	m_accelCellX->LogDouble(m_accel->GetX());
 	m_accelCellY->LogDouble(m_accel->GetY());
 	m_accelCellZ->LogDouble(m_accel->GetZ());
+	*/
 
 	/*
 	SmartDashboard::PutNumber("X-Accel", m_accel->GetX());
@@ -175,7 +184,6 @@ void Robot::AllStateContinuous(void) {
 	*/
 
 	double backFlywheelCurrent = m_pdp->GetCurrent(BACK_FLYWHEEL_PDB);
-	double armCurrent = m_pdp->GetCurrent(ARM_PDB);
 
 	if (m_shooterStallFilter->Update(
 			backFlywheelCurrent > BACK_FLYWHEEL_STALL_CURRENT)) {
@@ -183,8 +191,8 @@ void Robot::AllStateContinuous(void) {
 		DBStringPrintf(DBStringPos::DB_LINE0, "!STALL DETECTED!");
 	}
 
-	DBStringPrintf(DBStringPos::DB_LINE0, "bf %2.2lf arm %2.2lf",
-			backFlywheelCurrent, armCurrent);
+	DBStringPrintf(DBStringPos::DB_LINE0, "bf %2.2lf",
+			backFlywheelCurrent);
 }
 void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
