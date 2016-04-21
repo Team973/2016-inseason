@@ -48,6 +48,7 @@ private:
 	double m_prevAnglePos;
 	double m_targetAngleVel;
 	double m_targetAnglePos;
+	double m_prevReading;
 
 	PID *m_velPid;
 	PID *m_posPid;

@@ -30,6 +30,7 @@ PixyVisionDriveController::PixyVisionDriveController()
 		, m_prevAnglePos (0.0)
 		, m_targetAngleVel (0.0)
 		, m_targetAnglePos (0.0)
+		, m_prevReading (0.0)
 		, m_velPid(new PID(TURN_VEL_KP, TURN_VEL_KI, TURN_VEL_KD, PID_SPEED_CTRL))
 		, m_posPid(new PID(TURN_POS_KP, TURN_POS_KI, TURN_POS_KD))
 		, m_offsetInput(new AnalogInput(PIXY_CAM_ANALOG_PORT))
@@ -50,6 +51,9 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 
 	double turn = 0.0;
 
+	double averageread = (m_offsetInput->GetVoltage() + m_prevReading) / 2.0;
+	m_prevReading = m_offsetInput->GetVoltage();
+
 	if (m_targetFoundInput->Get() == false) {
 		printf("Waiting\n");
 		DBStringPrintf(DBStringPos::DB_LINE4,
@@ -58,7 +62,7 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	else {
 		printf("Turning\n");
 
-		m_posPid->SetTarget(m_offsetInput->GetVoltage() - (3.3 / 2));
+		m_posPid->SetTarget(averageread - (3.3 / 2));
 		double velSetpt = m_posPid->CalcOutput(m_prevAnglePos);
 		velSetpt = Util::bound(velSetpt, -MAX_VELOCITY, MAX_VELOCITY);
 
@@ -69,7 +73,7 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	}
 
 	DBStringPrintf(DBStringPos::DB_LINE4,
-			"px p %1.2lf a %2.1lf s %d\n", turn, m_offsetInput->GetVoltage() - (3.3 / 2),
+			"px p %1.2lf a %2.1lf s %d\n", turn, averageread - (3.3 / 2),
 			m_targetFoundInput->Get());
 
 	out->SetDriveOutput(turn, -turn);
