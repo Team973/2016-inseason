@@ -51,7 +51,8 @@ public:
 	 * Release the hooks if they haven't already been released
 	 * If they have been released, just do nothing (don't spam them)
 	 */
-	void TryReleaseHooks(bool setttt);
+	void TryReleaseHooks();
+
 private:
 	/**
 	 * Take control of the conveyor motor away from the shooter.

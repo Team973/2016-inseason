@@ -15,7 +15,7 @@
 
 namespace frc973 {
 
-static constexpr double DEFAULT_HANG_POWER = 0.4;
+static constexpr double DEFAULT_HANG_POWER = -0.4;
 
 Hanger::Hanger(TaskMgr *scheduler, Drive *drive, VictorSP *crankMotor, Shooter *shooter)
 		 : CoopTask()
@@ -36,7 +36,7 @@ Hanger::~Hanger() {
 }
 
 void Hanger::SetAutoHang(bool enabledP) {
-	TryReleaseHooks(true);
+	TryReleaseHooks();
 	TakeConveyorMotor();
 
 	if (enabledP) {
@@ -48,7 +48,7 @@ void Hanger::SetAutoHang(bool enabledP) {
 }
 
 void Hanger::SetManualHang(bool enabledP) {
-	TryReleaseHooks(true);
+	TryReleaseHooks();
 	TakeConveyorMotor();
 
 	if (enabledP) {
@@ -59,9 +59,13 @@ void Hanger::SetManualHang(bool enabledP) {
 	}
 }
 
-void Hanger::TryReleaseHooks(bool settt) {
-	printf("PTO Setting: %d -> %d\n", m_ptoRelease->Get(), settt);
-	m_ptoRelease->Set(settt);
+void Hanger::TryReleaseHooks() {
+	if (m_hooksReleased != true){
+		m_ptoRelease->Set(true);
+		m_hooksReleased = true;
+	}
+	else {
+	}
 }
 
 void Hanger::TakeConveyorMotor() {
@@ -81,6 +85,7 @@ void Hanger::TaskPeriodic(RobotMode mode) {
 	case HangerState::AutoHanging:
 		if (!m_leftHookSensor->Get() || !m_rightHookSensor->Get()) {
 			m_crankMotor->Set(0.0);
+			m_state = PostHanging;
 		}
 		else {
 			m_crankMotor->Set(DEFAULT_HANG_POWER);
