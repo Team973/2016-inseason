@@ -58,6 +58,10 @@ public:
 		m_distEnabled = false;
 	}
 
+	void SetCap (double newCap){
+		m_powerCap = newCap;
+	}
+
 	void Zero() {
 		m_prevDist = 0.0;
 		m_prevAngle = 0.0;
@@ -78,6 +82,8 @@ private:
 	PID *m_turnPID;
 
 	bool m_distEnabled;
+
+	double m_powerCap;
 };
 
 }

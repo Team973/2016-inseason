@@ -37,7 +37,8 @@ PIDDriveController::PIDDriveController():
 	m_onTarget(0.0),
 	m_drivePID(nullptr),
 	m_turnPID(nullptr),
-	m_distEnabled(true)
+	m_distEnabled(true),
+	m_powerCap(1.0)
 {
 	m_drivePID = new PID(DRIVE_PID_KP, DRIVE_PID_KI, DRIVE_PID_KD);
 	m_turnPID = new PID(TURN_PID_KP, TURN_PID_KI, TURN_PID_KD);
@@ -59,7 +60,7 @@ void PIDDriveController::CalcDriveOutput(DriveStateProvider *state,
 
 
 	if (m_distEnabled){
-		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -1.0, 1.0);
+		throttle = -Util::bound(m_drivePID->CalcOutput(m_prevDist), -m_powerCap, m_powerCap);
 	}
 	else {
 		throttle = 0.0;
