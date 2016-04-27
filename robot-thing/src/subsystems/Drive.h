@@ -17,7 +17,6 @@ class RampPIDDriveController;
 class PixyVisionDriveController;
 class VelocityTurnPID;
 class SPIGyro;
-//class ADXRS450_Gyro;
 class LogSpreadsheet;
 class LogCell;
 

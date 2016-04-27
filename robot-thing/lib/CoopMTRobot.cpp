@@ -19,7 +19,9 @@
 namespace frc973 {
 
 CoopMTRobot::CoopMTRobot(void
-		): m_prevMode(RobotMode::MODE_DISABLED)
+		): IterativeRobot()
+		 , TaskMgr()
+		 , m_prevMode(RobotMode::MODE_DISABLED)
 		 , m_robotModeMutex(PTHREAD_MUTEX_INITIALIZER)
 {
 }

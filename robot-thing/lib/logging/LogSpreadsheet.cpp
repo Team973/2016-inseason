@@ -73,6 +73,7 @@ LogSpreadsheet::LogSpreadsheet(TaskMgr *scheduler):
 		m_initialized(false),
 		m_mode(RobotMode::MODE_DISABLED)
 {
+	fprintf(stderr, "Starting logger\n");
 	this->m_scheduler->RegisterTask("Logger", this, TASK_POST_PERIODIC);
 }
 

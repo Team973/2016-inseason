@@ -36,8 +36,10 @@ SPIGyro::SPIGyro(): mutex(PTHREAD_MUTEX_INITIALIZER),
     zero_offset = 0;
 
 
+    fprintf(stderr, "Starting gyro thread\n");
     pthread_t updateThread;
     pthread_create(&updateThread, NULL, Run, this);
+    fprintf(stderr, "Started gyro thread\n");
 }
 
 /*

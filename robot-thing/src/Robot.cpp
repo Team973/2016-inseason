@@ -23,12 +23,13 @@ constexpr int TWO_BALL_AUTO = 1;
 
 Robot::Robot(void
 	) :
+	CoopMTRobot(),
+	JoystickObserver(),
 	m_hiFreq(nullptr),
 	m_logger(nullptr),
 	m_pdp(new PowerDistributionPanel()),
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
-	m_accel(nullptr),
 #ifdef PROTO_BOT_PINOUT
 	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN,
 			false, CounterBase::k4X)),
@@ -54,9 +55,6 @@ Robot::Robot(void
 	m_battery(nullptr),
 	m_time(nullptr),
 	m_state(nullptr),
-	m_accelCellX(nullptr),
-	m_accelCellY(nullptr),
-	m_accelCellZ(nullptr),
 	m_messages(nullptr),
 	m_buttonPresses(nullptr),
 	m_poseManager(nullptr),
@@ -70,10 +68,6 @@ Robot::Robot(void
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
 
 	fprintf(stderr, "Initialized joysticks\n");
-	//m_accel = new BuiltInAccelerometer(Accelerometer::kRange_4G);
-	fprintf(stderr, "Initialized accelerometer\n");
-
-	//m_spiGyro = new ADXRS450_Gyro(SPI::kOnboardCS0);
 
 	m_leftDriveVictor = new VictorSP(DRIVE_LEFT_PWM);
 	m_rightDriveVictor = new VictorSP(DRIVE_RIGHT_PWM);
@@ -107,9 +101,6 @@ Robot::Robot(void
 
 	m_time = new LogCell("Time (ms)");
 	m_state = new LogCell("Game State");
-	m_accelCellX = new LogCell("X-acceleration");
-	m_accelCellY = new LogCell("Y-acceleration");
-	m_accelCellZ = new LogCell("Z-acceleration");
 	m_messages = new LogCell("Robot messages", 100, true);
 	m_buttonPresses = new LogCell("Button Presses (disabled only)", 100, true);
 
@@ -133,16 +124,13 @@ Robot::~Robot(void) {
 void Robot::Initialize(void) {
 	printf("initializing the roboto\n");
 
-	//SmartDashboard::PutString("DB/String 0", "Two ball auto");
-	//m_spiGyro->Calibrate();
-
 	m_compressor->Enable();
 	fprintf(stderr, "Finished compressor enable\n");
 
 	m_logger->InitializeTable();
 	fprintf(stderr, "Finished logger init\n");
 
-	SmartDashboard::init();
+	//SmartDashboard::init();
 	fprintf(stderr, "Finished smart-dash\n");
 
 	//m_hiFreq->Start();
@@ -162,7 +150,7 @@ void Robot::AllStateContinuous(void) {
 #endif
 
 	//printf("gyro angle: %lf\n", m_austinGyro->GetDegreesPerSec());
-	DBStringPrintf(DBStringPos::DB_LINE5, "rdist %lf", m_drive->GetLeftDist());
+	DBStringPrintf(DBStringPos::DB_LINE5, "dist %lf", m_drive->GetLeftDist());
 
 	//DBStringPrintf(DBStringPos::DB_LINE8, "port 10 cur %lf", m_pdp->GetCurrent(10));
 
@@ -170,18 +158,6 @@ void Robot::AllStateContinuous(void) {
 
 	m_time->LogDouble(GetSecTime());
 	m_state->LogPrintf("%s", GetRobotModeString());
-
-	/*
-	m_accelCellX->LogDouble(m_accel->GetX());
-	m_accelCellY->LogDouble(m_accel->GetY());
-	m_accelCellZ->LogDouble(m_accel->GetZ());
-	*/
-
-	/*
-	SmartDashboard::PutNumber("X-Accel", m_accel->GetX());
-	SmartDashboard::PutNumber("Y-Accel", m_accel->GetY());
-	SmartDashboard::PutNumber("Z-Accel", m_accel->GetZ());
-	*/
 
 	double backFlywheelCurrent = m_pdp->GetCurrent(BACK_FLYWHEEL_PDB);
 
@@ -196,8 +172,7 @@ void Robot::AllStateContinuous(void) {
 }
 void Robot::ObserveJoystickStateChange(uint32_t port, uint32_t button,
 			bool pressedP) {
-
-	printf("joystick state change port %d button %d state %d\n", port, button, pressedP);
+	fprintf(stderr, "joystick state change port %d button %d state %d\n", port, button, pressedP);
 	if (this->IsOperatorControl()){
 		HandleTeleopButton(port, button, pressedP);
 	}

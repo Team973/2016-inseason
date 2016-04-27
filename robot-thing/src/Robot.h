@@ -41,8 +41,6 @@ private:
 	ObservableJoystick		*m_driverJoystick;
 	ObservableJoystick		*m_operatorJoystick;
 
-	Accelerometer 	*m_accel;
-
 #ifdef PROTO_BOT_PINOUT
 	Encoder *m_collinGyro;
 #else
@@ -88,9 +86,6 @@ private:
 	LogCell *m_battery;
 	LogCell *m_time;
 	LogCell *m_state;
-	LogCell *m_accelCellX;
-	LogCell *m_accelCellY;
-	LogCell *m_accelCellZ;
 	LogCell *m_messages;
 	LogCell *m_buttonPresses;
 

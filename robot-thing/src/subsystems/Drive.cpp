@@ -56,10 +56,13 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_leftPowerLog(new LogCell("Left motor power"))
 		 , m_rightPowerLog(new LogCell("Right motor power"))
 {
-	printf("Initializing Drive Subsystem\n");
-	m_leftEncoder->SetDistancePerPulse(1.0);
-	//this->SetDriveController(m_arcadeDriveController);
+	fprintf(stderr, "Initializing Drive Subsystem %p\n", m_leftEncoder);
+	fprintf(stderr, "Survived fprintf yes its up to date\n");
 
+	if (m_leftEncoder != nullptr) {
+		fprintf(stderr, "Operating on left drive encoder\n");
+		m_leftEncoder->SetDistancePerPulse(1.0);
+	}
 
 	fprintf(stderr, "starting arcade drive\n");
 	m_arcadeDriveController = new ArcadeDriveController();

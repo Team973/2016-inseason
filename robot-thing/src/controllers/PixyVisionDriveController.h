@@ -34,8 +34,9 @@ public:
 	bool OnTarget() {
 		return Util::abs(m_prevAngleVel) < 0.25 &&
 				Util::abs(m_targetAnglePos - m_prevAnglePos) < 0.25;
-}
+	}
 
+	void Start() override;
 private:
 	static constexpr double MAX_VELOCITY = 20.0;
 

@@ -12,7 +12,7 @@
 
 namespace frc973 {
 
-static constexpr double TURN_POS_KP = 0.08;
+static constexpr double TURN_POS_KP = 0.5;
 static constexpr double TURN_POS_KI = 0.0;
 static constexpr double TURN_POS_KD = 0;
 
@@ -37,8 +37,7 @@ PixyVisionDriveController::PixyVisionDriveController()
 	printf("Pixy Vision Drive Controller Has Initialized horray!!!\n");
 	m_velPid->SetBounds(-MAX_VELOCITY, MAX_VELOCITY);
 	m_posPid->SetBounds(-POWER_CAP, POWER_CAP);
-
-	}
+}
 
 PixyVisionDriveController::~PixyVisionDriveController() {
 }
@@ -58,13 +57,12 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	else {
 		printf("Turning\n");
 
-		m_posPid->SetTarget(m_offsetInput->GetVoltage() - (3.3 / 2));
-		double velSetpt = m_posPid->CalcOutput(m_prevAnglePos);
+		double velSetpt = m_posPid->CalcOutput(-(m_offsetInput->GetVoltage() - (3.3 / 2)));
 		velSetpt = Util::bound(velSetpt, -MAX_VELOCITY, MAX_VELOCITY);
 
 		m_velPid->SetTarget(velSetpt);
 		turn = m_velPid->CalcOutput(m_prevAngleVel);
-		turn = Util::signedIncrease(turn, velSetpt * 0.0);
+		turn = Util::signedIncrease(turn, velSetpt * 0.05);
 		turn = Util::bound(turn, -0.35, 0.35);
 	}
 
@@ -73,6 +71,12 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 			m_targetFoundInput->Get());
 
 	out->SetDriveOutput(turn, -turn);
+}
+
+void PixyVisionDriveController::Start() {
+	m_posPid->Reset();
+	m_velPid->Reset();
+	m_posPid->SetTarget(0);
 }
 
 } /* namespace frc973 */
