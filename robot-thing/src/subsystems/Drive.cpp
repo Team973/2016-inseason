@@ -47,7 +47,6 @@ Drive::Drive(TaskMgr *scheduler, VictorSP *left, VictorSP *right,
 		 , m_rampPidDriveController(nullptr)
 		 , m_visionDriveController(nullptr)
 		 , m_velocityTurnController(nullptr)
-		 , m_brakes(new DoubleSolenoid(DRIVE_BREAK_SOL_A, DRIVE_BREAK_SOL_B))
 		 , m_spreadsheet(logger)
 		 , m_angleLog(new LogCell("Angle"))
 		 , m_angularRateLog(new LogCell("Angular Rate"))
@@ -221,15 +220,6 @@ void Drive::SetDriveOutput(double left, double right) {
 		m_rightMotor->Set(
 				m_rightMotorPowerFilter->Update(
 						Util::bound(-m_rightPower, -1.0, 1.0)));
-	}
-}
-
-void Drive::SetBraking(bool enabledP) {
-	if (enabledP) {
-		m_brakes->Set(DoubleSolenoid::kForward);
-	}
-	else {
-		m_brakes->Set(DoubleSolenoid::kReverse);
 	}
 }
 

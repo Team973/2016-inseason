@@ -142,7 +142,6 @@ public:
 	 */
 	void SetDriveOutput(double left, double right) override;
 
-	void SetBraking(bool enabledP);
 private:
 	void TaskPeriodic(RobotMode mode) override;
 
@@ -176,8 +175,6 @@ private:
     RampPIDDriveController *m_rampPidDriveController;
     PixyVisionDriveController *m_visionDriveController;
     VelocityTurnPID *m_velocityTurnController;
-
-    DoubleSolenoid *m_brakes;
 
     LogSpreadsheet *m_spreadsheet;
     LogCell *m_angleLog;

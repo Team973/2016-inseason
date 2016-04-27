@@ -57,7 +57,6 @@ void Robot::AutonomousStart(void) {
 	m_intake->SetIntakeMode(Intake::IntakeMode::off);
 
 	m_drive->Zero();
-	m_drive->SetBraking(false);
 
 	m_autoState = 0;
 }
@@ -141,12 +140,11 @@ void Robot::PortcullisAuto() {
 	switch (m_autoState){
 	case 0:
 		m_autoTimer = GetMsecTime();
-		//m_arm->Zero();0
-		//m_arm->SetTargetPosition(Arm::ARM_POS_PORTCULLIS);
+		m_poseManager->ChooseNthPose(m_poseManager->STOW_POSE);
 		m_autoState++;
 		break;
 	case 1:
-		if (GetMsecTime() - m_autoTimer > 2000){
+		if (GetMsecTime() - m_autoTimer > 1000){
 			m_autoState ++;
 		}
 		break;
@@ -155,37 +153,27 @@ void Robot::PortcullisAuto() {
 		m_autoState ++;
 		break;
 	case 3:
-		if (m_drive->OnTarget()) {
-			//m_arm->SetTargetPosition(20.0);
-			m_autoState++;
-
-			if (m_selectedDirection == AutoStartPosition::NoVision) {
-				m_autoState += 1000;
-			}
-		}
-		break;
-	case 4:
 		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 		m_shooter->SetFlywheelEnabled(true);
 		m_autoTimer = GetMsecTime();
-		m_autoState ++;
+		m_autoState++;
 		break;
-	case 5:
+	case 4:
 		if (m_drive->OnTarget() && GetMsecTime() - m_autoTimer > 5000){
 			m_autoState ++;
 		}
 		break;
-	case 6:
+	case 5:
 		m_drive->SetVisionTargeting();
 		m_autoState++;
 		break;
-	case 7:
+	case 6:
 		if (m_drive->OnTarget()){
 			m_autoState ++;
 		}
 		break;
-	case 8:
+	case 7:
 		m_shooter->SetConveyerPower(1.0);
 		m_autoState++;
 		break;

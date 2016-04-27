@@ -59,8 +59,8 @@ Shooter::Shooter(TaskMgr *scheduler, LogSpreadsheet *logger, VictorSP *conveyorM
 		m_shooterPow(new LogCell("shooter power")),
 		m_shooterTime(new LogCell("Shooter Time (ms)")),
 		m_scheduler(scheduler),
-		m_runningLight(nullptr),
-		m_readyLight(new Solenoid(7)),
+		m_runningLight(new Solenoid(RUNNING_LIGHT_SOL)),
+		m_readyLight(new Solenoid(READY_LIGHT_SOL)),
 		m_conveyorControl(true)
 {
 	m_scheduler->RegisterTask("Shooter", this, TASK_PERIODIC);
@@ -89,7 +89,7 @@ Shooter::~Shooter() {
 
 void Shooter::SetFlywheelEnabled(bool enabledP) {
 	m_flywheelEnabled = enabledP;
-	//m_runningLight->Set(enabledP);
+	m_runningLight->Set(enabledP);
 }
 
 void Shooter::SetFrontFlywheelSSShoot(double goal) {

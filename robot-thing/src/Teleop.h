@@ -5,7 +5,6 @@ namespace frc973 {
 
 void Robot::TeleopStart(void) {
 	m_teleopTimeSec = GetSecTime();
-	m_drive->SetBraking(false);
 	m_drive->ArcadeDrive(0.0, 0.0);
 	m_shooter->SetConveyerPower(0.0);
     printf("***teleop start\n");
@@ -51,13 +50,6 @@ void Robot::TeleopContinuous(void) {
 	double y = m_driverJoystick->GetRawAxis(DualAction::LeftYAxis);
 	double x = -m_driverJoystick->GetRawAxis(DualAction::RightXAxis);
 
-	/*
-	if (Util::abs(x) > 0.6 || Util::abs(y) > 0.6) {
-		teleopDrive = true;
-		m_drive->SetBraking(false);
-	}
-	*/
-
 	if (teleopDrive) {
 		if (m_driverJoystick->GetRawButton(DualAction::LeftBumper)) {
 			y *= 0.4;
@@ -81,18 +73,11 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 		switch (button) {
 		case DualAction::BtnA:
 			if (pressedP) {
-				if (GetSecTime() - m_teleopTimeSec > 100.0){
-					//m_drive->PIDTurn(5.0, Drive::RelativeTo::Now);
-					m_drive->ArcadeDrive(0.0, 0.0);
-					m_drive->SetBraking(true);
-					teleopDrive = false;
-				}
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
 				//m_drive->PIDTurn(-5.0, Drive::RelativeTo::Now);
-				m_drive->SetBraking(false);
 				m_drive->ArcadeDrive(0.0, 0.0);
 				teleopDrive = true;
 			}

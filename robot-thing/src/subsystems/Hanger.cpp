@@ -22,13 +22,15 @@ Hanger::Hanger(TaskMgr *scheduler, Drive *drive, VictorSP *crankMotor, Shooter *
 		 , m_scheduler(scheduler)
 		 , m_drive(drive)
 		 , m_shooter(shooter)
-		 , m_ptoRelease(new Solenoid(POWER_TAKEOFF_SOL))
+		 , m_ptoRelease(new DoubleSolenoid(POWER_TAKEOFF_SOL_A, POWER_TAKEOFF_SOL_B))
 		 , m_crankMotor(crankMotor)
 		 , m_leftHookSensor(new DigitalInput(LEFT_HOOK_HALL_DIN))
 		 , m_rightHookSensor(new DigitalInput(RIGHT_HOOK_HALL_DIN))
 		 , m_hooksReleased(false)
 		 , m_state(HangerState::PreHanging) {
 	m_scheduler->RegisterTask("Hanger", this, TASK_PERIODIC);
+
+	m_ptoRelease->Set(DoubleSolenoid::Value::kReverse);
 }
 
 Hanger::~Hanger() {
@@ -61,7 +63,7 @@ void Hanger::SetManualHang(bool enabledP) {
 
 void Hanger::TryReleaseHooks() {
 	if (m_hooksReleased != true){
-		m_ptoRelease->Set(true);
+		m_ptoRelease->Set(DoubleSolenoid::Value::kForward);
 		m_hooksReleased = true;
 	}
 	else {

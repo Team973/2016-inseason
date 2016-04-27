@@ -91,15 +91,16 @@ constexpr int DRIVE_BREAK_SOL_A = 3;
 constexpr int DRIVE_BREAK_SOL_B = 5;
 constexpr int DRIVE_SHIFT_SOL = 2;
 #else
-constexpr int DRIVE_BREAK_SOL_A = 2;
-constexpr int DRIVE_BREAK_SOL_B = 5;
 constexpr int DRIVE_SHIFT_SOL = 3;
 #endif
 
 constexpr int INTAKE_EXTENSION_SOL = 4;
 
-constexpr int POWER_TAKEOFF_SOL = 6;
+constexpr int POWER_TAKEOFF_SOL_A = 2;
+constexpr int POWER_TAKEOFF_SOL_B = 5;
 
+constexpr int READY_LIGHT_SOL = 7;
+constexpr int RUNNING_LIGHT_SOL = 6;
 /**
  * Power Distrobution Channels
  * (only the ones we care about)

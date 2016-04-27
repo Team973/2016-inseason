@@ -32,8 +32,8 @@ public:
 		 *  - we're within a degree of the target
 		 */
 	bool OnTarget() {
-		return Util::abs(m_prevAngleVel) < 0.25 &&
-				Util::abs(m_targetAnglePos - m_prevAnglePos) < 0.25;
+		return Util::abs(m_prevAngleVel) < 0.1 &&
+				Util::abs(m_prevReading) < 0.05;
 	}
 
 	void Start() override;
@@ -49,6 +49,8 @@ private:
 	double m_prevAnglePos;
 	double m_targetAngleVel;
 	double m_targetAnglePos;
+
+	double m_prevReading;
 
 	PID *m_velPid;
 	PID *m_posPid;

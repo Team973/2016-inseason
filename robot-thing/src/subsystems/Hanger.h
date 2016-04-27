@@ -8,7 +8,7 @@
 #ifndef SRC_SUBSYSTEMS_HANGER_H_
 #define SRC_SUBSYSTEMS_HANGER_H_
 
-class Solenoid;
+class DoubleSolenoid;
 class VictorSP;
 class DigitalInput;
 
@@ -65,7 +65,7 @@ private:
 	Drive *m_drive;
 	Shooter *m_shooter;
 
-	Solenoid *m_ptoRelease;
+	DoubleSolenoid *m_ptoRelease;
 	VictorSP *m_crankMotor;
 
 	DigitalInput *m_leftHookSensor;

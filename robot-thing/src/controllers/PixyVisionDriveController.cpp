@@ -30,6 +30,7 @@ PixyVisionDriveController::PixyVisionDriveController()
 		, m_prevAnglePos (0.0)
 		, m_targetAngleVel (0.0)
 		, m_targetAnglePos (0.0)
+		, m_prevReading(0.0)
 		, m_velPid(new PID(TURN_VEL_KP, TURN_VEL_KI, TURN_VEL_KD, PID_SPEED_CTRL))
 		, m_posPid(new PID(TURN_POS_KP, TURN_POS_KI, TURN_POS_KD))
 		, m_offsetInput(new AnalogInput(PIXY_CAM_ANALOG_PORT))
@@ -57,8 +58,8 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	else {
 		printf("Turning\n");
 
-		double velSetpt = m_posPid->CalcOutput(-(m_offsetInput->GetVoltage() - (3.3 / 2)));
-		velSetpt = Util::bound(velSetpt, -MAX_VELOCITY, MAX_VELOCITY);
+		m_prevReading = m_posPid->CalcOutput(-(m_offsetInput->GetVoltage() - (3.3 / 2)));
+		double velSetpt = Util::bound(m_prevReading, -MAX_VELOCITY, MAX_VELOCITY);
 
 		m_velPid->SetTarget(velSetpt);
 		turn = m_velPid->CalcOutput(m_prevAngleVel);
