@@ -134,8 +134,9 @@ void Drive::ArcadeDrive(double throttle, double turn) {
 	m_arcadeDriveController->SetJoysticks(throttle, turn);
 }
 
-void Drive::PIDDrive(double distance, RelativeTo relativity) {
+void Drive::PIDDrive(double distance, RelativeTo relativity, double powerCap) {
 	this->SetDriveController(m_pidDriveController);
+	m_pidDriveController->SetCap(powerCap);
 	m_pidDriveController->EnableDist();
 	m_pidDriveController->SetTarget(distance, 0.0, relativity, this);
 }

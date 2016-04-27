@@ -98,7 +98,7 @@ void Robot::Flappers(void) {
 	switch(m_autoState){
 	case 0:
 		m_poseManager->ChooseNthPose(m_poseManager->CHIVAL_POSE);
-		m_drive->PIDDrive(143 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
+		m_drive->PIDDrive(143 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint, 0.8);
 		m_autoState++;
 		break;
 	case 1:

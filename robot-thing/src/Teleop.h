@@ -133,7 +133,7 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 		case DualAction::RightTrigger:
 			if (pressedP) {
 				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
-				m_shooter->SetConveyerPower(1.0);
+				m_shooter->SetConveyerPower(0.8);
 			}
 			else {
 				m_intake->SetIntakeMode(Intake::IntakeMode::off);
@@ -186,7 +186,7 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 		case DualAction::RightBumper:
 			if (pressedP) {
 				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
-				m_shooter->SetConveyerPower(1.0);
+				m_shooter->SetConveyerPower(0.8);
 			}
 			else {
 				m_intake->SetIntakeMode(Intake::IntakeMode::off);
@@ -196,7 +196,7 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 		case DualAction::RightTrigger:
 			if (pressedP) {
 				m_intake->SetIntakeMode(Intake::IntakeMode::reverse);
-				m_shooter->SetConveyerPower(-1.0);
+				m_shooter->SetConveyerPower(-0.8);
 			}
 			else {
 				m_intake->SetIntakeMode(Intake::IntakeMode::off);

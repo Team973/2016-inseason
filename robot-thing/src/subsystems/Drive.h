@@ -101,7 +101,7 @@ public:
      * @param dist Distance in inches to go
      * @param relativity What is that distance metric relative to?
      */
-    void PIDDrive(double dist, RelativeTo relativity);
+    void PIDDrive(double dist, RelativeTo relativity, double powerCap = 1.0);
 
     /**
      * Set a target turn to be achieved by pid
