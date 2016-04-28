@@ -58,8 +58,9 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	else {
 		printf("Turning\n");
 
-		m_prevReading = m_posPid->CalcOutput(-(m_offsetInput->GetVoltage() - (3.3 / 2)));
-		double velSetpt = Util::bound(m_prevReading, -MAX_VELOCITY, MAX_VELOCITY);
+		m_prevReading = -(m_offsetInput->GetVoltage() - (3.3 / 2));
+		double velSetpt = m_posPid->CalcOutput(m_prevReading);
+		velSetpt = Util::bound(velSetpt, -MAX_VELOCITY, MAX_VELOCITY);
 
 		m_velPid->SetTarget(velSetpt);
 		turn = m_velPid->CalcOutput(m_prevAngleVel);
@@ -68,8 +69,8 @@ void PixyVisionDriveController::CalcDriveOutput(DriveStateProvider *state,
 	}
 
 	DBStringPrintf(DBStringPos::DB_LINE4,
-			"px p %1.2lf a %2.1lf s %d\n", turn, m_offsetInput->GetVoltage() - (3.3 / 2),
-			m_targetFoundInput->Get());
+			"x p %1.2lf a %2.1lf s %d %d\n", turn, m_prevReading,
+			m_targetFoundInput->Get(), OnTarget());
 
 	out->SetDriveOutput(turn, -turn);
 }

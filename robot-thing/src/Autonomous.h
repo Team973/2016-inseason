@@ -101,7 +101,7 @@ void Robot::Flappers(void) {
 	switch(m_autoState){
 	case 0:
 		m_poseManager->ChooseNthPose(m_poseManager->CHIVAL_POSE);
-		m_drive->PIDDrive(53, Drive::RelativeTo::SetPoint);
+		m_drive->PIDDrive(42, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
 	case 1:
@@ -112,8 +112,8 @@ void Robot::Flappers(void) {
 		}
 		break;
 	case 2:
-		if(GetMsecTime() - m_autoTimer >= 500){
-			m_drive->PIDDrive(90 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint, 0.4);
+		if(GetMsecTime() - m_autoTimer >= 1000){
+			m_drive->PIDDrive(100 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint, 0.4);
 			m_autoTimer = GetMsecTime();
 			m_autoState++;
 		}
@@ -159,11 +159,17 @@ void Robot::Flappers(void) {
 void Robot::PortcullisAuto() {
 	switch (m_autoState){
 	case 0:
+		m_autoTimer = GetMsecTime();
 		m_poseManager->ChooseNthPose(m_poseManager->STOW_POSE);
-		m_drive->PIDDrive(148.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
 		m_autoState ++;
 		break;
 	case 1:
+		if (GetMsecTime() - m_autoTimer >= 1000){
+			m_drive->PIDDrive(148.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
+			m_autoState++;
+		}
+		break;
+	case 2:
 		if (m_drive->OnTarget()){
 			m_autoState++;
 
@@ -172,7 +178,7 @@ void Robot::PortcullisAuto() {
 				}
 		}
 		break;
-	case 2:
+	case 3:
 		m_drive -> GetAngle();
 		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);

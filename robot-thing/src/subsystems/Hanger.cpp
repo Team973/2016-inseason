@@ -42,7 +42,11 @@ void Hanger::SetAutoHang(bool enabledP) {
 	TryReleaseHooks();
 	TakeConveyorMotor();
 
-	if (enabledP) {
+	if (enabledP && m_state == HangerState::PreHanging) {
+		TryReleaseHooks();
+		TakeConveyorMotor();
+	}
+	else if (enabledP) {
 		m_state = HangerState::AutoHanging;
 	}
 	else {
@@ -54,7 +58,11 @@ void Hanger::SetManualHang(bool enabledP) {
 	TryReleaseHooks();
 	TakeConveyorMotor();
 
-	if (enabledP) {
+	if (enabledP && m_state == HangerState::PreHanging) {
+		TryReleaseHooks();
+		TakeConveyorMotor();
+	}
+	else if (enabledP) {
 		m_state = HangerState::ManualHanging;
 	}
 	else {
