@@ -30,37 +30,37 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 		case DualAction::BtnA:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::Portcullis;
-				DBStringPrintf(DBStringPos::DB_LINE6, "Portcullis Auto");
+				DBStringPrintf(DBStringPos::DB_LINE7, "Portcullis Auto");
 			}
 			break;
 		case DualAction::BtnB:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::ChevaldeFrise;
-				DBStringPrintf(DBStringPos::DB_LINE6, "ChevaldeFrise Auto");
+				DBStringPrintf(DBStringPos::DB_LINE7, "ChevaldeFrise Auto");
 			}
 			break;
 		case DualAction::BtnX:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::Drawbridge;
-				DBStringPrintf(DBStringPos::DB_LINE6, "Drawbridge Auto");
+				DBStringPrintf(DBStringPos::DB_LINE7, "Drawbridge Auto");
 			}
 			break;
 		case DualAction::BtnY:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::Go;
-				DBStringPrintf(DBStringPos::DB_LINE6, "Forward Auto");
+				DBStringPrintf(DBStringPos::DB_LINE7, "Forward Auto");
 			}
 			break;
 		case DualAction::RightBumper:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::SpyBot;
-				DBStringPrintf(DBStringPos::DB_LINE6, "SpyBot Auto");
+				DBStringPrintf(DBStringPos::DB_LINE7, "SpyBot Auto");
 			}
 			break;
 		case DualAction::Back:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::NoAuto;
-				DBStringPrintf(DBStringPos::DB_LINE6, "No Auto (Just sit)");
+				DBStringPrintf(DBStringPos::DB_LINE7, "No Auto (Just sit)");
 			}
 			break;
 		case DualAction::DPadUpVirtBtn:
@@ -91,6 +91,18 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 			if (pressedP) {
 				m_selectedDirection = AutoStartPosition::NoVision;
 				DBStringPrintf(DBStringPos::DB_LINE9, "No Vision (still drive tho)");
+			}
+			break;
+		case DualAction::LeftTrigger:
+			if (pressedP) {
+				m_goBack = true;
+				DBStringPrintf(DBStringPos::DB_LINE1, "Go Back Neutral Zone");
+			}
+			break;
+		case DualAction::RightTrigger:
+			if (pressedP) {
+				m_goBack = false;
+				DBStringPrintf(DBStringPos::DB_LINE1, " DO NOT Go Back Neutral Zone");
 			}
 			break;
 		}

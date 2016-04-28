@@ -10,6 +10,10 @@ static constexpr double POS_3_DIST = 0.0;
 static constexpr double POS_4_DIST = 0.0;
 static constexpr double POS_5_DIST = 0.0 * 12.0;
 
+static constexpr int GO_BACK_START = 1001;
+
+static double headingBeforeTurn = 0.0;
+
 double AutonomousExtraDist (Robot::AutoStartPosition selectedDirection){
 	double EXTRA_DIST = 0.0;
 	if (selectedDirection == Robot::AutoStartPosition::Pos2){
@@ -97,11 +101,26 @@ void Robot::Flappers(void) {
 	switch(m_autoState){
 	case 0:
 		m_poseManager->ChooseNthPose(m_poseManager->CHIVAL_POSE);
-		m_drive->PIDDrive(143 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint, 0.8);
+		m_drive->PIDDrive(53, Drive::RelativeTo::SetPoint);
 		m_autoState++;
 		break;
 	case 1:
 		if (m_drive->OnTarget()){
+			m_poseManager->ChooseNthPose(m_poseManager->STOW_POSE);
+			m_autoTimer = GetMsecTime();
+			m_autoState++;
+		}
+		break;
+	case 2:
+		if(GetMsecTime() - m_autoTimer >= 500){
+			m_drive->PIDDrive(90 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint, 0.4);
+			m_autoTimer = GetMsecTime();
+			m_autoState++;
+		}
+		break;
+	case 3:
+		if (GetMsecTime() - m_autoTimer >= 700){
+			m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 			m_autoState++;
 
 			if (m_selectedDirection == NoVision) {
@@ -109,14 +128,15 @@ void Robot::Flappers(void) {
 			}
 		}
 		break;
-	case 2:
-		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
-		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		m_shooter->SetFlywheelEnabled(true);
-		m_autoTimer = GetMsecTime();
-		m_autoState++;
+	case 4:
+		if (m_drive->OnTarget()){
+			m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
+			m_shooter->SetFlywheelEnabled(true);
+			m_autoTimer = GetMsecTime();
+			m_autoState++;
+		}
 		break;
-	case 3:
+	case 5:
 		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000) {
 			m_drive->SetVisionTargeting();
 
@@ -124,7 +144,7 @@ void Robot::Flappers(void) {
 			m_autoState ++;
 		}
 		break;
-	case 4:
+	case 6:
 		if (m_drive->OnTarget()){
 			m_shooter->SetConveyerPower(1.0);
 
@@ -139,20 +159,21 @@ void Robot::Flappers(void) {
 void Robot::PortcullisAuto() {
 	switch (m_autoState){
 	case 0:
-		m_autoTimer = GetMsecTime();
 		m_poseManager->ChooseNthPose(m_poseManager->STOW_POSE);
-		m_autoState++;
-		break;
-	case 1:
-		if (GetMsecTime() - m_autoTimer > 1000){
-			m_autoState ++;
-		}
-		break;
-	case 2:
 		m_drive->PIDDrive(148.0 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::SetPoint);
 		m_autoState ++;
 		break;
-	case 3:
+	case 1:
+		if (m_drive->OnTarget()){
+			m_autoState++;
+
+			if (m_selectedDirection == NoVision){
+					m_autoState = GO_BACK_START;
+				}
+		}
+		break;
+	case 2:
+		m_drive -> GetAngle();
 		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
 		m_shooter->SetFlywheelEnabled(true);
@@ -177,6 +198,23 @@ void Robot::PortcullisAuto() {
 		m_shooter->SetConveyerPower(1.0);
 		m_autoState++;
 		break;
+	case GO_BACK_START:
+		if (m_goBack == true){
+			m_poseManager->ChooseNthPose(PoseManager::STOW_POSE);
+			m_drive->PIDTurn(180, Drive::RelativeTo::Absolute);
+			m_autoState ++;
+		}
+		else {
+			m_autoState += 1000;
+		}
+		break;
+	case GO_BACK_START + 1:
+		if (m_drive->OnTarget()){
+			m_drive->PIDDrive(110 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::Now, 1.0);
+			m_autoState ++;
+		}
+		break;
+
 	default:
 		break;
 	}
@@ -187,7 +225,6 @@ void Robot::Moat() {
 	case 0:
 		m_drive->SetGearing(Drive::DriveGearing::LowGear);
 		m_drive->PIDDrive(180 + AutonomousExtraDist(m_selectedDirection), Drive::RelativeTo::Now);
-		//remember 120 failed for almost everything
 		m_autoState++;
 		break;
 	case 1:
@@ -195,11 +232,12 @@ void Robot::Moat() {
 			m_autoState ++;
 
 			if (m_selectedDirection == NoVision){
-				m_autoState += 1000;
+				m_autoState = GO_BACK_START;
 			}
 		}
 		break;
 	case 2:
+		headingBeforeTurn = m_drive->GetAngle();
 		m_drive->PIDTurn(AutonomousTurn(m_selectedDirection), Drive::RelativeTo::Now);
 		m_autoTimer = GetMsecTime();
 		m_autoState ++;
@@ -212,28 +250,44 @@ void Robot::Moat() {
 	case 4:
 		m_autoTimer = GetMsecTime();
 		m_poseManager->ChooseNthPose(PoseManager::NEAR_DEFENSE_SHOT_POSE);
-		//m_arm->SetTargetPosition(Arm::ARM_POS_SHOOT);
 		m_shooter->SetFlywheelEnabled(true);
+
 		m_autoState ++;
 		break;
 	case 5:
-		if (m_drive->OnTarget() || GetMsecTime() - m_autoTimer > 2000){
-			m_autoState ++;
-		}
-		break;
-	case 6:
 		m_drive->SetVisionTargeting();
 		m_autoState++;
 		m_autoTimer = GetMsecTime();
 		break;
-	case 7:
+	case 6:
 		if (GetMsecTime() - m_autoTimer > 2700 && m_drive->OnTarget()) {
 			m_autoState ++;
 		}
 		break;
-	case 8:
+	case 7:
 		m_shooter->SetConveyerPower(1.0);
+		m_autoTimer = GetMsecTime();
 		m_autoState++;
+		break;
+	case 8:
+		if (GetMsecTime() - m_autoTimer >= 2000){
+			m_autoState = GO_BACK_START;
+		}
+		break;
+	case GO_BACK_START:
+		if (m_goBack == true){
+			m_drive->PIDTurn(headingBeforeTurn, Drive::RelativeTo::Absolute);
+			m_autoState ++;
+		}
+		else {
+			m_autoState += 1000;
+		}
+		break;
+	case GO_BACK_START + 1:
+		if (m_drive->OnTarget()){
+			m_drive->PIDDrive(-(150 + AutonomousExtraDist(m_selectedDirection)), Drive::RelativeTo::Now, 1.0);
+			m_autoState ++;
+		}
 		break;
 	default:
 		break;

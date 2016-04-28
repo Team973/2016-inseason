@@ -72,6 +72,7 @@ private:
 	DigitalInput *m_rightHookSensor;
 
 	bool m_hooksReleased;
+	bool m_everSeenSwitch;
 
 	HangerState m_state;
 };

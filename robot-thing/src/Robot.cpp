@@ -30,6 +30,7 @@ Robot::Robot(void
 	m_pdp(new PowerDistributionPanel()),
 	m_driverJoystick(nullptr),
 	m_operatorJoystick(nullptr),
+	m_tuningJoystick(nullptr),
 #ifdef PROTO_BOT_PINOUT
 	m_collinGyro(new Encoder(COLLIN_GYRO_A_DIN, COLLIN_GYRO_B_DIN,
 			false, CounterBase::k4X)),
@@ -59,13 +60,15 @@ Robot::Robot(void
 	m_buttonPresses(nullptr),
 	m_poseManager(nullptr),
 	m_selectedRoutine(AutoRoutine::Go),
-	m_selectedDirection(AutoStartPosition::NoVision)
+	m_selectedDirection(AutoStartPosition::NoVision),
+	m_goBack(false)
 {
 	printf("Starting robot init\n");fflush(stdout);
 	//m_hiFreq = new SingleThreadTaskMgr(*this, 1.0 / 2.0);
 
 	m_driverJoystick = new ObservableJoystick(DRIVER_JOYSTICK_PORT, this, this);
 	m_operatorJoystick = new ObservableJoystick(OPERATOR_JOYSTICK_PORT, this, this);
+	m_tuningJoystick = new ObservableJoystick(2, this, this);
 
 	fprintf(stderr, "Initialized joysticks\n");
 

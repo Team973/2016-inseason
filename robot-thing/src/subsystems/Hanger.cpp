@@ -15,7 +15,7 @@
 
 namespace frc973 {
 
-static constexpr double DEFAULT_HANG_POWER = -0.4;
+static constexpr double DEFAULT_HANG_POWER = -1.0;
 
 Hanger::Hanger(TaskMgr *scheduler, Drive *drive, VictorSP *crankMotor, Shooter *shooter)
 		 : CoopTask()
@@ -27,6 +27,7 @@ Hanger::Hanger(TaskMgr *scheduler, Drive *drive, VictorSP *crankMotor, Shooter *
 		 , m_leftHookSensor(new DigitalInput(LEFT_HOOK_HALL_DIN))
 		 , m_rightHookSensor(new DigitalInput(RIGHT_HOOK_HALL_DIN))
 		 , m_hooksReleased(false)
+		 , m_everSeenSwitch(false)
 		 , m_state(HangerState::PreHanging) {
 	m_scheduler->RegisterTask("Hanger", this, TASK_PERIODIC);
 
@@ -85,9 +86,10 @@ void Hanger::TaskPeriodic(RobotMode mode) {
 		//Don't do anything
 		break;
 	case HangerState::AutoHanging:
-		if (!m_leftHookSensor->Get() || !m_rightHookSensor->Get()) {
+		if (!m_leftHookSensor->Get() || !m_rightHookSensor->Get() || m_everSeenSwitch) {
 			m_crankMotor->Set(0.0);
 			m_state = PostHanging;
+			m_everSeenSwitch = true;
 		}
 		else {
 			m_crankMotor->Set(DEFAULT_HANG_POWER);

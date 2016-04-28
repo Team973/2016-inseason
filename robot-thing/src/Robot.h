@@ -40,6 +40,7 @@ private:
 	 */
 	ObservableJoystick		*m_driverJoystick;
 	ObservableJoystick		*m_operatorJoystick;
+	ObservableJoystick		*m_tuningJoystick;
 
 #ifdef PROTO_BOT_PINOUT
 	Encoder *m_collinGyro;
@@ -148,6 +149,7 @@ public:
 	};
 	AutoRoutine m_selectedRoutine;
 	AutoStartPosition m_selectedDirection;
+	bool m_goBack;
 	/**
 	 * Defined in Test.h
 	 */
