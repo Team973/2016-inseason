@@ -12,11 +12,11 @@
 
 namespace frc973 {
 
-static constexpr double TURN_POS_KP = 0.5;
+static constexpr double TURN_POS_KP = 0.4;
 static constexpr double TURN_POS_KI = 0.0;
 static constexpr double TURN_POS_KD = 0;
 
-static constexpr double TURN_VEL_KP = 0.12;
+static constexpr double TURN_VEL_KP = 0.20;
 static constexpr double TURN_VEL_KI = 0.0;
 static constexpr double TURN_VEL_KD = 0.0;
 

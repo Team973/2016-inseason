@@ -117,12 +117,14 @@ void Robot::HandleTeleopButton(uint32_t port, uint32_t button,
 			break;
 		case DualAction::RightTrigger:
 			if (pressedP) {
-				m_intake->SetIntakeMode(Intake::IntakeMode::forward);
+				m_intake->SetIntakeMode(Intake::IntakeMode::off);
 				m_shooter->SetConveyerPower(0.8);
+				m_compressor->Disable();
 			}
 			else {
 				m_intake->SetIntakeMode(Intake::IntakeMode::off);
 				m_shooter->SetConveyerPower(0.0);
+				m_compressor->Enable();
 			}
 			break;
 		case DualAction::Start:

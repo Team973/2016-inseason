@@ -52,8 +52,8 @@
             "shortCylinderExtended": false,
             "superiorFlywheelControl": "closed",
             "inferiorFlywheelControl": "open",
-            "superiorFlywheelRPM": 4600.0,
-            "inferiorFlywheelRPM": 4600.0,
+            "superiorFlywheelRPM": 4575.0,
+            "inferiorFlywheelRPM": 4575.0,
             "superiorFlywheelPower": 0.4,
             "inferiorFlywheelPower": 0.8
         },

@@ -8,6 +8,19 @@ void Robot::DisabledStart(void) {
     m_shooter->SetFlywheelStop();
 	m_intake->SetIntakeMode(Intake::IntakeMode::off);
 	fprintf(stderr, "disable start end \n");
+
+	if (m_goBack == true && m_ballSnatch == true){
+		DBStringPrintf(DBStringPos::DB_LINE1, "GoBack, Snatch");
+	}
+	else if (m_goBack == true && m_ballSnatch == false){
+		DBStringPrintf(DBStringPos::DB_LINE1, "GoBack, NOSnatch");
+	}
+	else if (m_goBack == false && m_ballSnatch == true){
+		DBStringPrintf(DBStringPos::DB_LINE1, "NOreturn, Snatch");
+	}
+	else if (m_goBack == false && m_ballSnatch == false){
+		DBStringPrintf(DBStringPos::DB_LINE1, "NOreturn, NOsnatch");
+	}
 }
 
 void Robot::DisabledStop(void) {
@@ -22,6 +35,7 @@ void Robot::DisabledContinuous(void) {
 			m_drive->GetAngularRate());
 			*/
 }
+
 void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 		bool pressedP){
 	m_buttonPresses->LogPrintf("Button event port %d button %d pressed %d", port, button, pressedP);
@@ -52,12 +66,6 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 			}
 			break;
 		case DualAction::RightBumper:
-			if (pressedP) {
-				m_selectedRoutine = AutoRoutine::SpyBot;
-				DBStringPrintf(DBStringPos::DB_LINE7, "SpyBot Auto");
-			}
-			break;
-		case DualAction::Back:
 			if (pressedP) {
 				m_selectedRoutine = AutoRoutine::NoAuto;
 				DBStringPrintf(DBStringPos::DB_LINE7, "No Auto (Just sit)");
@@ -96,15 +104,36 @@ void Robot::HandleDisabledButton(uint32_t port, uint32_t button,
 		case DualAction::LeftTrigger:
 			if (pressedP) {
 				m_goBack = true;
-				DBStringPrintf(DBStringPos::DB_LINE1, "Go Back Neutral Zone");
 			}
 			break;
 		case DualAction::RightTrigger:
 			if (pressedP) {
 				m_goBack = false;
-				DBStringPrintf(DBStringPos::DB_LINE1, " DO NOT Go Back Neutral Zone");
 			}
 			break;
+		case DualAction::Start:
+			if (pressedP) {
+				m_ballSnatch = true;
+			}
+			break;
+		case DualAction::Back:
+			if (pressedP) {
+				m_ballSnatch = false;
+			}
+			break;
+		}
+
+		if (m_goBack == true && m_ballSnatch == true){
+			DBStringPrintf(DBStringPos::DB_LINE1, "GoBack, Snatch");
+		}
+		else if (m_goBack == true && m_ballSnatch == false){
+			DBStringPrintf(DBStringPos::DB_LINE1, "GoBack, NOSnatch");
+		}
+		else if (m_goBack == false && m_ballSnatch == true){
+			DBStringPrintf(DBStringPos::DB_LINE1, "NOreturn, Snatch");
+		}
+		else if (m_goBack == false && m_ballSnatch == false){
+			DBStringPrintf(DBStringPos::DB_LINE1, "NOreturn, NOsnatch");
 		}
 	}
 

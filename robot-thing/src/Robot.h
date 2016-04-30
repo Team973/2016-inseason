@@ -150,6 +150,7 @@ public:
 	AutoRoutine m_selectedRoutine;
 	AutoStartPosition m_selectedDirection;
 	bool m_goBack;
+	bool m_ballSnatch;
 	/**
 	 * Defined in Test.h
 	 */
